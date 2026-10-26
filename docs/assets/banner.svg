@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="title desc">
+  <title id="title">Prisma.AI — educação financeira personalizada</title>
+  <desc id="desc">Banner escuro com um prisma luminoso, três agentes e a proposta de aprender finanças praticando o próximo passo.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08070f"/>
+      <stop offset="0.55" stop-color="#0d0b1c"/>
+      <stop offset="1" stop-color="#12102a"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b6a4ff"/>
+      <stop offset="0.38" stop-color="#6c3bff"/>
+      <stop offset="0.72" stop-color="#2775ff"/>
+      <stop offset="1" stop-color="#56ccf2"/>
+    </linearGradient>
+    <linearGradient id="prism" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6deff" stop-opacity="0.96"/>
+      <stop offset="0.28" stop-color="#a890ff" stop-opacity="0.9"/>
+      <stop offset="0.62" stop-color="#6c3bff" stop-opacity="0.82"/>
+      <stop offset="1" stop-color="#2775ff" stop-opacity="0.78"/>
+    </linearGradient>
+    <linearGradient id="prismDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3d237f" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#0b0a18" stop-opacity="0.8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#6c3bff" stop-opacity="0.42"/>
+      <stop offset="0.55" stop-color="#2775ff" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#08070f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#56ccf2" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#08070f" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0V42" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="400" fill="url(#bg)"/>
+  <rect width="1280" height="400" fill="url(#grid)"/>
+  <circle cx="1035" cy="198" r="290" fill="url(#glow)"/>
+  <circle cx="1185" cy="86" r="180" fill="url(#glowCyan)"/>
+
+  <!-- wordmark -->
+  <g transform="translate(64 48)">
+    <path d="M12 2 26 34H-2L12 2Z" fill="url(#brand)"/>
+    <path d="M12 9v18M5 34 12 19l7 15" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="1.4"/>
+    <text x="40" y="27" fill="#f7f4ff" font-family="'Space Grotesk', Inter, 'Segoe UI', sans-serif" font-size="22" font-weight="600" letter-spacing="-0.8">Prisma<tspan fill="#a890ff">.AI</tspan></text>
+  </g>
+
+  <!-- copy -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="64" y="132" fill="#a7a1bf" font-size="12" font-weight="600" letter-spacing="2.4">EDUCAÇÃO FINANCEIRA PARA JOVENS ADULTOS</text>
+    <text x="64" y="192" fill="#f7f4ff" font-family="'Space Grotesk', Inter, 'Segoe UI', sans-serif" font-size="48" font-weight="600" letter-spacing="-1.8">Aprender finanças é</text>
+    <text x="64" y="246" fill="url(#brand)" font-family="'Space Grotesk', Inter, 'Segoe UI', sans-serif" font-size="48" font-weight="600" letter-spacing="-1.8">praticar o próximo passo.</text>
+    <text x="64" y="288" fill="#d8d3ec" font-size="16">Seis fases, missões reais e agentes com limites claros —</text>
+    <text x="64" y="312" fill="#d8d3ec" font-size="16">do primeiro salário à proteção digital.</text>
+  </g>
+
+  <!-- chips -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">
+    <rect x="64" y="336" width="94" height="28" rx="14" fill="#ffffff" fill-opacity="0.055" stroke="#ffffff" stroke-opacity="0.12"/>
+    <text x="111" y="354" fill="#d8d3ec" text-anchor="middle">6 fases</text>
+    <rect x="168" y="336" width="112" height="28" rx="14" fill="#ffffff" fill-opacity="0.055" stroke="#ffffff" stroke-opacity="0.12"/>
+    <text x="224" y="354" fill="#d8d3ec" text-anchor="middle">19 missões</text>
+    <rect x="290" y="336" width="165" height="28" rx="14" fill="#ffffff" fill-opacity="0.055" stroke="#ffffff" stroke-opacity="0.12"/>
+    <text x="372.5" y="354" fill="#d8d3ec" text-anchor="middle">IA com governança</text>
+  </g>
+
+  <!-- prism artwork -->
+  <g transform="translate(1030 196)">
+    <ellipse cx="0" cy="126" rx="188" ry="26" fill="#08070f" fill-opacity="0.72"/>
+    <g fill="none" stroke="#a890ff" stroke-opacity="0.2">
+      <ellipse cx="0" cy="0" rx="188" ry="62" transform="rotate(-18)"/>
+      <ellipse cx="0" cy="0" rx="228" ry="84" transform="rotate(14)"/>
+    </g>
+
+    <g filter="url(#softGlow)">
+      <path d="M0 -116 98 98H-98L0 -116Z" fill="url(#prism)" fill-opacity="0.2" stroke="#e6deff" stroke-opacity="0.78" stroke-width="1.6"/>
+      <path d="M0 -116 0 98H-98L0 -116Z" fill="url(#prismDark)" fill-opacity="0.62"/>
+      <path d="M0 -116 98 98H0V-116Z" fill="#56ccf2" fill-opacity="0.08"/>
+      <path d="M0 -116v214M-49 41 0 -116l49 157M-98 98 0 41l98 57" fill="none" stroke="#e6deff" stroke-opacity="0.28" stroke-width="1.1"/>
+    </g>
+
+    <!-- agent nodes -->
+    <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700">
+      <g transform="translate(-146 -34)">
+        <circle r="7" fill="#ff6b6b"/>
+        <circle r="13" fill="none" stroke="#ff6b6b" stroke-opacity="0.34"/>
+        <text x="-18" y="4" fill="#d8d3ec" text-anchor="end">Catalisador</text>
+      </g>
+      <g transform="translate(150 -70)">
+        <circle r="7" fill="#2f80ed"/>
+        <circle r="13" fill="none" stroke="#56ccf2" stroke-opacity="0.4"/>
+        <text x="18" y="4" fill="#d8d3ec">Mentor</text>
+      </g>
+      <g transform="translate(166 70)">
+        <circle r="7" fill="#38ef7d"/>
+        <circle r="13" fill="none" stroke="#38ef7d" stroke-opacity="0.34"/>
+        <text x="18" y="4" fill="#d8d3ec">Analista</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="1216" y="368" fill="#78728f" font-family="Inter, 'Segoe UI', sans-serif" font-size="10" text-anchor="end" letter-spacing="1.6">SUA JORNADA. SUAS ESCOLHAS. SEU FUTURO.</text>
+</svg>
