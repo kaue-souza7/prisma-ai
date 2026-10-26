@@ -181,16 +181,19 @@ Veja `.env.example` para a lista completa com descrições.
 - [`docs/ESQUEMA_CONTEUDO_ATIVIDADES.md`](docs/ESQUEMA_CONTEUDO_ATIVIDADES.md) — contrato JSONB das atividades.
 - [`docs/CRITERIOS_DOMINIO_E_PROGRESSAO_FASE_1.md`](docs/CRITERIOS_DOMINIO_E_PROGRESSAO_FASE_1.md) — domínio, reforço e desbloqueio.
 - [`docs/GUIA_PRODUCAO_CONTEUDO.md`](docs/GUIA_PRODUCAO_CONTEUDO.md) — como escrever e publicar missões.
-- [`docs/MINICURSOS_TRILHAS_1_2.md`](docs/MINICURSOS_TRILHAS_1_2.md) — arquitetura e experiência dos minicursos das Trilhas 1 e 2.
+- [`docs/MINICURSOS_TRILHAS_1_2.md`](docs/MINICURSOS_TRILHAS_1_2.md) — arquitetura e experiência dos módulos das Trilhas 1 e 2.
 - [`docs/MINICURSOS_TRILHAS_3_6.md`](docs/MINICURSOS_TRILHAS_3_6.md) — conteúdo e roteiros das Trilhas 3 a 6.
 - [`docs/AGENTES_INTEGRACAO_ORCHESTRATE.md`](docs/AGENTES_INTEGRACAO_ORCHESTRATE.md) — trilha personalizada, chat do Mentor, contratos e preparação para o Orchestrate.
+- [`docs/plano-estudio-prismas.md`](docs/plano-estudio-prismas.md) — economia de Prismas, Estúdio de revisão e biblioteca pessoal.
 - [`docs/fase-1-primeiro-salario.md`](docs/fase-1-primeiro-salario.md) — referência editorial da Fase 1.
 
-As migrations `0002`–`0010` carregam as seis trilhas, os minicursos imersivos,
-o desafio integrador e a trilha personalizada do perfil. Depois de
-`alembic upgrade head`, o fluxo do estudante já funciona sem IA: onboarding com
-trilha, missão, feedback determinístico, chat com fallback honesto, progresso e
-desbloqueio pela ordem da trilha.
+As migrations `0002`–`0014` carregam as seis trilhas, os módulos imersivos,
+o desafio integrador, a trilha personalizada do perfil, o modelo de avaliação
+por percentual (aprovação a partir de 70%, excelência a partir de 90%) e a
+economia de Prismas do Estúdio. Depois de `alembic upgrade head`, o fluxo do
+estudante já funciona sem IA: onboarding com trilha, módulo, feedback
+determinístico, chat com fallback honesto, progresso, desbloqueio pela ordem da
+trilha e acúmulo de Prismas para o Estúdio.
 
 ---
 
@@ -201,5 +204,6 @@ Documentadas em [`docs/Arquitetura_Tecnica_ELL_IBM.md`](docs/Arquitetura_Tecnica
 - Monólito modular inicial (sem microserviços)
 - Backend é autoridade sobre regras de negócio — IA nunca altera pontos ou desbloqueios diretamente
 - Gamificação determinística: 100 pts (1ª tentativa) / 70 pts (após reforço) / 50 pts (onboarding)
+- Prismas (◆) são uma moeda separada dos pontos: acumuladas por acertos e conclusões, gastas no Estúdio
 - Áudio fora do escopo do MVP
 - watsonx Orchestrate reservado para Etapa 2 (requer spike técnico)
