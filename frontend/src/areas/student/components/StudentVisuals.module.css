@@ -1,0 +1,193 @@
+.mascot {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 28px 42px rgba(91, 43, 224, 0.22));
+}
+
+.mascotFloat {
+  animation: mascot-float 6s ease-in-out infinite;
+}
+
+.mascotBody {
+  transform-origin: 120px 210px;
+  animation: mascot-breathe 5.5s ease-in-out infinite;
+}
+
+.mascotOrbit {
+  transform-origin: 120px 120px;
+  animation: mascot-orbit 18s linear infinite;
+}
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+@keyframes mascot-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.012); }
+}
+
+@keyframes mascot-orbit {
+  to { transform: rotate(360deg); }
+}
+
+.agentAvatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 22px -10px rgba(35, 23, 92, 0.35);
+}
+
+.agentAvatarInner {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.agent_catalyst .agentAvatarInner { background: var(--gradient-warm); }
+.agent_mentor .agentAvatarInner { background: var(--gradient-mentor); }
+.agent_analyst .agentAvatarInner { background: var(--gradient-analyst); }
+
+.phaseArt {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  color: #fff;
+  isolation: isolate;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 18px 32px -20px rgba(42, 24, 111, 0.5);
+}
+
+.phaseArt > svg {
+  position: relative;
+  z-index: 2;
+}
+
+.phaseArt small {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.68);
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.phaseArtGlow {
+  position: absolute;
+  inset: -28% -20% auto auto;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.phaseArt_1 { background: linear-gradient(145deg, #8B5CFF, #5B2BE0 56%, #2775FF); }
+.phaseArt_2 { background: linear-gradient(145deg, #56CCF2, #2775FF 58%, #6C3BFF); }
+.phaseArt_3 { background: linear-gradient(145deg, #43E5A0, #11998E 60%, #0B7A78); }
+.phaseArt_4 { background: linear-gradient(145deg, #FFB38A, #FF6B6B 58%, #E34E7A); }
+.phaseArt_5 { background: linear-gradient(145deg, #FCD86A, #FCA048 58%, #FF6B6B); }
+.phaseArt_6 { background: linear-gradient(145deg, #9AA7FF, #6C3BFF 58%, #2F80ED); }
+
+.progressRing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.progressRing svg {
+  position: absolute;
+  inset: 0;
+}
+
+.progressRingValue {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progressRingCenter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.progressRingCenter strong {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  letter-spacing: -0.045em;
+  color: var(--st-ink, #17152b);
+}
+
+.progressRingCenter small {
+  margin-top: 4px;
+  color: var(--st-muted, #6f6a86);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.brandMark {
+  width: 25px;
+  height: 29px;
+  filter: drop-shadow(0 0 14px rgba(139, 92, 255, 0.5));
+}
+
+.brandType {
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+}
+
+.brandType span {
+  color: #b8a5ff;
+}
+
+.brandLight {
+  color: var(--st-ink, #17152b);
+}
+
+.brandLight .brandMark {
+  filter: drop-shadow(0 4px 12px rgba(108, 59, 255, 0.28));
+}
+
+.brandLight .brandType span {
+  color: var(--st-purple, #6c3bff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascotFloat,
+  .mascotBody,
+  .mascotOrbit,
+  .progressRingValue {
+    animation: none !important;
+    transition: none !important;
+  }
+}

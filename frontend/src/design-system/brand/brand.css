@@ -1,0 +1,106 @@
+/* ═══════════════════════════════════════════════════════════════
+   Prisma.AI — Tokens e elementos de marca compartilhados
+   Usado pela landing page e pelas telas de autenticação.
+   ═══════════════════════════════════════════════════════════════ */
+
+.prisma-landing,
+.prisma-brand {
+  --pl-bg: #08070f;
+  --pl-bg-soft: #0e0c1d;
+  --pl-bg-deep: #17152b;
+  --pl-surface: rgba(255, 255, 255, 0.045);
+  --pl-surface-strong: rgba(255, 255, 255, 0.075);
+  --pl-border: rgba(255, 255, 255, 0.1);
+  --pl-border-strong: rgba(255, 255, 255, 0.17);
+  --pl-text: #f7f4ff;
+  --pl-text-soft: #d8d3ec;
+  --pl-muted: #a7a1bf;
+  --pl-dim: #78728f;
+  --pl-purple: #6c3bff;
+  --pl-purple-soft: #a890ff;
+  --pl-blue: #2775ff;
+  --pl-cyan: #56ccf2;
+  --pl-coral: #ff6b6b;
+  --pl-orange: #fca048;
+  --pl-mint: #38ef7d;
+  --pl-green: #11998e;
+  --pl-radius: 24px;
+  --pl-radius-sm: 16px;
+  --pl-container: 1180px;
+  --pl-gradient: linear-gradient(118deg, #b6a4ff 0%, #6c3bff 34%, #2775ff 70%, #56ccf2 100%);
+  --pl-gradient-warm: linear-gradient(118deg, #ff6b6b 0%, #fca048 100%);
+  --pl-font: 'Inter', system-ui, sans-serif;
+  --pl-display: 'Space Grotesk', system-ui, sans-serif;
+}
+
+html.prisma-auth-html {
+  background: #08070f;
+}
+
+html.prisma-auth-html body {
+  background: #08070f;
+}
+
+/* ─────────────────────────────────────────────
+   Logo
+   ───────────────────────────────────────────── */
+
+.prisma-landing .pl-logo,
+.prisma-brand .pl-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.prisma-landing .pl-logo-mark,
+.prisma-brand .pl-logo-mark {
+  width: 25px;
+  height: 29px;
+  filter: drop-shadow(0 0 12px rgba(108, 59, 255, 0.48));
+}
+
+.prisma-landing .pl-logo-type,
+.prisma-brand .pl-logo-type {
+  font-family: var(--pl-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+
+.prisma-landing .pl-logo-dot,
+.prisma-brand .pl-logo-dot {
+  color: var(--pl-purple-soft);
+}
+
+/* ─────────────────────────────────────────────
+   Prisma art
+   ───────────────────────────────────────────── */
+
+.pl-prism-art {
+  display: block;
+}
+
+.prisma-landing .pl-prism-shape,
+.prisma-brand .pl-prism-shape {
+  animation: pl-prism-turn 22s ease-in-out infinite alternate;
+}
+
+@keyframes pl-prism-turn {
+  from {
+    transform: rotate(-2deg) scale(1);
+  }
+
+  to {
+    transform: rotate(2.5deg) scale(1.025);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prisma-landing .pl-prism-shape,
+  .prisma-brand .pl-prism-shape {
+    animation: none !important;
+  }
+}
