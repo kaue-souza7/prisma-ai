@@ -1,0 +1,458 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(230px, 0.65fr);
+  overflow: hidden;
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-xl);
+  background:
+    radial-gradient(circle at 92% 10%, rgba(86, 204, 242, 0.2), transparent 17rem),
+    radial-gradient(circle at 0% 100%, rgba(47, 128, 237, 0.1), transparent 18rem),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: var(--st-shadow);
+  backdrop-filter: blur(14px);
+}
+
+.heroCopy {
+  padding: 32px;
+}
+
+.heroCopy h1 {
+  margin: 9px 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.7vw, 2.8rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.heroCopy h1 span {
+  color: var(--st-blue);
+}
+
+.heroCopy p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.heroArt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 270px;
+}
+
+.heroOrb {
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(47, 128, 237, 0.16), rgba(86, 204, 242, 0.08) 50%, transparent 72%);
+}
+
+.agentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.agentCard {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-lg);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--st-shadow-soft);
+  backdrop-filter: blur(12px);
+}
+
+.agent_catalyst {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 107, 107, 0.12), transparent 12rem),
+    rgba(255, 255, 255, 0.74);
+}
+
+.agent_mentor {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(86, 204, 242, 0.16), transparent 12rem),
+    rgba(255, 255, 255, 0.74);
+}
+
+.agent_analyst {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(56, 239, 125, 0.14), transparent 12rem),
+    rgba(255, 255, 255, 0.74);
+}
+
+.agentTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.agentState {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(23, 21, 43, 0.05);
+  color: var(--st-muted);
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--st-orange);
+  box-shadow: 0 0 0 3px rgba(252, 160, 72, 0.15);
+}
+
+.agentCard h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+}
+
+.agentRole {
+  margin-top: 1px;
+  color: var(--st-purple);
+  font-size: 0.63rem;
+  font-weight: 750;
+}
+
+.agent_mentor .agentRole { color: var(--st-blue); }
+.agent_analyst .agentRole { color: #087f68; }
+.agent_catalyst .agentRole { color: #c6542f; }
+
+.agentCard p {
+  margin: 11px 0 15px;
+  color: var(--st-muted);
+  font-size: 0.73rem;
+  line-height: 1.6;
+}
+
+.agentFooter {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--st-border);
+}
+
+.available,
+.unavailable {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.available { color: #087f68; }
+.unavailable { color: #a36216; }
+
+.fallbackCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid rgba(47, 128, 237, 0.16);
+  border-radius: var(--st-radius-lg);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(86, 204, 242, 0.14), transparent 15rem),
+    linear-gradient(145deg, #f2f9ff, #f9fcff);
+  box-shadow: 0 16px 38px -34px rgba(47, 128, 237, 0.5);
+}
+
+.fallbackIcon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: #fff;
+  color: var(--st-blue);
+  box-shadow: 0 10px 24px -18px rgba(47, 128, 237, 0.45);
+}
+
+.fallbackCopy {
+  flex: 1;
+}
+
+.fallbackCopy h2 {
+  margin: 5px 0 3px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+}
+
+.fallbackCopy p {
+  max-width: 75ch;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-radius: 11px;
+  background: var(--gradient-mentor);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-decoration: none;
+  box-shadow: 0 12px 26px -18px rgba(47, 128, 237, 0.65);
+}
+
+.primaryAction:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.principles article {
+  padding: 16px;
+  border: 1px solid var(--st-border);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.principles strong {
+  font-size: 0.76rem;
+}
+
+.principles p {
+  margin: 4px 0 0;
+  color: var(--st-muted);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heroArt {
+    min-height: 210px;
+  }
+
+  .agentGrid,
+  .principles {
+    grid-template-columns: 1fr;
+  }
+
+  .fallbackCard {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .primaryAction {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroCopy {
+    padding: 24px;
+  }
+
+  .fallbackCard {
+    padding: 18px;
+  }
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(280px, 0.72fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.chatColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chatIntro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-lg);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(86, 204, 242, 0.12), transparent 14rem),
+    rgba(255, 255, 255, 0.68);
+}
+
+.chatIntro h2 {
+  margin: 6px 0 5px;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  letter-spacing: -0.04em;
+}
+
+.chatIntro p {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.backToMission {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 11px;
+  border: 1px solid rgba(47, 128, 237, 0.16);
+  border-radius: 10px;
+  background: #f5fbff;
+  color: #1f5fae;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.backToMission:hover {
+  color: #174b8c;
+  text-decoration: none;
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sideCard {
+  padding: 18px;
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-lg);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--st-shadow-soft);
+}
+
+.sideCard h2 {
+  margin: 6px 0 9px;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  letter-spacing: -0.03em;
+}
+
+.sideList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sideList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: var(--st-muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.sideList li > span {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #eaf9f2;
+  color: #087f68;
+}
+
+.agentStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agentStack .agentCard {
+  padding: 15px;
+}
+
+.agentStack .agentCard p {
+  margin: 7px 0 0;
+  font-size: 0.69rem;
+}
+
+.agentStack .agentFooter {
+  display: none;
+}
+
+.workspace + .principles {
+  margin-top: 2px;
+}
+
+@media (max-width: 1080px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .agentStack {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .chatIntro {
+    flex-direction: column;
+  }
+
+  .sideColumn,
+  .agentStack {
+    grid-template-columns: 1fr;
+  }
+}
