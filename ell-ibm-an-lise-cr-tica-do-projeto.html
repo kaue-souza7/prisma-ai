@@ -1,0 +1,546 @@
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ELL IBM — Análise Crítica do Projeto</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #1f2328;
+    background: #ffffff;
+    padding: 32px 16px 48px;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; color: #1f2328; margin-bottom: 4px; }
+  .subtitle { color: #57606a; font-size: 13px; margin-bottom: 32px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+  h2 { font-size: 16px; font-weight: 700; color: #1f2328; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #e5e7eb; }
+  h3 { font-size: 14px; font-weight: 600; color: #1f2328; margin: 20px 0 8px; }
+  p { margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .part-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #57606a;
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+  }
+
+  /* Score boxes */
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+  .score-box { background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 12px; }
+  .score-box .label { font-size: 11px; color: #57606a; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .score-box .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .score-box .note { font-size: 11px; color: #57606a; margin-top: 2px; }
+  .green { color: #166534; }
+  .yellow { color: #92400e; }
+  .red { color: #991b1b; }
+  .blue { color: #1e40af; }
+
+  /* Tags */
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; border-radius: 4px; padding: 1px 7px; margin-right: 4px; }
+  .tag-alto { background: #fee2e2; color: #991b1b; }
+  .tag-medio { background: #fef9c3; color: #854d0e; }
+  .tag-baixo { background: #dcfce7; color: #166534; }
+  .tag-critico { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+  .tag-urgente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .tag-planejado { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+  .tag-ok { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .tag-pendente { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+
+  /* Callout boxes */
+  .callout { border-left: 3px solid #e5e7eb; padding: 10px 14px; background: #f7f8fa; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .callout.warn { border-color: #f59e0b; background: #fffbeb; }
+  .callout.danger { border-color: #ef4444; background: #fef2f2; }
+  .callout.info { border-color: #3b82d4; background: #eff6ff; }
+  .callout.success { border-color: #10b981; background: #ecfdf5; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; }
+  th { background: #f7f8fa; text-align: left; font-weight: 600; padding: 8px 10px; border: 1px solid #e5e7eb; color: #1f2328; font-size: 12px; }
+  td { padding: 8px 10px; border: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  td strong { font-weight: 600; }
+
+  /* Section divider */
+  .divider { height: 1px; background: #e5e7eb; margin: 32px 0; }
+
+  /* Plan steps */
+  .plan-step { display: flex; gap: 14px; margin-bottom: 16px; }
+  .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #1f2328; color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-num.before { background: #dc2626; }
+  .step-num.during { background: #d97706; }
+  .step-num.after { background: #059669; }
+  .step-content strong { font-size: 14px; font-weight: 700; }
+  .step-content p { margin: 2px 0 0; color: #57606a; font-size: 13px; }
+
+  footer { text-align: center; color: #57606a; font-size: 12px; margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>ELL IBM — Análise Crítica do Projeto</h1>
+  <p class="subtitle">Diagnóstico independente com base nos cinco documentos disponíveis: PRD, Conteúdo e Jornada, Arquitetura Técnica, Especificação de Agentes e Design System &amp; UX/UI. Versão de análise preparada como insumo para tomada de decisão.</p>
+
+  
+  <div class="part-label">Parte 1</div>
+  <h2>Diagnóstico Geral</h2>
+
+  <h3>Maturidade do projeto</h3>
+  <div class="score-grid">
+    <div class="score-box">
+      <div class="label">Visão de produto</div>
+      <div class="value green">Forte</div>
+      <div class="note">Clara, consistente e bem articulada</div>
+    </div>
+    <div class="score-box">
+      <div class="label">Conteúdo pedagógico</div>
+      <div class="value yellow">Médio</div>
+      <div class="note">Estrutura sólida; critérios faltam</div>
+    </div>
+    <div class="score-box">
+      <div class="label">Especificação técnica</div>
+      <div class="value yellow">Médio</div>
+      <div class="note">Stack definida; contratos ausentes</div>
+    </div>
+    <div class="score-box">
+      <div class="label">Agentes de IA</div>
+      <div class="value red">Incompleto</div>
+      <div class="note">49 decisões de comportamento; nenhuma aprovada</div>
+    </div>
+    <div class="score-box">
+      <div class="label">Pronto para implementar</div>
+      <div class="value yellow">Parcial</div>
+      <div class="note">Base técnica sim; funcional depende de pendências</div>
+    </div>
+  </div>
+
+  <h3>Pontos fortes</h3>
+  <ul>
+    <li><strong>Proposta de valor consistente.</strong> A visão "transformar educação financeira em jornada prática e personalizada" está presente em todos os documentos sem contradições relevantes de propósito.</li>
+    <li><strong>Separação clara entre IA e regras de negócio.</strong> O princípio de que a IA nunca altera pontos ou desbloqueios diretamente é repetido em todos os documentos de forma coerente — é uma decisão de governança acertada e bem protegida.</li>
+    <li><strong>Conteúdo das seis fases bem estruturado.</strong> O Documento 5 define missões, competências esperadas, evidências de aprendizagem e intervenções dos agentes por fase de forma detalhada e pedagogicamente fundamentada.</li>
+    <li><strong>Ciclo pedagógico comum.</strong> A estrutura de 8 etapas por missão (contexto → decisão → aprender fazendo → feedback → verificação → reforço → evidência → próximo passo) é reutilizável e reduz inconsistências.</li>
+    <li><strong>Stack técnica razoável para o escopo.</strong> FastAPI + React/Vite + PostgreSQL + Docker Compose é uma combinação madura e adequada para um MVP local.</li>
+    <li><strong>Design System aprovado.</strong> É o único documento com aprovação explícita registrada e oferece diretrizes claras de identidade, acessibilidade e implementação progressiva.</li>
+    <li><strong>Boa separação de escopos de MVP.</strong> O que não é MVP está listado em vários documentos — transações reais, RAG, rankings públicos, áudio prioritário, produção.</li>
+  </ul>
+
+  <h3>Problemas mais relevantes</h3>
+  <ul>
+    <li><strong>Inconsistência no número de fases:</strong> o PRD define cinco fases; o Documento 5 define seis fases com nomes distintos. O Documento de Arquitetura ainda referencia cinco fases. Essa divergência afeta estrutura de dados, navegação e testes.</li>
+    <li><strong>Especificação de agentes sem aprovação formal:</strong> o Documento 4 tem 49 decisões marcadas explicitamente como "NÃO APROVADO". Iniciar implementação com base nele é arriscado.</li>
+    <li><strong>Escopo inflacionado para um MVP:</strong> três agentes coordenados por watsonx Orchestrate + quizzes gerados por LLM + avaliação de respostas abertas + áudio + 18 missões + simulações + desafio integrador representa uma amplitude significativa para uma primeira versão.</li>
+    <li><strong>Ausência de critérios numéricos de gamificação:</strong> pontuação, níveis, conquistas e regras de progressão estão listados como pendências em todos os documentos. Sem esses dados, o motor determinístico não pode ser implementado.</li>
+    <li><strong>Integração watsonx Orchestrate não especificada:</strong> o contrato técnico entre FastAPI e Orchestrate — autenticação, formato de entrada/saída, tratamento de falhas, latência — está completamente em aberto.</li>
+    <li><strong>Hipótese de público não validada:</strong> o PRD reconhece que a faixa de 18–24 anos é uma premissa de trabalho, não uma conclusão de pesquisa. Um produto de educação financeira construído sem validação do público real corre risco de inadequação de linguagem, exemplos e jornada.</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  
+  <div class="part-label">Parte 2</div>
+  <h2>Problemas Encontrados</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">Problema</th>
+        <th style="width:18%">Documento de origem</th>
+        <th style="width:15%">Impacto</th>
+        <th>Solução recomendada</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Inconsistência no número de fases: PRD define 5, Documento 5 define 6, Arquitetura referencia 5</strong></td>
+        <td>PRD §5, Doc5 §4 e §7, Arquitetura §4 e §8</td>
+        <td><span class="tag tag-critico">Crítico</span></td>
+        <td>Decidir e registrar formalmente se são 5 ou 6 fases. Atualizar PRD, Arquitetura e o mapa de dados. O Documento 5 indica que o desafio integrador pode ser encerramento da Fase 6 — isso sugere 6 fases como a decisão mais recente, mas precisa ser confirmado e propagado para os outros documentos.</td>
+      </tr>
+      <tr>
+        <td><strong>Especificação de agentes com 49 decisões não aprovadas</strong></td>
+        <td>Documento 4, §5 ("Estado atual: NÃO APROVADO")</td>
+        <td><span class="tag tag-critico">Crítico</span></td>
+        <td>Realizar sessão formal de revisão e aprovação do Documento 4 antes de qualquer implementação que dependa do comportamento dos agentes. Priorizar as decisões que bloqueiam a Etapa 2 da Arquitetura.</td>
+      </tr>
+      <tr>
+        <td><strong>Áudio marcado como "sem prioridade" na Arquitetura, mas incluído como critério de aceite do MVP no PRD</strong></td>
+        <td>PRD §13, Arquitetura §4 e §20 item 4</td>
+        <td><span class="tag tag-alto">Alto</span></td>
+        <td>Decisão explícita: remover áudio dos critérios de aceite do MVP ou alocá-lo formalmente em uma etapa posterior. A Arquitetura recomenda corretamente a mudança formal de escopo no PRD — isso ainda não foi feito.</td>
+      </tr>
+      <tr>
+        <td><strong>Fórmulas de pontuação, níveis e conquistas ausentes</strong></td>
+        <td>PRD §8.3, Doc5 §2.3, Arquitetura §22</td>
+        <td><span class="tag tag-alto">Alto</span></td>
+        <td>O motor de gamificação determinístico não pode ser implementado sem esses dados. Definir regras mínimas (mesmo que simples) antes da Etapa 2 da Arquitetura.</td>
+      </tr>
+      <tr>
+        <td><strong>Integração FastAPI–watsonx Orchestrate sem contrato técnico</strong></td>
+        <td>Arquitetura §11, §22</td>
+        <td><span class="tag tag-alto">Alto</span></td>
+        <td>Spike técnico prioritário: autenticar, enviar uma solicitação real ao Orchestrate e receber resposta. Registrar contrato de entrada/saída, latência observada e estratégia de fallback antes de depender da integração.</td>
+      </tr>
+      <tr>
+        <td><strong>Critérios de domínio por competência e por missão não definidos</strong></td>
+        <td>Doc5 §11.3 e §11.4, PRD §5.1</td>
+        <td><span class="tag tag-alto">Alto</span></td>
+        <td>Sem esses critérios, o Analista de Progresso não tem base para recomendar reforços e as regras de desbloqueio de fases não podem ser implementadas. Definir critérios mínimos para as missões da Fase 1 antes de qualquer teste com usuários.</td>
+      </tr>
+      <tr>
+        <td><strong>Conteúdo financeiro sem revisão formal definida: responsável, fonte e processo não escolhidos</strong></td>
+        <td>PRD §10.3, Doc5 §15</td>
+        <td><span class="tag tag-alto">Alto</span></td>
+        <td>Definir quem revisa, qual o processo e qual a fonte primária antes de produzir os conteúdos das missões. Sem isso, o critério de aceite do MVP ("conteúdos com revisão e fontes documentadas") não pode ser atendido.</td>
+      </tr>
+      <tr>
+        <td><strong>Quizzes gerados pela LLM sem critério de avaliação estruturado disponível para o backend</strong></td>
+        <td>Doc5 §9.6</td>
+        <td><span class="tag tag-medio">Médio</span></td>
+        <td>A seção 9.6 exige que cada pergunta aberta tenha "critério de avaliação documentado". Sem esse critério no banco de dados, o backend não consegue validar a resposta do agente. Definir formato de armazenamento dos critérios antes de implementar quizzes dinâmicos.</td>
+      </tr>
+      <tr>
+        <td><strong>Bases legais para coleta de dados não especificadas</strong></td>
+        <td>PRD §10.4</td>
+        <td><span class="tag tag-medio">Médio</span></td>
+        <td>O PRD reconhece a pendência mas não a resolve. Base legal (consentimento, legítimo interesse, obrigação legal) precisa ser definida antes da implementação dos fluxos de consentimento e retenção.</td>
+      </tr>
+      <tr>
+        <td><strong>Design System não tem paleta completa publicada (cores de superfície, estados, erros ausentes no documento)</strong></td>
+        <td>Design System §3.2</td>
+        <td><span class="tag tag-medio">Médio</span></td>
+        <td>O documento lista apenas 5 tokens de cor. Tokens de superfície, borda, erro, aviso, sucesso e estados interativos são necessários para implementação consistente. Complementar a seção 3.2 com a paleta completa de tokens.</td>
+      </tr>
+      <tr>
+        <td><strong>Narrativa e personagens sem detalhamento: nomes, backstory e ilustrações ausentes</strong></td>
+        <td>Doc5 §6.1, Design System §6.4</td>
+        <td><span class="tag tag-baixo">Baixo</span></td>
+        <td>O Design System menciona "mascotes" e "personagens" como direção conceitual sem artes finais. Não bloqueia o MVP textual, mas precisa de prazo para execução antes do piloto.</td>
+      </tr>
+      <tr>
+        <td><strong>Estratégia de sessão e expiração de token não definida</strong></td>
+        <td>Arquitetura §10, §22</td>
+        <td><span class="tag tag-medio">Médio</span></td>
+        <td>O comportamento de retomada da jornada depende de sessão válida. Definir duração, renovação e comportamento de expiração antes de implementar persistência.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  
+  <div class="part-label">Parte 3</div>
+  <h2>Decisões Pendentes</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:22%">Decisão necessária</th>
+        <th style="width:25%">Alternativas</th>
+        <th style="width:25%">Recomendação</th>
+        <th style="width:13%">Urgência</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Número definitivo de fases: 5 ou 6?</strong></td>
+        <td>A) 5 fases (PRD original). B) 6 fases com nomes do Documento 5.</td>
+        <td>Adotar 6 fases com os nomes do Documento 5, pois é o documento mais detalhado e recente. Atualizar PRD e Arquitetura formalmente.</td>
+        <td><span class="tag tag-critico">Crítica — bloqueia tudo</span></td>
+      </tr>
+      <tr>
+        <td><strong>Áudio no MVP: incluir ou adiar?</strong></td>
+        <td>A) Incluir no MVP conforme PRD. B) Adiar formalmente para versão posterior.</td>
+        <td>Adiar formalmente. A Arquitetura já sinalizou isso. O risco de latência, custo e complexidade de transcrição não justifica a inclusão no MVP de validação. Remover dos critérios de aceite.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Aprovação do Documento 4 (Agentes): quais decisões estão confirmadas?</strong></td>
+        <td>A) Aprovar todas as 49 decisões em bloco. B) Aprovar subconjunto essencial para o MVP. C) Revisar e corrigir antes de aprovar.</td>
+        <td>Aprovar um subconjunto mínimo: apenas as decisões que afetam o comportamento do Mentor e do Analista de Progresso na Etapa 2 da Arquitetura. Deferir as demais para a etapa de validação.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Escopo real do MVP: 6 fases completas ou fluxo vertical de validação?</strong></td>
+        <td>A) MVP com as 18 missões, 3 agentes, simulações e desafio integrador. B) MVP reduzido: onboarding + Fase 1 completa + Mentor funcional + gamificação básica.</td>
+        <td>Fortemente recomendado: MVP reduzido (opção B). Validar a hipótese central (aprendizagem por missões + IA contextual) com uma fase antes de produzir 17 missões adicionais. Alinhar com a Etapa A do Documento 5.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Regras numéricas de pontuação e níveis</strong></td>
+        <td>A) Sistema simples: 1 ponto por atividade concluída, 5 níveis fixos. B) Sistema ponderado por dificuldade e tentativas. C) Adiar gamificação completa para pós-MVP.</td>
+        <td>Opção A para o MVP. Um sistema simples e determinístico é suficiente para validar a experiência. A complexidade pode ser adicionada após validação.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Modelo Granite: qual usar para cada agente?</strong></td>
+        <td>Depende do ambiente watsonx disponível. Definir qual modelo (Granite 3.x, Granite 13B, etc.) para Mentor vs. Catalisador vs. Analista de Progresso.</td>
+        <td>Realizar spike técnico para avaliar qualidade de resposta em português e latência. Definir um único modelo para o MVP como padrão e diferenciar depois se necessário.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Responsável pela revisão do conteúdo financeiro</strong></td>
+        <td>A) Especialista financeiro externo. B) IBM subject matter expert. C) Revisão colaborativa interna.</td>
+        <td>Qualquer opção é válida, mas deve ser definida e documentada antes da produção de conteúdo. Sem revisor, os critérios de aceite do MVP não podem ser cumpridos.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Base legal para coleta de dados (LGPD)</strong></td>
+        <td>A) Consentimento explícito em todos os dados. B) Execução de contrato para dados funcionais + consentimento para dados de personalização.</td>
+        <td>Consultar assessoria jurídica ou compliance IBM. Documentar antes de implementar o fluxo de cadastro e onboarding.</td>
+        <td><span class="tag tag-urgente">Urgente</span></td>
+      </tr>
+      <tr>
+        <td><strong>Público-alvo real: validar ou manter premissa de 18–24 anos?</strong></td>
+        <td>A) Manter premissa de trabalho sem validação até o piloto. B) Realizar pesquisa exploratória mínima antes de desenvolver conteúdo.</td>
+        <td>Ao menos 5–8 entrevistas exploratórias com o público antes de finalizar os nomes e cenários das missões. O custo é baixo e o impacto na qualidade dos exemplos é alto.</td>
+        <td><span class="tag tag-planejado">Planejado — antes do piloto</span></td>
+      </tr>
+      <tr>
+        <td><strong>Critério exato de "domínio" por competência</strong></td>
+        <td>A) Acerto em ≥ 70% das questões objetivas da missão. B) Completar o ciclo pedagógico com evidência registrada pelo Analista. C) Combinação A + B.</td>
+        <td>Opção C para competências essenciais. Definir pelo menos para a Fase 1 antes de qualquer teste com usuário. As fórmulas podem ser ajustadas após o piloto.</td>
+        <td><span class="tag tag-planejado">Planejado — antes de implementar progressão</span></td>
+      </tr>
+      <tr>
+        <td><strong>Estratégia de contexto para os agentes: quanto de histórico enviar ao Orchestrate?</strong></td>
+        <td>A) Últimas N mensagens da conversa. B) Resumo estruturado do perfil + fase atual + erros recentes. C) Híbrido: resumo + janela recente.</td>
+        <td>Opção C. O contexto mínimo necessário reduz custo e latência. Definir o formato do payload antes de implementar o módulo de orquestração.</td>
+        <td><span class="tag tag-planejado">Planejado — antes da Etapa 2</span></td>
+      </tr>
+      <tr>
+        <td><strong>Frequência máxima de intervenções proativas da IA</strong></td>
+        <td>A) No máximo 1 intervenção por missão. B) Baseada em gatilhos, sem limite fixo. C) Usuário define preferência.</td>
+        <td>Opção A para o MVP. Limite fixo simplifica a implementação e evita experiências intrusivas antes de ter dados reais de uso.</td>
+        <td><span class="tag tag-planejado">Planejado — antes de implementar gatilhos</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  
+  <div class="part-label">Parte 4</div>
+  <h2>Melhorias e Simplificações</h2>
+
+  <h3>Funcionalidades a manter sem alterações</h3>
+  <ul>
+    <li><strong>Separação IA vs. regras determinísticas.</strong> É o princípio mais importante da arquitetura. Está bem definido e deve ser preservado integralmente.</li>
+    <li><strong>Ciclo pedagógico de 8 etapas por missão.</strong> É claro, reutilizável e implementável. Não simplificar.</li>
+    <li><strong>Três tipos de evidência de aprendizagem</strong> (objetiva, resposta aberta, decisão em simulação). Diferenciar os tipos é necessário para não tratar participação como aprendizagem.</li>
+    <li><strong>Design System como documento aprovado.</strong> É a âncora de consistência. Preservar e referenciar em implementações.</li>
+  </ul>
+
+  <h3>Simplificações recomendadas</h3>
+
+  <div class="callout warn">
+    <strong>Simplificar: três agentes para um agente no MVP</strong><br />
+    O PRD e o Documento 5 descrevem Catalisador, Mentor e Analista como três entidades separadas coordenadas pelo Orchestrate. Na prática, as fronteiras são porosas — o Catalisador recomenda o próximo passo, o Mentor explica o conceito, o Analista identifica a dificuldade — e um usuário em uma missão pode precisar das três funções na mesma interação.<br />
+    <strong>Risco do modelo atual:</strong> três chamadas ao Orchestrate por interação complexa aumenta latência, custo e complexidade de orquestração.<br />
+    <strong>Alternativa:</strong> um único agente contextual (o Mentor) com personas e funções que mudam por contexto, mais um módulo backend de análise de progresso baseado em regras. O Catalisador pode ser inteiramente substituído por lógica de recomendação determinística no backend. Reavaliar três agentes apenas se um único agente demonstrar limitações claras após o MVP.
+  </div>
+
+  <div class="callout warn">
+    <strong>Simplificar: quizzes gerados dinamicamente por LLM</strong><br />
+    A seção 9 do Documento 5 define um sistema onde a LLM gera quizzes adaptativos durante a conversa. Isso requer: critérios de avaliação documentados por objetivo, validação das perguntas geradas, persistência do resultado e garantia de que o conteúdo educacional aprovado seja respeitado. É tecnicamente viável mas pedagogicamente arriscado sem uma base robusta de critérios e testes extensivos.<br />
+    <strong>Alternativa para o MVP:</strong> banco de quizzes pré-escritos, revisados e categorizados por competência e nível de dificuldade. A LLM seleciona e adapta o contexto narrativo, mas não cria perguntas do zero. Reduz risco de alucinação e simplifica a avaliação.
+  </div>
+
+  <div class="callout warn">
+    <strong>Adiar: desafio integrador</strong><br />
+    O desafio integrador (Documento 5, §14) combina competências de todas as fases em um cenário complexo. É pedagogicamente valioso, mas implementá-lo antes de ter evidência de que os usuários chegam à Fase 6 é prematuro. Adiar para a versão pós-piloto.
+  </div>
+
+  <div class="callout warn">
+    <strong>Adiar: ações práticas opcionais fora do app (seção 13, Documento 5)</strong><br />
+    O mecanismo de registro de "ações reais" (comparar preços, revisar configurações de segurança, etc.) adiciona complexidade de UX e não contribui diretamente para a evidência de aprendizagem dentro da plataforma. Adiar para após validação do núcleo pedagógico.
+  </div>
+
+  <h3>Novas ideias com benefício concreto</h3>
+
+  <div class="callout info">
+    <strong>Ideia 1: "Momento de decisão" gravável</strong> — Complexidade: baixa<br />
+    Ao final de cada simulação, o usuário escreve em uma frase "o que mudaria na sua decisão real?". Essa reflexão é armazenada no perfil e pode ser revisitada. Benefício: aumenta a transferência do simulado para o real, cria material qualitativo valioso para validar o produto e não requer IA para processar — é um campo livre de texto.
+  </div>
+
+  <div class="callout info">
+    <strong>Ideia 2: Painel de competências visível ao usuário</strong> — Complexidade: média<br />
+    Em vez de apenas exibir pontos e conquistas, mostrar ao usuário um mapa das competências da jornada com o estado de cada uma (não iniciada / em desenvolvimento / demonstrada). Benefício: torna o progresso educacional tangível, não apenas a pontuação de gamificação. Alinha com o princípio de "medir evolução do conhecimento, não apenas participação" (PRD §2.3). O backend já precisa rastrear competências para o Analista de Progresso — é um reuso de dados existentes.
+  </div>
+
+  <div class="callout info">
+    <strong>Ideia 3: Fallback educativo explícito quando a IA falha</strong> — Complexidade: baixa<br />
+    Quando o agente estiver indisponível ou retornar resposta fora do escopo, em vez de apenas exibir mensagem de erro, o sistema apresenta automaticamente o conteúdo educacional estático relacionado à atividade atual. Benefício: garante que falhas de IA não interrompam a aprendizagem; o conteúdo estruturado já está no banco, é apenas uma questão de roteamento.
+  </div>
+
+  <h3>Funcionalidades a questionar</h3>
+
+  <div class="callout danger">
+    <strong>Questionar: narrativa contínua com personagens como requisito do MVP</strong><br />
+    O Documento 5 e o Design System descrevem uma história contínua organizada em capítulos, com personagens enfrentando dilemas financeiros. Isso é pedagogicamente valioso a longo prazo, mas cria uma dependência de produção de conteúdo narrativo e artes finais que pode atrasar o MVP.<br />
+    <strong>Recomendação:</strong> para o MVP, utilizar cenários situacionais (sem personagens nomeados) e validar se a narrativa continuada aumenta realmente o engajamento. Introduzir personagens na segunda versão, após evidência de que os usuários chegam à Fase 2 e além.
+  </div>
+
+  <div class="callout danger">
+    <strong>Questionar: watsonx Orchestrate como requisito do MVP</strong><br />
+    O Orchestrate foi aprovado como coordenador dos agentes, mas o contrato técnico está completamente em aberto. Se o spike técnico revelar latência alta, custo elevado ou complexidade de integração acima do esperado, o MVP ficará bloqueado.<br />
+    <strong>Recomendação:</strong> definir explicitamente um plano de fallback: se a integração com Orchestrate não estiver estável até a Etapa 2, usar chamadas diretas à API dos modelos Granite com orquestração própria no backend FastAPI. Isso não exige mudar a decisão de usar Orchestrate em produção, mas garante que o MVP não seja bloqueado por uma dependência externa não controlada.
+  </div>
+
+  <div class="divider"></div>
+
+  
+  <div class="part-label">Parte 5</div>
+  <h2>Plano de Ação</h2>
+
+  <h3>Antes do MVP — Decisões e especificações</h3>
+
+  <div class="plan-step">
+    <div class="step-num before">1</div>
+    <div class="step-content">
+      <strong>Resolver a inconsistência de fases e aprovar o escopo real do MVP</strong>
+      <p>Definir: 5 ou 6 fases? MVP com 1 fase ou todas? Registrar formalmente em todos os documentos. Sem isso, qualquer trabalho posterior pode ser refeito.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num before">2</div>
+    <div class="step-content">
+      <strong>Realizar spike técnico de integração watsonx Orchestrate + Granite</strong>
+      <p>Autenticar, enviar prompt real em português, medir latência e custo. Documentar contrato de entrada/saída. Confirmar ou revisar a decisão de usar Orchestrate no MVP.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num before">3</div>
+    <div class="step-content">
+      <strong>Aprovar subconjunto mínimo do Documento 4 (Agentes)</strong>
+      <p>Identificar as decisões que afetam diretamente o Mentor e o Analista de Progresso no fluxo da Etapa A. Aprovar esse subconjunto formalmente. Adiar as demais.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num before">4</div>
+    <div class="step-content">
+      <strong>Definir regras de gamificação mínimas e critérios de domínio da Fase 1</strong>
+      <p>Fórmula de pontos, critério de conclusão de missão e de fase. Mesmo que simples, precisam existir antes de implementar o motor determinístico.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num before">5</div>
+    <div class="step-content">
+      <strong>Definir responsável pela revisão de conteúdo financeiro e revisar conteúdo da Fase 1</strong>
+      <p>As 3 missões da Fase 1 ("Primeiro salário") precisam de conteúdo revisado e fontes documentadas para atender o critério de aceite do MVP.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num before">6</div>
+    <div class="step-content">
+      <strong>Consultar jurídico sobre base legal LGPD e definir fluxo de consentimento</strong>
+      <p>Necessário antes de implementar cadastro e onboarding com coleta de dados.</p>
+    </div>
+  </div>
+
+  <h3>Durante o MVP — Sequência de implementação</h3>
+
+  <div class="plan-step">
+    <div class="step-num during">7</div>
+    <div class="step-content">
+      <strong>Etapa 1: Base técnica (Arquitetura §19)</strong>
+      <p>Docker Compose + FastAPI + React/Vite + PostgreSQL + autenticação com e-mail/senha. Sem IA ainda.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num during">8</div>
+    <div class="step-content">
+      <strong>Fluxo vertical: onboarding + Missão 1.1 + Mentor + gamificação básica</strong>
+      <p>Implementar o ciclo pedagógico completo de ponta a ponta para uma única missão. Testar com 5 usuários reais antes de expandir.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num during">9</div>
+    <div class="step-content">
+      <strong>Expandir para Fase 1 completa (3 missões + simulação)</strong>
+      <p>Somente após validar o fluxo vertical. Integrar Analista de Progresso e regras de progressão de fase.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num during">10</div>
+    <div class="step-content">
+      <strong>Testes de isolamento, segurança e falhas de IA</strong>
+      <p>Antes de ampliar para mais fases: validar que falhas do Orchestrate não corrompem progresso, que dados de um usuário não vazam para outro e que o fallback educativo funciona.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num during">11</div>
+    <div class="step-content">
+      <strong>Expandir para as demais fases</strong>
+      <p>Apenas após o piloto da Fase 1 retornar evidências positivas de aprendizagem e usabilidade.</p>
+    </div>
+  </div>
+
+  <h3>Após o MVP — Validação e evolução</h3>
+
+  <div class="plan-step">
+    <div class="step-num after">12</div>
+    <div class="step-content">
+      <strong>Piloto com usuários reais: medir aprendizagem, não só engajamento</strong>
+      <p>Aplicar pré/pós avaliação de conhecimento. Coletar NPS qualitativo. Medir abandono no onboarding. Avaliar qualidade das respostas do Mentor com critério documentado.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num after">13</div>
+    <div class="step-content">
+      <strong>Decidir sobre narrativa contínua e personagens</strong>
+      <p>Com dados reais de engajamento por fase, decidir se a narrativa com personagens justifica o investimento de produção.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num after">14</div>
+    <div class="step-content">
+      <strong>Avaliar necessidade de três agentes distintos vs. agente único</strong>
+      <p>Com dados de uso real, verificar se a especialização dos agentes traz benefício pedagógico perceptível ao usuário ou se é complexidade sem contrapartida.</p>
+    </div>
+  </div>
+
+  <div class="plan-step">
+    <div class="step-num after">15</div>
+    <div class="step-content">
+      <strong>Painel administrativo, áudio, quizzes dinâmicos, desafio integrador</strong>
+      <p>Implementar na ordem de prioridade revelada pelo uso real. Não antes.</p>
+    </div>
+  </div>
+
+  <div class="callout success" style="margin-top:24px">
+    <strong>Próximo passo mais importante:</strong> realizar uma sessão de alinhamento de escopo para resolver a inconsistência de fases (5 vs. 6) e definir formalmente o escopo real do MVP. Tudo o mais depende dessa decisão.
+  </div>
+
+</div>
+
+<footer>
+  <p>Análise realizada com base exclusivamente nos documentos disponíveis em <code>docs/</code> — Mai 2025 · Made with IBM Bob</p>
+</footer>
+
+</body>
+</html>
