@@ -1,0 +1,941 @@
+.stage {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: clamp(540px, calc(100svh - 218px), 660px);
+  flex-direction: column;
+  justify-content: center;
+  isolation: isolate;
+  padding: 10px 0 30px;
+}
+
+.prism {
+  position: absolute;
+  top: 48%;
+  left: 52%;
+  z-index: 0;
+  width: min(820px, 142%);
+  max-width: none;
+  opacity: 0.44;
+  pointer-events: none;
+  filter: drop-shadow(0 0 70px rgba(108, 59, 255, 0.18));
+  transform: translate(-50%, -50%);
+}
+
+.stage--register .prism {
+  opacity: 0.5;
+  transform: translate(-50%, -52%) rotate(3deg);
+}
+
+.stage--support .prism {
+  opacity: 0.36;
+}
+
+.orbitOne,
+.orbitTwo,
+.orbitThree {
+  position: absolute;
+  top: 48%;
+  left: 52%;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orbitOne {
+  z-index: 1;
+  width: min(690px, 118%);
+  height: 250px;
+  transform: translate(-50%, -50%) rotate(-23deg);
+}
+
+.orbitTwo {
+  z-index: 1;
+  width: min(520px, 92%);
+  height: 650px;
+  border-color: rgba(108, 59, 255, 0.13);
+  transform: translate(-50%, -50%) rotate(40deg);
+}
+
+.orbitThree {
+  z-index: 1;
+  width: min(430px, 78%);
+  height: 180px;
+  border-color: rgba(39, 117, 255, 0.11);
+  transform: translate(-50%, -50%) rotate(12deg);
+}
+
+.body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  width: min(470px, 100%);
+  flex-direction: column;
+  gap: 25px;
+  margin-inline: auto;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #9d95b5;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pl-gradient-warm);
+  box-shadow: 0 0 12px rgba(252, 160, 72, 0.7);
+}
+
+.title {
+  max-width: 440px;
+  margin: 15px 0 0;
+  color: var(--pl-text);
+  font-family: var(--pl-display);
+  font-size: clamp(2.05rem, 2.85vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.058em;
+  text-wrap: balance;
+}
+
+.accent {
+  color: transparent;
+  background: var(--pl-gradient);
+  background-size: 170% 170%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: visual-gradient 9s ease-in-out infinite;
+}
+
+.description {
+  max-width: 420px;
+  margin: 14px 0 0;
+  color: #a8a1bd;
+  font-size: 0.9rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+/* ─────────────────────────────────────────────
+   Card de progresso (login)
+   ───────────────────────────────────────────── */
+
+.dashboard {
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 88% 0%, rgba(108, 59, 255, 0.13), transparent 38%),
+    linear-gradient(150deg, rgba(30, 27, 53, 0.93), rgba(12, 10, 26, 0.92));
+  box-shadow:
+    0 32px 74px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(108, 59, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(20px);
+}
+
+.dashboard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 14%;
+  left: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(203, 191, 255, 0.55), transparent);
+  pointer-events: none;
+}
+
+.dashTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashIcon {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(168, 144, 255, 0.2);
+  border-radius: 11px;
+  color: #d3c7ff;
+  background: linear-gradient(135deg, rgba(108, 59, 255, 0.34), rgba(39, 117, 255, 0.13));
+  box-shadow: 0 0 24px rgba(108, 59, 255, 0.2);
+}
+
+.dashTitle {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.dashTitle small {
+  color: #756e8a;
+  font-size: 7.5px;
+  font-weight: 650;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.dashTitle strong {
+  overflow: hidden;
+  margin-top: 2px;
+  color: #e6e0f4;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 1px solid rgba(108, 59, 255, 0.2);
+  border-radius: 999px;
+  color: #b8aaff;
+  background: rgba(108, 59, 255, 0.08);
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashStatus > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #b8aaff;
+  box-shadow: 0 0 8px #8f75ff;
+  animation: visual-pulse 2.2s ease-in-out infinite;
+}
+
+.progressMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 19px;
+  color: #9c95af;
+  font-size: 8.5px;
+}
+
+.progressMeta strong {
+  color: #baacf3;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.progressTrack {
+  height: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.progressTrack > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6c3bff, #2775ff 62%, #56ccf2);
+  box-shadow: 0 0 12px rgba(108, 59, 255, 0.55);
+}
+
+.missionList {
+  display: grid;
+  gap: 5px;
+  margin-top: 17px;
+}
+
+.mission {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+.mission > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.mission strong {
+  overflow: hidden;
+  color: #d2ccdf;
+  font-size: 9.5px;
+  font-weight: 550;
+  letter-spacing: -0.005em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mission small {
+  margin-top: 1px;
+  color: #736c87;
+  font-size: 7.5px;
+}
+
+.missionIcon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  color: #817a97;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.missionDone {
+  opacity: 0.66;
+}
+
+.missionDone .missionIcon {
+  color: #88e8a9;
+  border-color: rgba(56, 239, 125, 0.15);
+  background: rgba(56, 239, 125, 0.07);
+}
+
+.missionActive {
+  border-color: rgba(108, 59, 255, 0.24);
+  background: linear-gradient(90deg, rgba(108, 59, 255, 0.14), rgba(39, 117, 255, 0.035));
+}
+
+.missionActive .missionIcon {
+  color: #b6a4ff;
+  border-color: rgba(108, 59, 255, 0.25);
+  background: rgba(108, 59, 255, 0.13);
+}
+
+.missionLocked {
+  opacity: 0.42;
+}
+
+.missionPulse {
+  width: 5px;
+  height: 5px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #9e85ff;
+  box-shadow: 0 0 10px #7d5bff;
+  animation: visual-pulse 2s ease-in-out infinite;
+}
+
+.dashNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 9px 10px;
+  border-left: 2px solid rgba(108, 59, 255, 0.55);
+  color: #8e86a3;
+  background: linear-gradient(90deg, rgba(108, 59, 255, 0.075), transparent);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.dashNote svg {
+  flex-shrink: 0;
+  color: #b6a4ff;
+}
+
+/* ─────────────────────────────────────────────
+   Jornada (cadastro)
+   ───────────────────────────────────────────── */
+
+.journey {
+  position: relative;
+  padding: 21px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(39, 117, 255, 0.13), transparent 38%),
+    radial-gradient(circle at 90% 100%, rgba(252, 160, 72, 0.075), transparent 35%),
+    linear-gradient(150deg, rgba(30, 27, 53, 0.93), rgba(12, 10, 26, 0.92));
+  box-shadow:
+    0 32px 74px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(39, 117, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(20px);
+}
+
+.journey::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 14%;
+  left: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168, 144, 255, 0.5), transparent);
+  pointer-events: none;
+}
+
+.journeyTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #8d86a2;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journeyCount {
+  padding: 3px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  color: #817a96;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 7px;
+  letter-spacing: 0.03em;
+}
+
+.journeyPath {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding: 0 2px;
+}
+
+.pathLine {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  left: 18px;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.pathLine > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(108, 59, 255, 0.9), rgba(39, 117, 255, 0.55), transparent);
+  box-shadow: 0 0 12px rgba(108, 59, 255, 0.55);
+}
+
+.phase {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+}
+
+.phaseDot {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 50%;
+  color: #625b77;
+  background: #0d0b1b;
+  font-size: 7.5px;
+  font-weight: 700;
+  transition: border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.phaseActive .phaseDot {
+  border-color: rgba(182, 164, 255, 0.55);
+  color: #fff;
+  background: linear-gradient(135deg, #6c3bff, #2775ff);
+  box-shadow:
+    0 0 0 4px rgba(108, 59, 255, 0.1),
+    0 0 24px rgba(108, 59, 255, 0.45);
+  animation: visual-breathe 3.8s ease-in-out infinite;
+}
+
+.pathLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 7px;
+  padding: 0 2px;
+  color: #5f586f;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journeyCurrent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 10px 11px;
+  border: 1px solid rgba(108, 59, 255, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(108, 59, 255, 0.12), rgba(39, 117, 255, 0.03));
+}
+
+.journeyCurrentIcon {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(168, 144, 255, 0.19);
+  border-radius: 9px;
+  color: #cabaff;
+  background: rgba(108, 59, 255, 0.13);
+}
+
+.journeyCurrent > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.journeyCurrent small {
+  color: #756e8a;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.journeyCurrent strong {
+  overflow: hidden;
+  margin-top: 1px;
+  color: #ded7ed;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.journeyPoints {
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 1px solid rgba(252, 160, 72, 0.16);
+  border-radius: 999px;
+  color: #ffc178;
+  background: rgba(252, 160, 72, 0.06);
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.journeyNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 15px;
+  color: #6f6882;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.dotSep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(168, 144, 255, 0.42);
+}
+
+/* ─────────────────────────────────────────────
+   Suporte (recuperação / verificação)
+   ───────────────────────────────────────────── */
+
+.supportCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108, 59, 255, 0.16), transparent 42%),
+    linear-gradient(150deg, rgba(30, 27, 53, 0.93), rgba(12, 10, 26, 0.92));
+  box-shadow:
+    0 32px 74px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(108, 59, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(20px);
+}
+
+.shieldWrap {
+  position: relative;
+  display: flex;
+  width: 124px;
+  height: 106px;
+  align-items: center;
+  justify-content: center;
+}
+
+.shieldRingOne,
+.shieldRingTwo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.shieldRingOne {
+  width: 148px;
+  height: 66px;
+  border-color: rgba(108, 59, 255, 0.24);
+  transform: translate(-50%, -50%) rotate(-20deg);
+  animation: visual-orbit 18s linear infinite;
+}
+
+.shieldRingTwo {
+  width: 96px;
+  height: 106px;
+  border-color: rgba(39, 117, 255, 0.16);
+  transform: translate(-50%, -50%) rotate(28deg);
+  animation: visual-orbit-reverse 14s linear infinite;
+}
+
+.shieldOrb {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  width: 76px;
+  height: 76px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(182, 164, 255, 0.37);
+  border-radius: 50%;
+  color: #f2edff;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.3), transparent 36%),
+    linear-gradient(135deg, rgba(108, 59, 255, 0.9), rgba(39, 117, 255, 0.56));
+  box-shadow:
+    0 0 0 8px rgba(108, 59, 255, 0.06),
+    0 0 44px rgba(108, 59, 255, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  animation: visual-breathe 4.6s ease-in-out infinite;
+}
+
+.supportList {
+  display: grid;
+  width: 100%;
+  gap: 7px;
+}
+
+.supportList > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.supportList > div > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.supportList strong {
+  color: #d3ccdf;
+  font-size: 9.5px;
+  font-weight: 550;
+}
+
+.supportList small {
+  margin-top: 1px;
+  color: #736c86;
+  font-size: 7.5px;
+}
+
+.supportIcon {
+  display: inline-flex;
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(108, 59, 255, 0.17);
+  border-radius: 8px;
+  color: #b8a8f5;
+  background: rgba(108, 59, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────────
+   Cartões flutuantes
+   ───────────────────────────────────────────── */
+
+.floatCard {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 13px;
+  background: rgba(17, 15, 33, 0.86);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(18px);
+  pointer-events: none;
+  animation: visual-float 7s ease-in-out infinite;
+}
+
+.floatCard > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.floatCard small {
+  color: #6f6884;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.floatCard strong {
+  margin-top: 1px;
+  color: #d5cedf;
+  font-size: 9px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.floatIconGreen,
+.floatIconPurple {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.floatIconGreen {
+  color: #8df5b7;
+  border: 1px solid rgba(56, 239, 125, 0.18);
+  background: rgba(17, 153, 142, 0.18);
+}
+
+.floatIconPurple {
+  color: #c9bbff;
+  border: 1px solid rgba(108, 59, 255, 0.18);
+  background: rgba(108, 59, 255, 0.14);
+}
+
+.floatTop {
+  top: 0;
+  right: -18px;
+}
+
+/* ─────────────────────────────────────────────
+   Legenda
+   ───────────────────────────────────────────── */
+
+.caption {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 8px;
+  margin-top: 21px;
+  color: #68617d;
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.captionLine {
+  width: 22px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ─────────────────────────────────────────────
+   Animações
+   ───────────────────────────────────────────── */
+
+@keyframes visual-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes visual-pulse {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes visual-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes visual-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px rgba(108, 59, 255, 0.08),
+      0 0 26px rgba(108, 59, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(108, 59, 255, 0.12),
+      0 0 44px rgba(108, 59, 255, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  }
+}
+
+@keyframes visual-orbit {
+  from {
+    transform: translate(-50%, -50%) rotate(-20deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(340deg);
+  }
+}
+
+@keyframes visual-orbit-reverse {
+  from {
+    transform: translate(-50%, -50%) rotate(28deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(-332deg);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Responsivo
+   ───────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .floatCard {
+    display: none;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 961px) {
+  .stage {
+    min-height: 500px;
+    padding-bottom: 22px;
+  }
+
+  .floatCard {
+    display: none;
+  }
+
+  .body {
+    gap: 18px;
+  }
+
+  .title {
+    margin-top: 11px;
+    font-size: 2.05rem;
+  }
+
+  .description {
+    margin-top: 10px;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  .dashboard,
+  .journey,
+  .supportCard {
+    padding: 16px;
+  }
+
+  .missionList {
+    margin-top: 12px;
+  }
+
+  .mission {
+    padding: 6px;
+  }
+
+  .dashNote {
+    margin-top: 11px;
+  }
+
+  .caption {
+    margin-top: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accent,
+  .dashStatus > span,
+  .missionPulse,
+  .phaseActive .phaseDot,
+  .shieldOrb,
+  .shieldRingOne,
+  .shieldRingTwo,
+  .floatCard {
+    animation: none !important;
+  }
+}
