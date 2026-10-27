@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-labelledby="title desc">
+  <title id="title">A evolução do Prisma.AI</title>
+  <desc id="desc">Três etapas: aprender fazendo hoje, uma camada de IA que acompanha o usuário e, no futuro, Open Finance com consentimento.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08070f"/>
+      <stop offset="0.55" stop-color="#0d0b1c"/>
+      <stop offset="1" stop-color="#12102a"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b6a4ff"/>
+      <stop offset="0.38" stop-color="#6c3bff"/>
+      <stop offset="0.72" stop-color="#2775ff"/>
+      <stop offset="1" stop-color="#56ccf2"/>
+    </linearGradient>
+    <linearGradient id="arrow1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#56ccf2" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#b6a4ff" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="arrow2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b6a4ff" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#38ef9d" stop-opacity="0.9"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#6c3bff" stop-opacity="0.3"/>
+      <stop offset="0.6" stop-color="#2775ff" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#08070f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#38ef9d" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#08070f" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0V42" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="560" fill="url(#bg)"/>
+  <rect width="1280" height="560" fill="url(#grid)"/>
+  <circle cx="1080" cy="70" r="280" fill="url(#glow)"/>
+  <circle cx="1180" cy="470" r="220" fill="url(#glowGreen)"/>
+
+  <!-- wordmark -->
+  <g transform="translate(64 40)">
+    <path d="M10 0 22 27H-2L10 0Z" fill="url(#brand)"/>
+    <text x="34" y="21" fill="#f7f4ff" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="-0.4">Prisma<tspan fill="#a890ff">.AI</tspan></text>
+    <text x="1152" y="20" fill="#78728f" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" letter-spacing="1.8" text-anchor="end">VISÃO DE FUTURO</text>
+  </g>
+
+  <!-- headline -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="64" y="99" fill="#b6a4ff" font-size="9.5" font-weight="700" letter-spacing="2.2">O PRÓXIMO CAPÍTULO</text>
+    <text x="64" y="139" fill="#f7f4ff" font-size="32" font-weight="600" letter-spacing="-1">Do aprendizado à <tspan fill="url(#brand)">vida financeira conectada.</tspan></text>
+    <text x="64" y="168" fill="#a7a1bf" font-size="13.5">A jornada de hoje prepara o próximo passo: mais contexto, mais personalização e dados que o usuário escolhe compartilhar.</text>
+  </g>
+
+  <!-- arrows -->
+  <g>
+    <line x1="424" y1="348" x2="452" y2="348" stroke="url(#arrow1)" stroke-width="1.4"/>
+    <path d="M452 344l8 4-8 4z" fill="#b6a4ff" fill-opacity="0.8"/>
+    <line x1="820" y1="348" x2="848" y2="348" stroke="url(#arrow2)" stroke-width="1.4"/>
+    <path d="M848 344l8 4-8 4z" fill="#38ef9d" fill-opacity="0.8"/>
+  </g>
+
+  <!-- PANEL 1 -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="64" y="204" width="360" height="276" rx="18" fill="#ffffff" fill-opacity="0.035" stroke="#ffffff" stroke-opacity="0.09"/>
+    <rect x="64" y="204" width="360" height="3" rx="1.5" fill="#56ccf2" fill-opacity="0.85"/>
+    <text x="88" y="238" fill="#56ccf2" font-size="9.5" font-weight="700" letter-spacing="2.2">HOJE</text>
+    <text x="88" y="273" fill="#f7f4ff" font-size="21" font-weight="600" letter-spacing="-0.4">Aprender fazendo</text>
+    <text x="88" y="305" fill="#a7a1bf" font-size="13">12 trilhas, 45 missões e simulações</text>
+    <text x="88" y="324" fill="#a7a1bf" font-size="13">com feedback. Nenhum dado bancário</text>
+    <text x="88" y="343" fill="#a7a1bf" font-size="13">necessário.</text>
+
+    <rect x="88" y="382" width="70" height="26" rx="13" fill="#56ccf2" fill-opacity="0.08" stroke="#56ccf2" stroke-opacity="0.22"/>
+    <text x="123" y="399" fill="#b7ecff" font-size="10" font-weight="600" text-anchor="middle">12 trilhas</text>
+    <rect x="166" y="382" width="78" height="26" rx="13" fill="#56ccf2" fill-opacity="0.08" stroke="#56ccf2" stroke-opacity="0.22"/>
+    <text x="205" y="399" fill="#b7ecff" font-size="10" font-weight="600" text-anchor="middle">45 missões</text>
+    <rect x="252" y="382" width="96" height="26" rx="13" fill="#56ccf2" fill-opacity="0.08" stroke="#56ccf2" stroke-opacity="0.22"/>
+    <text x="300" y="399" fill="#b7ecff" font-size="10" font-weight="600" text-anchor="middle">sem risco real</text>
+
+    <text x="88" y="450" fill="#78728f" font-size="10.5" letter-spacing="0.2">PRÁTICA · CONTEXTO · EVIDÊNCIA</text>
+  </g>
+
+  <!-- PANEL 2 -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="460" y="204" width="360" height="276" rx="18" fill="#ffffff" fill-opacity="0.045" stroke="#b6a4ff" stroke-opacity="0.16"/>
+    <rect x="460" y="204" width="360" height="3" rx="1.5" fill="#b6a4ff" fill-opacity="0.9"/>
+    <text x="484" y="238" fill="#b6a4ff" font-size="9.5" font-weight="700" letter-spacing="2.2">PRÓXIMO</text>
+    <text x="484" y="273" fill="#f7f4ff" font-size="21" font-weight="600" letter-spacing="-0.4">IA que acompanha</text>
+    <text x="484" y="305" fill="#a7a1bf" font-size="13">Mentor mais contextual, revisões</text>
+    <text x="484" y="324" fill="#a7a1bf" font-size="13">sob medida e orientação que respeita</text>
+    <text x="484" y="343" fill="#a7a1bf" font-size="13">o ritmo de cada usuário.</text>
+
+    <rect x="484" y="382" width="116" height="26" rx="13" fill="#b6a4ff" fill-opacity="0.09" stroke="#b6a4ff" stroke-opacity="0.24"/>
+    <text x="542" y="399" fill="#ddd5ff" font-size="10" font-weight="600" text-anchor="middle">Mentor contextual</text>
+    <rect x="608" y="382" width="122" height="26" rx="13" fill="#b6a4ff" fill-opacity="0.09" stroke="#b6a4ff" stroke-opacity="0.24"/>
+    <text x="669" y="399" fill="#ddd5ff" font-size="10" font-weight="600" text-anchor="middle">revisões sob medida</text>
+
+    <text x="484" y="450" fill="#78728f" font-size="10.5" letter-spacing="0.2">IA COM GOVERNANÇA</text>
+  </g>
+
+  <!-- PANEL 3 -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="856" y="204" width="360" height="276" rx="18" fill="#38ef9d" fill-opacity="0.035" stroke="#38ef9d" stroke-opacity="0.18"/>
+    <rect x="856" y="204" width="360" height="3" rx="1.5" fill="#38ef9d" fill-opacity="0.9"/>
+    <text x="880" y="238" fill="#38ef9d" font-size="9.5" font-weight="700" letter-spacing="2.2">VISÃO</text>
+    <text x="880" y="273" fill="#f7f4ff" font-size="21" font-weight="600" letter-spacing="-0.4">Finanças conectadas</text>
+    <text x="880" y="305" fill="#a7a1bf" font-size="13">Com consentimento, Open Finance</text>
+    <text x="880" y="324" fill="#a7a1bf" font-size="13">aproxima a aprendizagem da vida real:</text>
+    <text x="880" y="343" fill="#a7a1bf" font-size="13">dados atualizados, orientações mais</text>
+    <text x="880" y="362" fill="#a7a1bf" font-size="13">precisas e decisões mais conscientes.</text>
+
+    <rect x="880" y="400" width="88" height="26" rx="13" fill="#38ef9d" fill-opacity="0.08" stroke="#38ef9d" stroke-opacity="0.24"/>
+    <text x="924" y="417" fill="#b9ffdd" font-size="10" font-weight="600" text-anchor="middle">Open Finance</text>
+    <rect x="976" y="400" width="112" height="26" rx="13" fill="#38ef9d" fill-opacity="0.08" stroke="#38ef9d" stroke-opacity="0.24"/>
+    <text x="1032" y="417" fill="#b9ffdd" font-size="10" font-weight="600" text-anchor="middle">dados autorizados</text>
+
+    <text x="880" y="458" fill="#78728f" font-size="10.5" letter-spacing="0.2">O USUÁRIO NO CONTROLE</text>
+  </g>
+
+  <!-- footer -->
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="64" y="526" fill="#a7a1bf" font-size="11.5">Com consentimento e integrações adequadas, o Prisma.AI pode aproximar a prática da vida financeira real.</text>
+    <text x="1152" y="526" fill="#78728f" font-size="10.5" text-anchor="end" letter-spacing="0.2">O usuário decide o que compartilhar.</text>
+    <text x="64" y="548" fill="#5f5a75" font-size="9.5" letter-spacing="0.2">Prisma.AI não é banco, não movimenta dinheiro e não recomenda investimentos personalizados.</text>
+  </g>
+</svg>
