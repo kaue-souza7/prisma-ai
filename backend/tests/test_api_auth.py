@@ -79,6 +79,40 @@ async def test_onboarding_is_idempotent_and_grants_bonus_once(client, db_session
     assert [item["key"] for item in summary.json()["achievements"]] == ["primeiro_passo"]
 
 
+async def test_onboarding_repairs_missing_profile_for_legacy_user(client, db_session):
+    from sqlalchemy import select
+
+    from app.shared.models import Profile
+
+    user, tokens = await register_verified_user(client, db_session)
+    profile_result = await db_session.execute(
+        select(Profile).where(Profile.user_id == user.id)
+    )
+    profile = profile_result.scalar_one()
+    await db_session.delete(profile)
+    await db_session.flush()
+
+    response = await client.post(
+        "/api/v1/users/me/onboarding",
+        json={
+            "personal_goal": "Organizar meu primeiro salário",
+            "knowledge_level": "beginner",
+            "consent_version": "v1",
+        },
+        headers=auth_headers(tokens),
+    )
+
+    assert response.status_code == 200
+    assert response.json()["trail"]["phase_order"] == [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    ]
+
+    repaired = await db_session.execute(
+        select(Profile).where(Profile.user_id == user.id)
+    )
+    assert repaired.scalar_one().onboarding_completed is True
+
+
 async def test_password_reset_flow_changes_password(client, db_session):
     from sqlalchemy import select
 

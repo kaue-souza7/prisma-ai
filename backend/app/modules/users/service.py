@@ -17,10 +17,25 @@ async def get_profile(db: AsyncSession, user_id: int) -> Profile | None:
     return result.scalar_one_or_none()
 
 
-async def update_profile(db: AsyncSession, user_id: int, data: dict) -> Profile:
+async def get_or_create_profile(db: AsyncSession, user_id: int) -> Profile:
+    """Garante o perfil de contas antigas ou criadas fora do fluxo de cadastro.
+
+    O cadastro normal cria `Profile` e `UserPoints` na mesma transação. Contas
+    legadas (ou criadas por scripts de teste) podem não ter esse registro; nesse
+    caso, o onboarding deve reparar o estado em vez de devolver 404.
+    """
     profile = await get_profile(db, user_id)
-    if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil não encontrado.")
+    if profile:
+        return profile
+
+    profile = Profile(user_id=user_id)
+    db.add(profile)
+    await db.flush()
+    return profile
+
+
+async def update_profile(db: AsyncSession, user_id: int, data: dict) -> Profile:
+    profile = await get_or_create_profile(db, user_id)
 
     for key, value in data.items():
         if value is not None:
@@ -52,9 +67,7 @@ async def complete_onboarding(
     life_context: str | None = None,
     urgency: str | None = None,
 ) -> Profile:
-    profile = await get_profile(db, user_id)
-    if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil não encontrado.")
+    profile = await get_or_create_profile(db, user_id)
 
     merged_preferences = {**(profile.preferences or {}), **(preferences or {})}
     if life_context:
