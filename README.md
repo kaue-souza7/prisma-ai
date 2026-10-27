@@ -127,7 +127,7 @@ Com a ativação da IA generativa, o Mentor poderá responder de forma mais cont
 
 ## Visão de futuro
 
-![Da aprendizagem à vida financeira conectada: hoje, próximo e visão](docs/assets/futuro-open-finance.svg)
+![Da aprendizagem à vida financeira conectada: hoje, prática sem dados bancários; próximo, IA mais contextual; visão, Open Finance com consentimento](docs/assets/futuro-open-finance.svg)
 
 <sub>Hoje: prática sem dados bancários. Próximo: uma IA mais contextual. Visão: Open Finance com consentimento.</sub>
 
