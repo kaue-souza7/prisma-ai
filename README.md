@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="#o-que-é-o-prismaai">A ideia</a> ·
-  <a href="#por-que-isso-importa">Por que importa</a> ·
+  <a href="#por-que-isso-importa-para-os-jovens">Por que importa</a> ·
   <a href="#a-experiência">A experiência</a> ·
   <a href="#a-inteligência">A inteligência</a> ·
   <a href="#visão-de-futuro">Visão de futuro</a>
@@ -45,19 +45,29 @@ O Prisma.AI foi desenhado para jovens adultos, especialmente entre 18 e 24 anos,
 
 ---
 
-## Por que isso importa
+## Por que isso importa para os jovens
 
-Os números contam uma história que começa antes da fatura:
+**A primeira conta chega antes da primeira aula de educação financeira.**
 
-| <h3 align="center">83,9 milhões</h3> | <h3 align="center">28,7%</h3> | <h3 align="center">59,6/100</h3> |
+| <h3 align="center">20 anos</h3> | <h3 align="center">27,6 milhões</h3> | <h3 align="center">3,3% vs. 2,1%</h3> |
 |:---:|:---:|:---:|
-| de brasileiros estavam inadimplentes em julho de 2026 — R$ 586,4 bilhões em dívidas. | da renda mensal das famílias estava comprometida com o pagamento de dívidas em julho de 2026. | foi o nível médio de letramento financeiro da população na última medição nacional (2023). |
+| era a idade média do primeiro relacionamento com o sistema financeiro em 2024 — eram cerca de 35 anos em 2020. | de jovens de 15 a 29 anos tinham acesso a crédito em 2024, mais que o dobro de 2016 (13,7 milhões). | inadimplência média de jovens e adultos nos últimos oito anos — mais de 50% maior para os jovens. |
 
-**Fontes:** [Serasa, Mapa da Inadimplência · jul/2026](https://www.serasa.com.br/imprensa/inadimplencia-segundo-semestre-serasa/) · [Banco Central, comprometimento de renda · jul/2026](https://dadosabertos.bcb.gov.br/dataset/29034-comprometimento-de-renda-das-familias-com-o-servico-da-divida-com-o-sistema-financeiro-nacion) · [BCB, Relatório de Letramento Financeiro · 2023](https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/letramento/relatorio-de-letramento-financeiro.pdf).
+**Fontes:** [BCB, Relatório de Cidadania Financeira 2025, seção 2.3](https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/RCF/relatorio_de_cidadania_financeira_2025.pdf) · [Metrópoles, 13/04/2026](https://www.metropoles.com/brasil/jovens-tem-inadimplencia-50-superior-a-de-adultos-aponta-bc) · [BCB, Relatório de Letramento Financeiro 2023](https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/letramento/relatorio-de-letramento-financeiro.pdf).
 
-O dado de letramento é a última medição nacional publicada (pesquisa OCDE/INFE, 2023): 75% dos entrevistados pontuaram até 70 em uma escala de 0 a 100. A leitura é direta: **não falta informação sobre dinheiro; falta prática para usá-la quando a decisão aparece.**
+O cartão é a porta de entrada: **13 milhões** de jovens usaram o rotativo ou o parcelado em 2024 — 79% dos 17 milhões que usaram cartão. Entre jovens de baixa renda (até 2 salários mínimos), **17,4% estavam inadimplentes**. No país, **83,9 milhões** de pessoas estavam inadimplentes em julho de 2026, com **R$ 586,4 bilhões** em dívidas ([Serasa](https://www.serasa.com.br/imprensa/inadimplencia-segundo-semestre-serasa/)).
 
-Na prática, **quase R$ 3 de cada R$ 10** da renda mensal das famílias já estavam comprometidos com dívidas. E **50% dos brasileiros entrevistados** disseram ter gastado mais do que planejavam no primeiro semestre de 2026 ([Serasa/Opinion Box](https://www.serasa.com.br/imprensa/inadimplencia-segundo-semestre-serasa/)).
+### O paradoxo que explica o Prisma.AI
+
+Na pesquisa de letramento do Banco Central, jovens de 16 a 24 anos tiraram **64,5**, acima da média nacional de **59,6** ([BCB/OCDE, 2023](https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/letramento/relatorio-de-letramento-financeiro.pdf)). Na análise de crédito, porém, jovens de 15 a 29 anos têm inadimplência maior que adultos.
+
+> **Saber não é o mesmo que praticar.**
+
+É essa distância que o Prisma.AI transforma em jornada. Quando o primeiro cartão, o primeiro limite e a primeira parcela chegam, o usuário precisa de um lugar seguro para praticar — antes que o erro custe caro.
+
+<sub>Faixas etárias: letramento, 16 a 24 anos; crédito, 15 a 29 anos (Estatuto da Juventude).</sub>
+
+<sub><strong>Para ir além:</strong> <a href="https://exame.com/invest/minhas-financas/numero-de-jovens-com-acesso-a-credito-dobra-no-brasil-em-oito-anos/">Exame, out/2026 — crédito entre jovens dobra em oito anos</a> · <a href="https://www.estadao.com.br/einvestidor/financas-pessoais/geracao-z-cartao-de-credito-endividamento/">Estadão, dez/2025 — Geração Z lidera pedidos de cartão</a>.</sub>
 
 **O impacto que queremos ver:** quando um usuário reconhece o custo real de uma parcela antes de assinar — ou identifica um golpe antes de clicar — a educação financeira deixa de ser conteúdo e vira proteção. É esse impacto que o Prisma.AI quer tornar cotidiano.
 
@@ -68,6 +78,8 @@ Na prática, **quase R$ 3 de cada R$ 10** da renda mensal das famílias já esta
 ![Landing page do Prisma.AI com a proposta “Sua jornada. Suas escolhas. Seu futuro.”](docs/assets/landing.webp)
 
 <sub>A porta de entrada do Prisma.AI: uma promessa simples, uma jornada visual e nenhum dado bancário necessário. Telas com dados de exemplo.</sub>
+
+**A jornada começa onde a vida financeira começa:** no primeiro salário, no primeiro cartão, no primeiro limite.
 
 ### Doze trilhas, quatro movimentos
 
@@ -132,6 +144,8 @@ Com a ativação da IA generativa, o Mentor poderá responder de forma mais cont
 <sub>Hoje: prática sem dados bancários. Próximo: uma IA mais contextual. Visão: Open Finance com consentimento.</sub>
 
 O próximo capítulo do Prisma.AI é aproximar a prática da vida financeira real — sem abrir mão do que torna a experiência segura: **consentimento, contexto e limites claros**.
+
+Para uma geração que começa a usar crédito por volta dos 20 anos, a orientação precisa chegar antes da fatura — não depois.
 
 ### Open Finance, com consentimento
 
