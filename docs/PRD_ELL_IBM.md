@@ -5,7 +5,7 @@
 **Status:** Atualizado com decisões confirmadas em sessão de alinhamento (D1–D9)
 **Plataforma:** Aplicação web responsiva, mobile-first
 **Público principal:** Jovens adultos, com faixa de 18 a 24 anos como premissa de trabalho
-**Escopo:** MVP iterativo por fase — piloto começa com a Fase 1 (Primeiro salário)
+**Escopo:** MVP iterativo por trilha — piloto começa com a Trilha 1 (Meu primeiro salário)
 
 ---
 
@@ -15,7 +15,7 @@ O ELL IBM é uma plataforma web de educação financeira gamificada, destinada a
 
 O produto combina aprendizagem estruturada, personalização, avaliação híbrida e gamificação imersiva. A IA estará presente ao longo da experiência por meio de dois agentes especializados (Mentor e Analista de Progresso), coordenados pelo watsonx Orchestrate, e uma camada de lógica determinística (Catalisador) no backend.
 
-> **Decisão confirmada (D2):** o MVP é iterativo por fase. O piloto começa com a Fase 1 completa (onboarding + 3 missões + simulação). A expansão para fases seguintes depende dos resultados de cada piloto.
+> **Decisão confirmada (D2):** o MVP é iterativo por trilha. O piloto começa com a Trilha 1 completa (onboarding + 3 missões + simulação). A expansão para as trilhas seguintes depende dos resultados de cada piloto.
 
 A primeira versão priorizará interações por texto (respostas estruturadas, texto aberto e chat). Áudio foi formalmente adiado para versão posterior (D3).
 
@@ -87,57 +87,93 @@ A experiência deve considerar usuários com diferentes níveis de conhecimento 
 
 ## 5. Jornada de aprendizagem
 
-> **Decisão confirmada (D1):** a jornada é estruturada em **seis fases progressivas**, precedidas por onboarding obrigatório. Os nomes e o conteúdo das fases seguem o Documento 5 — Conteúdo e Jornada de Aprendizagem, que substitui a estrutura de cinco fases anteriormente descrita neste PRD.
+> **Decisão confirmada (D1 — revisada):** a jornada é estruturada em **doze trilhas progressivas**, precedidas por onboarding obrigatório. Os nomes e o conteúdo das trilhas seguem o Contrato Curricular em `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`. A estrutura anterior de seis fases foi substituída pela reestruturação curricular documentada na migration `0015_twelve_trails.py`.
 
-Cada fase reúne objetivos de aprendizagem, missões, simulação central, intervenções dos agentes e critérios de conclusão por competências demonstradas.
+Cada trilha reúne objetivos de aprendizagem, missões, simulações, intervenções dos agentes e critérios de conclusão por competências demonstradas. A trilha 12 (Desafio integrador) é sempre a última e avalia a aplicação conjunta de todas as competências anteriores.
 
-### Fase 1 — Primeiro salário
+### Trilha 1 — Meu primeiro salário
 
-Compreender renda, prioridades e organização inicial do dinheiro.
+Compreender renda bruta e líquida, holerite, descontos legais e direitos trabalhistas.
 
-**Resultado esperado:** o usuário consegue construir uma distribuição coerente de recursos e justificar suas prioridades em um cenário fictício.
+**Resultado esperado:** o usuário interpreta contracheques fictícios, calcula o líquido a partir do bruto e identifica INSS, IRRF, FGTS e benefícios.
 
-### Fase 2 — Seu dinheiro no digital
+### Trilha 2 — Orçamento na prática
 
-Compreender meios de pagamento digitais, débito, crédito e cuidados com transações.
+Organizar o orçamento mensal, classificar despesas, identificar gastos invisíveis e propor ajustes realistas.
 
-**Resultado esperado:** o usuário diferencia os meios de pagamento e interpreta corretamente as principais consequências de cada um.
+**Resultado esperado:** o usuário elabora um orçamento coerente, identifica desvios e propõe ajustes sem comprometer necessidades essenciais.
 
-### Fase 3 — Por que poupar
+### Trilha 3 — Pagamentos do dia a dia
 
-Desenvolver compreensão de objetivos financeiros, planejamento e preparação para imprevistos.
+Compreender Pix, débito, crédito, carteiras digitais e escolher o meio adequado para cada situação.
 
-**Resultado esperado:** o usuário propõe um plano coerente, identifica prioridades e explica como um imprevisto afeta suas decisões.
+**Resultado esperado:** o usuário compara meios de pagamento e aplica um procedimento de conferência antes de confirmar.
 
-### Fase 4 — Juros: a favor e contra você
+### Trilha 4 — Cartão e fatura
 
-Compreender como juros, tempo, atrasos e condições de crédito afetam o valor total de uma decisão financeira.
+Entender limite, ciclo de faturamento, pagamento integral, pagamento mínimo e crédito rotativo.
 
-**Resultado esperado:** o usuário compara corretamente cenários de crédito e justifica a escolha considerando custo total, prazo e riscos.
+**Resultado esperado:** o usuário calcula o comprometimento futuro da renda com parcelas em aberto e compara cenários de pagamento.
 
-### Fase 5 — Onde o dinheiro rende
+### Trilha 5 — Metas e reserva
 
-Introduzir a relação entre inflação, poder de compra, poupança e características básicas de alternativas de investimento.
+Formular metas financeiras e calcular o tamanho da reserva de emergência com base no perfil de renda.
 
-**Resultado esperado:** o usuário identifica características relevantes e reconhece que rendimento, risco e liquidez devem ser analisados em conjunto.
+**Resultado esperado:** o usuário dimensiona e planeja a constituição de uma reserva de emergência adequada ao seu perfil.
 
-### Fase 6 — Proteção digital
+### Trilha 6 — Guardar sem perder o controle
 
-Desenvolver a capacidade de reconhecer riscos digitais e tomar decisões seguras diante de possíveis fraudes financeiras.
+Aplicar a estratégia de separação do dinheiro no recebimento e adaptar o método para diferentes perfis de renda.
 
-**Resultado esperado:** o usuário identifica sinais de alerta e escolhe respostas coerentes com a prevenção de fraude.
+**Resultado esperado:** o usuário configura transferências programadas e aplica o método de pagar-se primeiro.
+
+### Trilha 7 — Juros e parcelas
+
+Compreender juros simples e compostos, custo efetivo total (CET) e avaliar ofertas de parcelamento.
+
+**Resultado esperado:** o usuário calcula o custo total de uma oferta de crédito e compara alternativas usando o CET.
+
+### Trilha 8 — Dívida que cresce
+
+Interpretar o crescimento de dívidas, calcular o impacto do crédito rotativo e traçar estratégias de saída.
+
+**Resultado esperado:** o usuário calcula cenários de pagamento mínimo, compara alternativas e avalia propostas de renegociação.
+
+### Trilha 9 — Inflação e poder de compra
+
+Compreender o IPCA, calcular reajustes e diferenciar rendimento nominal de real.
+
+**Resultado esperado:** o usuário aplica a fórmula de rendimento real e interpreta o impacto da inflação no poder de compra.
+
+### Trilha 10 — Onde o dinheiro rende
+
+Compreender fundamentos da renda fixa, FGC, tributação e comparar produtos.
+
+**Resultado esperado:** o usuário diferencia produtos cobertos pelo FGC, reconhece custos e compara rentabilidade real de alternativas.
+
+### Trilha 11 — Golpes e proteção de dados
+
+Reconhecer fraudes digitais, proteger dados e agir corretamente após um golpe.
+
+**Resultado esperado:** o usuário identifica sinais de fraude, conhece o MED e descreve os procedimentos pós-golpe.
+
+### Trilha 12 — Desafio integrador
+
+Aplicar competências de todas as trilhas anteriores em cenários integrados de decisão financeira.
+
+**Resultado esperado:** o usuário toma decisões coerentes em cenários que combinam salário, orçamento, pagamentos, crédito, reserva, investimentos e segurança.
 
 ### 5.1 Requisitos da jornada
 
-- **RF-01:** apresentar as fases em um mapa visual de progresso.
-- **RF-02:** associar cada fase a objetivos de aprendizagem definidos.
-- **RF-03:** oferecer conteúdo e atividades compatíveis com a fase atual.
+- **RF-01:** apresentar as trilhas em um mapa visual de progresso.
+- **RF-02:** associar cada trilha a objetivos de aprendizagem definidos.
+- **RF-03:** oferecer conteúdo e atividades compatíveis com a trilha atual.
 - **RF-04:** apresentar feedback após respostas e decisões relevantes.
 - **RF-05:** permitir revisão de conceitos e repetição de desafios.
 - **RF-06:** controlar a conclusão e os desbloqueios por critérios objetivos.
 - **RF-07:** registrar o progresso para permitir continuidade entre sessões.
 
-A quantidade de atividades por fase e os critérios detalhados de domínio ainda serão especificados.
+A quantidade de atividades por trilha e os critérios detalhados de domínio ainda serão especificados.
 
 ## 6. Requisitos funcionais
 
@@ -184,7 +220,7 @@ Os requisitos a seguir transformam as decisões aprovadas em comportamentos que 
 - **RF-32:** utilizar a IA para interpretar respostas abertas segundo critérios educacionais documentados.
 - **RF-33:** solicitar esclarecimentos quando a resposta não puder ser interpretada com segurança.
 - **RF-34:** distinguir avaliação de aprendizagem, recomendação pedagógica e pontuação de gamificação.
-- **RF-35:** manter os desbloqueios de fases sob controle do sistema.
+- **RF-35:** manter os desbloqueios de trilhas sob controle do sistema.
 - **RF-36:** permitir revisão e nova tentativa de atividades, conforme as regras de cada missão.
 
 ### 6.6 Gamificação e progresso
@@ -229,7 +265,7 @@ Os requisitos a seguir transformam as decisões aprovadas em comportamentos que 
 
 **Restrições:**
 - Não definir pontuação diretamente.
-- Não desbloquear fases por conta própria.
+- Não desbloquear trilhas por conta própria.
 - Não utilizar dados bancários reais, que estão fora do escopo.
 - Não apresentar inferências sobre o usuário como fatos certos.
 
@@ -243,7 +279,7 @@ Os requisitos a seguir transformam as decisões aprovadas em comportamentos que 
 - Perguntas livres.
 - Respostas abertas.
 - Dúvidas durante atividades.
-- Contexto educacional da fase atual.
+- Contexto educacional da trilha atual.
 
 **Saídas esperadas:**
 - Explicações acessíveis.
@@ -268,7 +304,7 @@ Os requisitos a seguir transformam as decisões aprovadas em comportamentos que 
 - Respostas às atividades.
 - Histórico de erros e tentativas.
 - Resultados de critérios objetivos.
-- Progresso nas fases.
+- Progresso nas trilhas.
 
 **Saídas esperadas:**
 - Interpretação de respostas abertas.
@@ -319,10 +355,10 @@ A gamificação deverá tornar o aprendizado visível, recompensar a evolução 
 | Níveis | Representam marcos de progressão |
 | Missões | Vinculadas a objetivos de aprendizagem |
 | Conquistas | Reconhecem competências ou marcos específicos |
-| Mapa da jornada | Mostra fases, progresso e próximos passos |
+| Mapa da jornada | Mostra trilhas, progresso e próximos passos |
 | Simulações | Demonstram consequências de decisões financeiras |
 | Itens digitais | Desbloqueáveis por critérios definidos |
-| Narrativa | Conecta as fases e os personagens |
+| Narrativa | Conecta as trilhas e os personagens |
 | Painel de progresso | Apresenta evolução e temas que precisam de reforço |
 
 ### 8.2 Regras obrigatórias
@@ -353,14 +389,14 @@ A gamificação deverá tornar o aprendizado visível, recompensar a evolução 
 | 4 | Estrategista | 1.200 |
 | 5 | Autônomo | 1.800 |
 
-**Progressão de fase:** concluída quando todas as missões obrigatórias atingirem ao menos 70 pontos (evidência de aprendizagem demonstrada, mesmo após reforço).
+**Progressão de trilha:** concluída quando todas as missões obrigatórias atingirem ao menos 70 pontos (evidência de aprendizagem demonstrada, mesmo após reforço).
 
-**Conquistas da Fase 1 (exemplos):**
+**Conquistas da Trilha 1 (exemplos):**
 - "Primeiro passo": concluir o onboarding.
-- "Planejador iniciante": concluir as 3 missões da Fase 1.
+- "Planejador iniciante": concluir as 3 missões da Trilha 1.
 - "Sem dúvidas": concluir uma missão sem intervenção do Mentor.
 
-Conquistas das Fases 2–6 serão definidas antes de cada fase ser implementada.
+Conquistas das Trilhas 2–12 serão definidas antes de cada trilha ser implementada.
 
 ## 9. Requisitos não funcionais
 
@@ -383,7 +419,7 @@ Os itens desta seção são propostas para validação técnica; não representa
 
 ### 9.1 Áudio — fora do escopo do MVP
 
-> **Decisão confirmada (D3):** áudio foi formalmente adiado. Não é critério de aceite do MVP da Fase 1.
+> **Decisão confirmada (D3):** áudio foi formalmente adiado. Não é critério de aceite do MVP da Trilha 1.
 
 Os requisitos de áudio listados anteriormente permanecem registrados como referência para implementação futura. A funcionalidade entra no roadmap após validação da experiência textual com usuários reais. Quando for implementada, os requisitos de acessibilidade, fallback, retenção e transcrição deverão ser especificados antes do desenvolvimento.
 
@@ -406,7 +442,7 @@ A IA não deverá solicitar senhas, códigos de autenticação, credenciais banc
 
 ### 10.3 Conteúdo financeiro
 
-> **Decisão confirmada (D8):** o conteúdo das missões será produzido pelo responsável do produto. Não haverá revisão formal por terceiros no MVP da Fase 1.
+> **Decisão confirmada (D8):** o conteúdo das missões será produzido pelo responsável do produto. Não haverá revisão formal por terceiros no MVP da Trilha 1.
 
 O conteúdo será inserido no sistema pelo responsável do produto quando estiver pronto. O Mentor utilizará esse conteúdo como fonte primária, conforme definido no Documento 4 (Decisão 9). Quando o conteúdo depender de regras, taxas ou condições sujeitas a mudança, o Mentor deverá sinalizar isso ao usuário em vez de afirmar que os dados continuam válidos.
 
@@ -488,11 +524,11 @@ O MVP utilizará apenas as seguintes categorias de dados:
 
 **Resultado esperado:** o usuário recebe ajuda contextual, sem transformar o chat em uma ferramenta de execução de operações financeiras.
 
-### Fluxo E — Conclusão de fase
+### Fluxo E — Conclusão de trilha
 
 1. O usuário conclui as atividades exigidas.
 2. O sistema verifica os critérios objetivos.
-3. A fase é marcada como concluída se todos os critérios aplicáveis forem atendidos.
+3. A trilha é marcada como concluída se todos os critérios aplicáveis forem atendidos.
 4. A pontuação e as conquistas são atualizadas pelas regras do produto.
 5. O usuário recebe um resumo da aprendizagem e a indicação do próximo passo.
 
@@ -506,7 +542,7 @@ Os indicadores abaixo são propostas iniciais. As metas numéricas deverão ser 
 |---|---|---|
 | Ativação | Taxa de conclusão do onboarding | Capacidade de levar o usuário até a primeira atividade |
 | Aprendizagem | Variação entre avaliação inicial e posterior | Evolução do conhecimento |
-| Domínio | Taxa de conclusão por objetivo educacional | Evidências de aprendizagem em cada fase |
+| Domínio | Taxa de conclusão por objetivo educacional | Evidências de aprendizagem em cada trilha |
 | Engajamento | Missões concluídas por usuário ativo | Uso efetivo das atividades |
 | Continuidade | Retorno dos usuários ao longo do tempo | Capacidade de sustentar o aprendizado |
 | Personalização | Uso e resultado das recomendações | Utilidade das adaptações sugeridas |
@@ -524,8 +560,8 @@ O MVP será considerado funcionalmente pronto para um piloto quando os requisito
 | Área | Critério de aceite |
 |---|---|
 | Onboarding | O usuário consegue concluir o diagnóstico e iniciar a jornada |
-| Jornada | As seis fases estão representadas e possuem objetivos e critérios definidos |
-| Conteúdo | Os conteúdos da Fase 1 foram produzidos e inseridos no sistema pelo responsável do produto |
+| Jornada | As doze trilhas estão representadas e possuem objetivos e critérios definidos |
+| Conteúdo | Os conteúdos da Trilha 1 foram produzidos e inseridos no sistema pelo responsável do produto |
 | Respostas estruturadas | A avaliação objetiva produz resultados conforme as regras configuradas |
 | Texto aberto | O usuário recebe interpretação e feedback adequados, com tratamento de respostas ambíguas |
 | Áudio | **Fora do escopo do MVP (D3)** — adiado para versão posterior |
@@ -597,8 +633,8 @@ em português brasileiro.
 
 ### 16.1 Decisões confirmadas (sessão D1–D9)
 
-- **D1:** seis fases oficiais — Primeiro salário / Seu dinheiro no digital / Por que poupar / Juros: a favor e contra você / Onde o dinheiro rende / Proteção digital.
-- **D2:** MVP iterativo por fase — piloto começa com a Fase 1; expansão depende de resultados.
+- **D1:** doze trilhas oficiais — Meu primeiro salário / Orçamento na prática / Pagamentos do dia a dia / Cartão e fatura / Metas e reserva / Guardar sem perder o controle / Juros e parcelas / Dívida que cresce / Inflação e poder de compra / Onde o dinheiro rende / Golpes e proteção de dados / Desafio integrador.
+- **D2:** MVP iterativo por trilha — piloto começa com a Trilha 1; expansão depende de resultados.
 - **D3:** áudio adiado formalmente — fora dos critérios de aceite do MVP.
 - **D4:** dois agentes de IA (Mentor + Analista de Progresso); Catalisador como lógica determinística no backend.
 - **D5:** Documento 4 parcialmente aprovado — 18 decisões de comportamento dos agentes confirmadas para o MVP.
@@ -610,10 +646,10 @@ em português brasileiro.
 ### 16.2 Pendências de produto
 
 - Confirmar perfis prioritários do público.
-- **Conteúdo da Fase 1 produzido e carregado pela migration `0002`; revisão editorial final e aprovação formal pendentes.**
+- **Conteúdo da Trilha 1 produzido e carregado pelas migrations `0002` e `0015`; revisão editorial final e aprovação formal pendentes.**
 - **Critérios de domínio e desbloqueio documentados e implementados; validação de produto pendente** (`docs/CRITERIOS_DOMINIO_E_PROGRESSAO_FASE_1.md`).
 - Estabelecer metas de sucesso e indicadores quantitativos para o piloto.
-- Definir conquistas das Fases 2–6 antes de cada fase ser implementada.
+- Definir conquistas das Trilhas 2–12 antes de cada trilha ser implementada.
 - Validar o texto de consentimento LGPD com o jurídico.
 
 ### 16.3 Pendências técnicas e operacionais
@@ -631,7 +667,7 @@ em português brasileiro.
 
 1. A faixa de 18 a 24 anos será mantida até a validação do público-alvo.
 2. A plataforma será uma aplicação web responsiva, não um aplicativo nativo.
-3. A primeira versão implementará a Fase 1 completa (conforme D1 e D2).
+3. A primeira versão implementará a Trilha 1 completa (conforme D1 e D2).
 4. O sistema utilizará regras determinísticas para progressão e pontuação (conforme D6).
 5. Áudio foi formalmente adiado (conforme D3).
 6. O MVP opera com dois agentes de IA e Catalisador determinístico (conforme D4).
@@ -640,7 +676,7 @@ em português brasileiro.
 
 1. **Aplicar e validar a migration `0002`:** subir o Compose, executar
    `alembic upgrade head` e rodar a suíte de integração com PostgreSQL.
-2. **Revisar o conteúdo da Fase 1:** produto e pedagógico validam as três
+2. **Revisar o conteúdo da Trilha 1:** produto e pedagógico validam as três
    missões, o contrato JSONB e os critérios de domínio. Ajustes geram uma nova
    versão de seed, não uma edição da migration já aplicada.
 3. **Validar o fluxo vertical sem IA:** onboarding, missão 1.1, feedback
@@ -652,15 +688,15 @@ em português brasileiro.
    do público-alvo.
 6. **Integrar Mentor e Analista:** após o spike, implementar o agente real e a
    avaliação de respostas abertas, mantendo o backend como autoridade.
-7. **Expandir para as Fases 2–6:** produzir conteúdo e conquistas antes de cada
-   fase, conforme os resultados do piloto.
+7. **Expandir para as Trilhas 2–12:** produzir conteúdo e conquistas antes de cada
+   trilha, conforme os resultados do piloto.
 
 ## 18. Conclusão
 
 Este PRD estabelece a direção funcional do ELL IBM com base nas decisões D1–D9.
 A Etapa 1 foi implementada e validada no escopo estrutural, e as frentes da
 Etapa 2 que não dependem de IA — onboarding, telas do estudante, conteúdo da
-Fase 1, critérios de domínio e progressão — também estão encaminhadas.
+Trilha 1, critérios de domínio e progressão — também estão encaminhadas.
 
 A integração de IA permanece condicionada ao spike do watsonx Orchestrate (D7),
 e o lançamento do piloto permanece condicionado à validação jurídica da base

@@ -38,7 +38,7 @@ Os fluxos textuais têm prioridade. O áudio não é prioridade de implementaç�
 
 ### Incluído
 
-- Jornada de aprendizagem com **seis fases** (Primeiro salário / Seu dinheiro no digital / Por que poupar / Juros: a favor e contra você / Onde o dinheiro rende / Proteção digital). Decisão confirmada em D1; estrutura detalhada no Documento 5.
+- Jornada de aprendizagem com **doze trilhas** (Meu primeiro salário / Orçamento na prática / Pagamentos do dia a dia / Cartão e fatura / Metas e reserva / Guardar sem perder o controle / Juros e parcelas / Dívida que cresce / Inflação e poder de compra / Onde o dinheiro rende / Golpes e proteção de dados / Desafio integrador). Decisão revisada em D1; estrutura detalhada em `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`.
 - Conteúdo educacional estruturado.
 - Catalisador, Mentor e Analista de Progresso, coordenados por watsonx Orchestrate.
 - Perfil, respostas, avaliações, progresso, gamificação e histórico relevante de conversas.
@@ -97,7 +97,7 @@ O backend será um monólito modular FastAPI, com responsabilidades e interfaces
 
 1. **Autenticação e autorização:** cadastro, verificação de e-mail, login, recuperação de senha, sessão e papéis.
 2. **Perfil do estudante:** dados necessários à personalização, preferências e configurações.
-3. **Jornada de aprendizagem:** fases, atividades, objetivos, respostas, avaliações e retomada.
+3. **Jornada de aprendizagem:** trilhas, atividades, objetivos, respostas, avaliações e retomada.
 4. **Conteúdo educacional:** conteúdo estruturado, critérios de avaliação, revisão e publicação.
 5. **Gamificação e progresso:** pontos, conquistas e desbloqueios com regras determinísticas.
 6. **Avaliações e indicadores:** resultados e indicadores agregados.
@@ -113,7 +113,7 @@ O frontend será modular, responsivo e baseado em componentes reutilizáveis, co
 ### Áreas do estudante
 
 - **Início:** resumo e próximos passos.
-- **Minha jornada:** seis fases, atividades e desbloqueios.
+- **Minha jornada:** doze trilhas, atividades e desbloqueios.
 - **Mentor e agentes:** interações com IA.
 - **Conquistas e progresso:** pontos, conquistas, resultados e evolução.
 - **Meu perfil:** perfil, preferências e configurações da conta.
@@ -144,7 +144,7 @@ PostgreSQL será o banco principal. O backend valida integridade e relações.
 
 - Usuários, credenciais e papéis.
 - Perfis e preferências.
-- Fases, atividades, objetivos e conteúdo.
+- Trilhas, atividades, objetivos e conteúdo.
 - Versões e estados de publicação.
 - Respostas e avaliações.
 - Progresso, pontos e conquistas.

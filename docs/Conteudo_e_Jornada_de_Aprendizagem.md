@@ -1,9 +1,20 @@
 # Documento 5 — Conteúdo e Jornada de Aprendizagem
 
-**Projeto:** ELL IBM — nome provisório do projeto  
-**Versão:** 0.1  
-**Status:** Proposta operacional baseada nas decisões confirmadas pelo usuário  
-**Idioma:** Português (Brasil)  
+> ⚠️ **DOCUMENTO HISTÓRICO — NÃO É A REFERÊNCIA ATIVA**
+>
+> Este documento descreve a estrutura original de **6 fases** adotada no MVP inicial (versão 0.1).
+> Com a reestruturação curricular de outubro/2026, o projeto passou a adotar **12 trilhas de aprendizagem**.
+>
+> A referência ativa é o **[CONTRATO_CURRICULAR_12_TRILHAS.md](./CONTRATO_CURRICULAR_12_TRILHAS.md)**.
+> O índice completo das trilhas está em **[docs/trilhas/INDICE_TRILHAS.md](./trilhas/INDICE_TRILHAS.md)**.
+>
+> Este arquivo é preservado para rastreabilidade histórica. Não deve ser usado para orientar
+> desenvolvimento, seeds, agentes ou navegação do produto.
+
+**Projeto:** ELL IBM — nome provisório do projeto
+**Versão:** 0.1 (histórico)
+**Status:** ~~Proposta operacional~~ **Substituído — ver CONTRATO_CURRICULAR_12_TRILHAS.md**
+**Idioma:** Português (Brasil)
 **Escopo:** Onboarding, jornada educacional, missões, simulações, intervenções adaptativas de IA, avaliação e progressão do MVP.
 
 ---

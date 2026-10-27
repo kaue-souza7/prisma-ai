@@ -1098,3 +1098,78 @@ docker compose exec backend alembic check
 4. Comparar os insights determinísticos do Analista com a análise do agente.
 5. Conectar o Catalisador IA via `apply_generated_trail()` e validar a trilha
    antes de exibi-la.
+
+---
+
+## 15. Reorganização e implementação das 12 trilhas (23/10/2026)
+
+### 15.1 Objetivo
+
+Expandir as trilhas 1–6 (antes limitadas a 2–3 missões cada) e criar as trilhas
+7–12 do zero, completando o currículo de 12 trilhas × 3–4 missões conforme o
+contrato curricular `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`.
+
+### 15.2 Mapeamento phase/trilha
+
+| Phase | Trilha | Nome |
+|---|---|---|
+| 1 | Trilha 1 | Meu primeiro salário |
+| 2 | Trilha 2 | Orçamento na prática |
+| 3 | Trilha 3 | Pagamentos do dia a dia |
+| 4 | Trilha 4 | Cartão e fatura |
+| 5 | Trilha 5 | Metas e reserva |
+| 6 | Trilha 6 | Guardar sem perder o controle |
+| 7–12 | Trilhas 7–12 | Juros e parcelas, dívida, inflação, investimentos, golpes e desafio integrador |
+
+As fases 1–6 já existiam na base. Não foram inseridas novas phases para elas —
+os seeds usam upsert por chave natural `(phase_id, mission.number)`.
+
+### 15.3 Seeds criados/modificados
+
+| Arquivo | Missões novas/expandidas |
+|---|---|
+| `trail_1_v2.py` | Missões 1.2 e 1.3 (expansão) |
+| `trail_2_v1.py` | Missões 2.1 e 2.2 (expansão) |
+| `trail_3_v1.py` | Missões 3.1 e 3.3 (expansão); 3.2 renumerada (era 3 → 2) |
+| `trail_4_v1.py` | Missão 4.1 (expansão) |
+| `trail_5_v1.py` | Missões 5.1 e 5.3 (expansão) |
+| `trail_6_v1.py` | Missão 6.1 (expansão) |
+| `trail_7_v1.py` a `trail_12_v1.py` | Todas as missões (novas fases) |
+
+### 15.4 Lesson flows
+
+`lesson_flows_trails.py` centraliza os roteiros das missões da reestruturação.
+Flows adicionados nesta sessão:
+
+- `(2, 1)`, `(2, 2)` — Trilha 2 expansões
+- `(3, 1)`, `(3, 3)` — Trilha 3 expansões; `(3, 2)` renomeado
+- `(4, 1)` — Trilha 4 expansão
+- `(5, 1)`, `(5, 3)` — Trilha 5 expansões
+- `(6, 1)` — Trilha 6 expansão
+
+Cada flow segue o padrão: `intro → reading/question interleaved → summary`.
+Atividades do tipo `simulation` usam `{"type": "scenario"}` no flow.
+
+### 15.5 Correção incluída
+
+`trail_3_v1.py` tinha "Carteiras digitais" registrada como `mission.number = 3`
+(conflito com a missão 3.3 do contrato). Foi corrigida para `number = 2`,
+`order = 2`, e os códigos de competência atualizados de `3.3.x` para `3.2.x`.
+
+### 15.6 Estado final dos testes
+
+```
+211 passed (PostgreSQL ativo)
+```
+
+Sem banco disponível, os 50 testes de integração são marcados como `skipped`.
+Todos os testes do módulo `test_content_trails_v2.py` passam, incluindo
+`test_lesson_flows_cover_all_new_missions` e
+`test_lesson_flow_structure_for_new_missions`.
+
+### 15.7 Próximas ações
+
+1. Revisão pedagógica e editorial de todo o conteúdo das 12 trilhas.
+2. Executar o spike do Orchestrate (§22 da Arquitetura).
+3. Ativar `ORCHESTRATE_ENABLED=true` em ambiente controlado.
+4. Conectar o Catalisador IA via `apply_generated_trail()` e validar.

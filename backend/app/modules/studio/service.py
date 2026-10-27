@@ -53,7 +53,7 @@ async def _get_phase(db: AsyncSession, phase_id: int) -> Phase:
     if not phase:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Fase não encontrada.",
+            detail="Trilha não encontrada.",
         )
     return phase
 
@@ -113,7 +113,7 @@ async def _build_context(
     if not mission_ids:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Esta fase ainda não possui módulos disponíveis para o Estúdio.",
+            detail="Esta trilha ainda não possui módulos disponíveis para o Estúdio.",
         )
 
     competencies_result = await db.execute(
@@ -312,7 +312,7 @@ async def generate_studio_content(
         if mission.phase_id != phase.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="O módulo não pertence à fase selecionada.",
+                detail="O módulo não pertence à trilha selecionada.",
             )
 
     if mission is not None:
@@ -324,7 +324,7 @@ async def generate_studio_content(
     elif not await _has_coursed_phase(db, user.id, phase.id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Você ainda não cursou esta fase.",
+            detail="Você ainda não cursou esta trilha.",
         )
 
     # Sem Orchestrate ativo, o Estúdio é honesto: não gera, não cobra. Essa

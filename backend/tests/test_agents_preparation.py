@@ -7,12 +7,13 @@ from tests.conftest import auth_headers, register_verified_user
 
 
 def test_trail_rules_are_explicit_and_goal_specific():
+    # Após a reestruturação de 12 trilhas, os phase_order passam a ter 12 elementos.
     debt = catalyst.build_trail(
         personal_goal="Sair das dívidas",
         goal_category="dividas",
         knowledge_level="intermediate",
     )
-    assert debt["phase_order"] == [4, 1, 2, 3, 5, 6]
+    assert debt["phase_order"] == [7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12]
     assert "juros" in debt["rationale"].lower()
 
     reserve = catalyst.build_trail(
@@ -20,7 +21,7 @@ def test_trail_rules_are_explicit_and_goal_specific():
         goal_category="reserva",
         knowledge_level="beginner",
     )
-    assert reserve["phase_order"] == [3, 1, 2, 4, 5, 6]
+    assert reserve["phase_order"] == [5, 6, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12]
     assert reserve["pace"] == "supported"
 
     advanced = catalyst.build_trail(
@@ -28,12 +29,22 @@ def test_trail_rules_are_explicit_and_goal_specific():
         goal_category="investimentos",
         knowledge_level="advanced",
     )
-    assert advanced["phase_order"] == [3, 4, 5, 1, 2, 6]
+    assert advanced["phase_order"] == [5, 6, 7, 9, 10, 1, 2, 3, 4, 8, 11, 12]
     assert advanced["pace"] == "accelerated"
+    # Trilha 12 (Desafio integrador) deve ser sempre a última
+    assert advanced["phase_order"][-1] == 12
 
 
 def test_trail_validation_rejects_incomplete_or_duplicated_orders():
-    assert catalyst.validate_phase_order([1, 2, 3, 4, 5, 6]) == [1, 2, 3, 4, 5, 6]
+    assert catalyst.validate_phase_order(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    ) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    # Ordens incompletas (6 elementos onde são esperados 12 no DEFAULT) são aceitas
+    # somente se passarem um available_numbers explícito compatível.
+    assert catalyst.validate_phase_order(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        available_numbers={1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+    ) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     assert catalyst.validate_phase_order([1, 2, 3, 4, 5]) is None
     assert catalyst.validate_phase_order([1, 2, 3, 4, 5, 5]) is None
     assert catalyst.validate_phase_order([1, 2, 3, 4, 5, 9]) is None
@@ -87,12 +98,16 @@ async def _user_id(client, headers) -> int:
 async def test_onboarding_generates_a_personalized_trail_and_orders_the_journey(
     client, db_session
 ):
-    mission_4 = await _mission(db_session, 4, 1)
+    # Após a reestruturação para 12 trilhas, a categoria "dividas" inicia por
+    # trilhas 7 (Juros e parcelas) e 8 (Dívida que cresce). O skip ocorre se
+    # as trilhas 1 e 7 não estiverem no banco — o que é normal em ambientes
+    # onde a migration 0015 ainda não foi aplicada.
+    mission_7 = await _mission(db_session, 7, 1)
     mission_1 = await _mission(db_session, 1, 1)
-    if not mission_4 or not mission_1:
+    if not mission_7 or not mission_1:
         import pytest
 
-        pytest.skip("Conteúdo das fases 1 e 4 não aplicado neste banco.")
+        pytest.skip("Conteúdo das trilhas 1 e 7 não aplicado neste banco (migration 0015 necessária).")
 
     _, tokens = await register_verified_user(client, db_session)
     headers = auth_headers(tokens)
@@ -111,32 +126,32 @@ async def test_onboarding_generates_a_personalized_trail_and_orders_the_journey(
     )
     assert response.status_code == 200
     trail = response.json()["trail"]
-    assert trail["phase_order"] == [4, 1, 2, 3, 5, 6]
-    assert trail["phases"][0]["number"] == 4
+    assert trail["phase_order"] == [7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12]
+    assert trail["phases"][0]["number"] == 7
     assert trail["source"] == "rules"
 
     trail_response = await client.get("/api/v1/users/me/trail", headers=headers)
     assert trail_response.status_code == 200
-    assert trail_response.json()["phase_order"] == [4, 1, 2, 3, 5, 6]
+    assert trail_response.json()["phase_order"] == [7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12]
 
     me = await client.get("/api/v1/users/me", headers=headers)
-    assert me.json()["profile"]["trail"]["phases"][0]["number"] == 4
+    assert me.json()["profile"]["trail"]["phases"][0]["number"] == 7
 
     overview = await client.get("/api/v1/journey/overview", headers=headers)
     assert overview.status_code == 200
     data = overview.json()
-    assert data["trail"]["phase_order"] == [4, 1, 2, 3, 5, 6]
-    assert data["phases"][0]["phase"]["number"] == 4
+    assert data["trail"]["phase_order"] == [7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12]
+    assert data["phases"][0]["phase"]["number"] == 7
     assert data["phases"][0]["is_unlocked"] is True
-    assert data["phases"][1]["phase"]["number"] == 1
+    assert data["phases"][1]["phase"]["number"] == 8
     assert data["phases"][1]["is_unlocked"] is False
-    assert data["recommendation"]["mission_id"] == mission_4.id
+    assert data["recommendation"]["mission_id"] == mission_7.id
     assert data["recommendation"]["trail_position"] == 1
 
-    # A segunda fase da trilha só abre após concluir a primeira.
+    # A segunda trilha só abre após concluir a primeira.
     user_id = await _user_id(client, headers)
     required = await db_session.execute(
-        select(Mission).where(Mission.phase_id == mission_4.phase_id, Mission.is_required == True)
+        select(Mission).where(Mission.phase_id == mission_7.phase_id, Mission.is_required == True)
     )
     for mission in required.scalars().all():
         db_session.add(
@@ -153,7 +168,7 @@ async def test_onboarding_generates_a_personalized_trail_and_orders_the_journey(
     unlocked = await client.get("/api/v1/journey/overview", headers=headers)
     phases = unlocked.json()["phases"]
     assert phases[0]["status"] == "completed"
-    assert phases[1]["phase"]["number"] == 1
+    assert phases[1]["phase"]["number"] == 8
     assert phases[1]["is_unlocked"] is True
 
     standard = await client.post(
@@ -162,7 +177,7 @@ async def test_onboarding_generates_a_personalized_trail_and_orders_the_journey(
         headers=headers,
     )
     assert standard.status_code == 200
-    assert standard.json()["phase_order"] == [1, 2, 3, 4, 5, 6]
+    assert standard.json()["phase_order"] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
     standard_overview = await client.get("/api/v1/journey/overview", headers=headers)
     assert standard_overview.json()["phases"][0]["phase"]["number"] == 1
@@ -173,14 +188,14 @@ async def test_onboarding_generates_a_personalized_trail_and_orders_the_journey(
         db_session,
         user_id,
         {
-            "phase_order": [2, 1, 3, 4, 5, 6],
+            "phase_order": [2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             "rationale": "Trilha sugerida pelo agente para o seu momento.",
             "focus_areas": ["Meios de pagamento"],
             "pace": "steady",
         },
     )
     assert ai_trail["source"] == "ai"
-    assert ai_trail["phase_order"] == [2, 1, 3, 4, 5, 6]
+    assert ai_trail["phase_order"] == [2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
     try:
         await catalyst.apply_generated_trail(

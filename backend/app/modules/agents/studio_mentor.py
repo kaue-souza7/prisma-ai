@@ -29,7 +29,7 @@ def build_studio_payload(
 ) -> dict:
     """Monta o payload que o Orchestrate receberá.
 
-    O backend é a autoridade: apenas conteúdo aprovado do módulo/fase entra no
+    O backend é a autoridade: apenas conteúdo aprovado do módulo/trilha entra no
     payload. A IA nunca consulta o banco diretamente.
     """
     return {

@@ -29,7 +29,7 @@ async def get_me(current_user: User = Depends(get_current_user), db: AsyncSessio
     payload = ProfileOut.model_validate(profile).model_dump()
     trail = await service.get_trail(db, current_user.id)
     if trail:
-        # Mantém /me consistente com /me/trail: a UI recebe as fases já
+        # Mantém /me consistente com /me/trail: a UI recebe as trilhas já
         # enriquecidas, não apenas a ordem bruta persistida.
         payload["trail"] = trail
     return {"user": current_user, "profile": payload}

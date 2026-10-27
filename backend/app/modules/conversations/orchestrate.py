@@ -50,7 +50,7 @@ async def request_mentor_reply(payload: dict) -> MentorReply:
     """Envia o payload do backend ao Mentor.
 
     Contrato de entrada (definido em `docs/AGENTES_INTEGRACAO_ORCHESTRATE.md`):
-    objetivo, fase, missão, competências com dificuldade, últimas mensagens.
+    objetivo, trilha, missão, competências com dificuldade, últimas mensagens.
     Contrato de saída esperado do Orchestrate: `{ "content": "..." }` ou
     `{ "output": "..." }`. O mapeamento exato será ajustado no spike, sem
     alterar o restante da aplicação.

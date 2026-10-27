@@ -1,11 +1,16 @@
-"""Roteiros imersivos dos minicursos das Trilhas 1 a 6.
+"""Roteiros imersivos dos minicursos das Trilhas 1 a 12.
 
-Cada missão existente é tratada como um minicurso. O roteiro referencia
-itens de conteúdo e atividades já versionados, sem duplicar o conteúdo
-pedagógico no banco.
+Cada missão é tratada como um minicurso. O roteiro referencia itens de
+conteúdo e atividades já versionados, sem duplicar o conteúdo pedagógico
+no banco.
+
+As missões das phases 1–6 originais estão definidas diretamente aqui.
+As missões novas (expansão das trilhas 1–6 e trilhas 7–12) estão em
+lesson_flows_trails.py e são mescladas no final deste módulo.
 """
+from app.modules.content.lesson_flows_trails import LESSON_FLOWS_TRAILS
 
-LESSON_FLOWS = {
+_BASE_FLOWS = {
     (1, 1): [
         {
             "type": "intro",
@@ -781,7 +786,7 @@ LESSON_FLOWS = {
                 "Você viu que códigos nunca devem ser compartilhados, que senhas "
                 "diferentes e verificação em duas etapas protegem as contas e que "
                 "preço, site e forma de pagamento revelam golpes.\n\n"
-                "O desafio integrador vai juntar essas decisões às das fases "
+                "O desafio integrador vai juntar essas decisões às das trilhas "
                 "anteriores."
             ),
             "highlights": [
@@ -833,3 +838,6 @@ LESSON_FLOWS = {
         },
     ],
 }
+
+# Mescla: flows originais (phases 1–6) + flows das trilhas expandidas e novas (7–12)
+LESSON_FLOWS = {**_BASE_FLOWS, **LESSON_FLOWS_TRAILS}

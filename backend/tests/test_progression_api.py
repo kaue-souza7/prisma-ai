@@ -489,8 +489,10 @@ async def test_phase_achievement_requires_all_three_seeded_missions(client, db_s
     answers = {
         1: {"selected_option": "a"},
         2: {"selected_option": "b"},
-        3: {"text": "Eu dividiria entre essenciais, reserva e lazer, justificando as prioridades."},
-        4: {"choice": "a"},
+        3: {"selected_option": "a"},
+        4: {"selected_option": "a"},
+        5: {"text": "Férias brutas: R$ 2.200 + R$ 733,33 = R$ 2.933,33. O líquido é menor porque INSS e IRRF incidem sobre o valor."},
+        6: {"selected_option": "a"},
     }
     last = None
     for order, response_data in answers.items():

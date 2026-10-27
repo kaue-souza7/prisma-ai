@@ -8,6 +8,14 @@ passo, sempre validadas pelo backend.
 Regra central: nenhuma trilha gerada aqui altera pontos, conquistas ou
 desbloqueios diretamente. O backend valida a trilha e continua sendo a
 autoridade sobre o estado do estudante.
+
+Histórico de mudanças:
+  - v1 (original): 6 fases (DEFAULT_PHASE_ORDER = [1..6])
+  - v2 (reestruturação 12 trilhas): DEFAULT_PHASE_ORDER = [1..12]. Cada número
+    é agora uma trilha temática. As TRAIL_RULES foram reescritas para refletir
+    as 12 trilhas: trilhas 1–2 = base salarial/orçamento, 3–4 = pagamentos/cartão,
+    5–6 = metas/poupança, 7–8 = crédito/dívida, 9–10 = inflação/investimentos,
+    11–12 = segurança/desafio. O Desafio integrador (12) é sempre o último.
 """
 from __future__ import annotations
 
@@ -19,13 +27,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.models import Phase, Profile
 
-DEFAULT_PHASE_ORDER = [1, 2, 3, 4, 5, 6]
+DEFAULT_PHASE_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-# Mapeamento explícito e documentado. A ordem define a sequência das fases na
-# trilha; dentro de cada fase, as missões continuam sequenciais.
+# Mapeamento explícito e documentado. A ordem define a sequência das trilhas;
+# dentro de cada trilha, as missões continuam sequenciais.
+# Regra invariante: a trilha 12 (Desafio integrador) é sempre a última.
+# Qualquer reordenação deve respeitar essa invariante.
 TRAIL_RULES: dict[str, dict] = {
     "primeiro_salario": {
-        "phase_order": [1, 2, 3, 4, 5, 6],
+        "phase_order": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         "rationale": (
             "Começar pelo primeiro salário organiza a base: entender o que "
             "entra, o que sai e como o dinheiro digital funciona."
@@ -33,23 +43,23 @@ TRAIL_RULES: dict[str, dict] = {
         "focus_areas": ["Salário bruto e líquido", "Orçamento", "Meios de pagamento"],
     },
     "dividas": {
-        "phase_order": [4, 1, 2, 3, 5, 6],
+        "phase_order": [7, 8, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12],
         "rationale": (
-            "Como seu objetivo é sair das dívidas, começar por juros ajuda a "
-            "entender o custo real do crédito antes de reorganizar o orçamento."
+            "Como seu objetivo é sair das dívidas, começar por juros e dívida "
+            "ajuda a entender o custo real do crédito antes de reorganizar o orçamento."
         ),
         "focus_areas": ["Juros compostos", "Custo de parcelamentos", "Estratégia para sair da dívida"],
     },
     "credito_juros": {
-        "phase_order": [4, 1, 2, 3, 5, 6],
+        "phase_order": [7, 8, 4, 1, 2, 3, 5, 6, 9, 10, 11, 12],
         "rationale": (
             "Você quer entender crédito e juros, então a trilha começa pelo "
             "custo do dinheiro no tempo e depois volta para a base do orçamento."
         ),
-        "focus_areas": ["Juros simples e compostos", "Parcelamento", "Rotativo"],
+        "focus_areas": ["Juros simples e compostos", "CET", "Crédito rotativo"],
     },
     "reserva": {
-        "phase_order": [3, 1, 2, 4, 5, 6],
+        "phase_order": [5, 6, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12],
         "rationale": (
             "Para criar uma reserva, a trilha começa por metas e pela diferença "
             "entre imprevisto e desejo, antes de aprofundar juros e investimentos."
@@ -57,15 +67,15 @@ TRAIL_RULES: dict[str, dict] = {
         "focus_areas": ["Meta financeira", "Reserva de emergência", "Equilíbrio do orçamento"],
     },
     "investimentos": {
-        "phase_order": [3, 4, 5, 1, 2, 6],
+        "phase_order": [5, 6, 7, 9, 10, 1, 2, 3, 4, 8, 11, 12],
         "rationale": (
             "Investir melhor começa por poupar com objetivo, entender juros e "
-            "só então comparar rendimento, prazo, liquidez e risco."
+            "só então comparar rendimento real, prazo, liquidez e risco."
         ),
         "focus_areas": ["Objetivo financeiro", "Juros compostos", "Risco, prazo e liquidez"],
     },
     "protecao_digital": {
-        "phase_order": [6, 2, 1, 3, 4, 5],
+        "phase_order": [11, 3, 4, 1, 2, 5, 6, 7, 8, 9, 10, 12],
         "rationale": (
             "Seu foco é proteção digital, então a trilha começa por golpes e "
             "dados pessoais, conecta com o dinheiro digital e depois avança na base."
@@ -73,7 +83,7 @@ TRAIL_RULES: dict[str, dict] = {
         "focus_areas": ["Phishing", "Golpes com Pix", "Proteção de dados"],
     },
     "outro": {
-        "phase_order": [1, 2, 3, 4, 5, 6],
+        "phase_order": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         "rationale": (
             "A trilha começa pela base do primeiro salário e avança conforme "
             "você constrói evidências de aprendizagem."
@@ -84,21 +94,22 @@ TRAIL_RULES: dict[str, dict] = {
 
 # Ajustes por contexto de vida. Só se aplicam quando o objetivo não tem uma
 # ordem própria mais específica (primeiro salário ou outro).
+# A trilha 12 (Desafio integrador) é sempre mantida ao final.
 LIFE_CONTEXT_RULES: dict[str, dict] = {
     "primeiro_emprego": {
-        "phase_order": [1, 2, 3, 4, 5, 6],
+        "phase_order": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         "rationale": "Seu primeiro emprego pede uma base clara sobre salário, descontos e orçamento.",
     },
     "ja_trabalho": {
-        "phase_order": [1, 2, 3, 4, 5, 6],
+        "phase_order": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         "rationale": "Como você já trabalha, a trilha organiza a renda atual e aprofunda as decisões do dia a dia.",
     },
     "autonomo_freelancer": {
-        "phase_order": [2, 3, 1, 4, 5, 6],
-        "rationale": "Sua renda variável pede atenção primeiro a meios de pagamento, reserva e organização do fluxo de caixa.",
+        "phase_order": [2, 6, 3, 1, 5, 4, 7, 8, 9, 10, 11, 12],
+        "rationale": "Sua renda variável pede atenção primeiro ao orçamento, separação do dinheiro e meios de pagamento antes de aprofundar crédito.",
     },
     "estudante_sem_renda": {
-        "phase_order": [3, 1, 2, 4, 5, 6],
+        "phase_order": [5, 6, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12],
         "rationale": "Começar por metas e reserva ajuda a construir hábitos antes de lidar com uma renda fixa.",
     },
 }
@@ -130,7 +141,7 @@ def validate_phase_order(
 ) -> list[int] | None:
     """Valida uma ordem de fases vinda de regra, usuário ou futuro agente IA.
 
-    A ordem só é aceita se contiver exatamente todas as fases ativas, uma vez
+    A ordem só é aceita se contiver exatamente todas as trilhas ativas, uma vez
     cada. Qualquer outro formato é rejeitado e o backend usa a ordem padrão.
     """
     if available_numbers is None:
@@ -171,9 +182,9 @@ def build_trail(
 
     if urgency == "agora_preciso" and category in {"outro", "primeiro_salario"}:
         # Diante de uma necessidade imediata, poupar e entender o custo do
-        # crédito vêm antes de aprofundar investimentos.
-        if phase_order[0] not in {3, 4}:
-            phase_order = [3, 1, 2, 4, 5, 6]
+        # crédito vêm antes de aprofundar investimentos. A trilha 12 permanece última.
+        if phase_order[0] not in {5, 6, 7, 8}:
+            phase_order = [5, 6, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12]
             rationale = (
                 "Como você indicou uma necessidade imediata, a trilha começa "
                 "por organização e reserva antes de avançar para investimentos."
@@ -285,14 +296,14 @@ async def apply_generated_trail(
     """Ponto de entrada para uma trilha gerada pelo Catalisador IA.
 
     O agente propõe `phase_order`, `rationale` e `focus_areas`; o backend
-    valida a ordem contra as fases ativas e só então persiste. Uma trilha
+    valida a ordem contra as trilhas ativas e só então persiste. Uma trilha
     inválida é rejeitada com `ValueError` — nunca desbloqueia fases por engano.
     """
     phases = await get_active_phases(db)
     available = {phase.number for phase in phases}
     order = validate_phase_order(generated.get("phase_order"), available)
     if not order:
-        raise ValueError("Ordem de fases inválida para a trilha.")
+        raise ValueError("Ordem de trilhas inválida para a trilha.")
 
     result = await db.execute(select(Profile).where(Profile.user_id == user_id))
     profile = result.scalar_one_or_none()
@@ -335,7 +346,7 @@ def build_recommendation(
             "kind": "complete",
             "message": (
                 "Você concluiu o que está disponível nesta trilha. Seu progresso "
-                "está salvo; as próximas fases entram quando o conteúdo for publicado."
+                "está salvo; as próximas trilhas entram quando o conteúdo for publicado."
             ),
             "mission_id": None,
             "mission_name": None,
@@ -362,7 +373,7 @@ def build_recommendation(
         kind = "start"
     elif phase_number:
         message = (
-            f"O próximo passo é “{mission_name}”, na fase {phase_number}. "
+            f"O próximo passo é “{mission_name}”, na trilha {phase_number}. "
             "Essa missão conecta com o que você praticou até aqui."
         )
         kind = "start"

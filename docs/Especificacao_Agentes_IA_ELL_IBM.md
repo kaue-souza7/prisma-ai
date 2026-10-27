@@ -68,17 +68,19 @@ O **backend** decide quando e qual agente invocar, com base no contexto da inter
 O backend monta e controla o contexto enviado a cada agente. Nenhum agente acessa o banco de dados diretamente.
 
 **Payload enviado ao Mentor em cada chamada:**
-- Fase e missão atual + objetivo educacional da missão.
+- Trilha (fase) e missão atual + objetivo educacional da missão.
 - Resposta ou pergunta do usuário na interação corrente.
 - Últimas 5 mensagens da conversa na missão atual (janela deslizante).
 - Competências com dificuldade recorrente identificadas pelo Analista (resumo estruturado, não histórico completo).
 - Meta pessoal declarada pelo usuário.
 
+> **Nota (reestruturação 12 trilhas):** internamente, o sistema ainda usa o conceito "phase" para o registro no banco. O Mentor deve referenciar "trilha" ao se comunicar com o usuário, utilizando o nome da trilha (ex.: "Trilha 3 — Pagamentos do dia a dia") em vez do número da fase.
+
 **Payload enviado ao Analista de Progresso:**
 - Resposta(s) da atividade avaliada.
 - Histórico de tentativas na competência relacionada (máximo: últimas 3).
 - Critério de avaliação documentado para a competência.
-- Fase e missão atual.
+- Trilha (fase) e missão atual.
 
 O conteúdo de conversas de sessões anteriores não é enviado automaticamente — apenas o resumo estruturado de competências. Retenção e exclusão do histórico serão definidas conforme a decisão de privacidade (D9).
 

@@ -652,7 +652,7 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
     phase_result = await db.execute(select(Phase).where(Phase.id == mission.phase_id))
     phase = phase_result.scalar_one_or_none()
     if not phase:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fase não encontrada.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trilha não encontrada.")
 
     content_result = await db.execute(
         select(ContentItem)

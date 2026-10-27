@@ -1,7 +1,10 @@
 import pytest
 
 from app.modules.content.activity_schema import validate_activity_content
-from app.modules.content.lesson_flows import LESSON_FLOWS
+# Os seeds originais das phases 3–6 são validados contra _BASE_FLOWS
+# (flows das missões originais antes da expansão). O LESSON_FLOWS mesclado
+# inclui os flows das missões novas, que substituem as entradas antigas.
+from app.modules.content.lesson_flows import _BASE_FLOWS as LESSON_FLOWS
 from app.modules.content.seeds.phase_3_v1 import PHASE_3_V1
 from app.modules.content.seeds.phase_4_v1 import PHASE_4_V1
 from app.modules.content.seeds.phase_5_v1 import PHASE_5_V1

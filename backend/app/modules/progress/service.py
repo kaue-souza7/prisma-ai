@@ -46,6 +46,13 @@ PHASE_ACHIEVEMENT_KEYS = {
     4: "fase_4_concluida",
     5: "fase_5_concluida",
     6: "fase_6_concluida",
+    # Trilhas 7–12 (adicionadas na reestruturação de 12 trilhas — migration 0015)
+    7: "trilha_juros",
+    8: "trilha_divida",
+    9: "trilha_inflacao",
+    10: "trilha_rendimentos",
+    11: "trilha_seguranca",
+    12: "desafio_integrador",
 }
 
 
