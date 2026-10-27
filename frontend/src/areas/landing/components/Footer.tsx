@@ -3,9 +3,10 @@ import { Logo } from '@/design-system/brand/Logo'
 
 const navLinks = [
   { href: '#inicio', label: 'Início' },
+  { href: '#sobre', label: 'Sobre' },
+  { href: '#impacto', label: 'Impacto' },
   { href: '#como-funciona', label: 'Como funciona' },
   { href: '#experiencia', label: 'Experiência' },
-  { href: '#sobre', label: 'Sobre' },
 ]
 
 export function Footer() {

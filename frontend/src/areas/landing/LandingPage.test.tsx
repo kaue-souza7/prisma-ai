@@ -34,10 +34,32 @@ describe('Prisma.AI landing page', () => {
     expect(screen.getAllByRole('link', { name: 'Como funciona' })[0].getAttribute('href')).toBe('#como-funciona')
     expect(screen.getAllByRole('link', { name: 'Experiência' })[0].getAttribute('href')).toBe('#experiencia')
     expect(screen.getAllByRole('link', { name: 'Sobre' })[0].getAttribute('href')).toBe('#sobre')
+    expect(screen.getAllByRole('link', { name: 'Impacto' })[0].getAttribute('href')).toBe('#impacto')
 
     expect(screen.getByRole('heading', { name: 'Catalisador' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Mentor' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Analista de Progresso' })).toBeInTheDocument()
+  })
+
+  it('presents youth impact data with primary sources', () => {
+    const { container } = renderLanding()
+
+    expect(
+      screen.getByRole('heading', { name: /A primeira conta chega antes da primeira aula/i }),
+    ).toBeInTheDocument()
+
+    const impactValues = Array.from(container.querySelectorAll('.pl-impact-value')).map(
+      (node) => node.textContent,
+    )
+    expect(impactValues).toEqual(['20 anos', '27,6 milhões', '3,3% vs. 2,1%'])
+    expect(screen.getByText('Saber não é o mesmo que praticar.')).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: 'BCB, Relatório de Cidadania Financeira 2025' })).toHaveAttribute(
+      'href',
+      'https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/RCF/relatorio_de_cidadania_financeira_2025.pdf',
+    )
+    expect(screen.getByRole('link', { name: 'Metrópoles, 13/04/2026' })).toHaveAttribute('target', '_blank')
+    expect(screen.getByRole('link', { name: 'BCB/OCDE, 2023' })).toHaveAttribute('target', '_blank')
   })
 
   it('opens and closes the navigation menu from the hamburger button', async () => {

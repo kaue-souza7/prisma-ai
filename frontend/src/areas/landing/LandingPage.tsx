@@ -9,6 +9,7 @@ import {
 import { Navbar } from './components/Navbar'
 import { HeroSection } from './components/HeroSection'
 import { SolutionSection } from './components/SolutionSection'
+import { ImpactSection } from './components/ImpactSection'
 import { HowItWorksSection } from './components/HowItWorksSection'
 import { AgentsSection } from './components/AgentsSection'
 import { ExperienceSection } from './components/ExperienceSection'
@@ -66,6 +67,7 @@ export function LandingPage() {
         <main id="conteudo">
           <HeroSection />
           <SolutionSection />
+          <ImpactSection />
           <HowItWorksSection />
           <AgentsSection />
           <ExperienceSection />
