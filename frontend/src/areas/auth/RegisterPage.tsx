@@ -77,7 +77,7 @@ export function RegisterPage() {
         documentTitle="Confirme seu e-mail — Prisma.AI"
         eyebrow="Quase lá!"
         heading={<>Confirme <GradientWord>seu e-mail.</GradientWord></>}
-        description="Conta criada. Verifique sua caixa de entrada para ativar o acesso e começar a Fase 1."
+        description="Conta criada. Verifique sua caixa de entrada para ativar o acesso e começar a Trilha 1."
         visual={<RegisterVisual />}
         footer={(
           <p className={styles.crossLink}>
@@ -113,8 +113,8 @@ export function RegisterPage() {
             <li>
               <span aria-hidden="true"><SparkIcon size={13} /></span>
               <div>
-                <strong>Comece a Fase 1</strong>
-                <small>Onboarding guiado e primeira missão: Primeiro salário.</small>
+                <strong>Comece a Trilha 1</strong>
+                <small>Onboarding guiado e primeira missão: Meu primeiro salário.</small>
               </div>
             </li>
           </ul>
@@ -150,7 +150,7 @@ export function RegisterPage() {
       documentTitle="Criar conta — Prisma.AI"
       eyebrow="Seu ponto de partida"
       heading={<>Sua jornada <GradientWord>começa aqui.</GradientWord></>}
-      description="Crie sua conta e comece a aprender educação financeira na prática — 6 fases, 18 missões, simulações e agentes de IA que acompanham seu progresso."
+      description="Crie sua conta e comece a aprender educação financeira na prática — 12 trilhas, 45 missões, simulações e agentes de IA que acompanham seu progresso."
       visual={<RegisterVisual />}
       footer={(
         <p className={styles.crossLink}>

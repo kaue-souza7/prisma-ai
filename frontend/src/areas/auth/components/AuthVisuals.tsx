@@ -56,7 +56,7 @@ export function LoginVisual() {
       tone="login"
       eyebrow="Sessão segura"
       title={<>Sua jornada continua<br /><span className={styles.accent}>de onde você parou.</span></>}
-      description="Retome missões, confira conquistas e pontos, e siga avançando pelas 6 fases de educação financeira."
+      description="Retome missões, confira conquistas e pontos, e siga avançando pelas 12 trilhas de educação financeira."
       caption="Experiência ilustrativa"
     >
       <motion.div
@@ -71,7 +71,7 @@ export function LoginVisual() {
           </span>
           <div className={styles.dashTitle}>
             <small>Trilha em andamento</small>
-            <strong>Fase 1 — Primeiro salário</strong>
+            <strong>Trilha 1 — Meu primeiro salário</strong>
           </div>
           <span className={styles.dashStatus}>
             <span aria-hidden="true" />
@@ -143,7 +143,7 @@ export function LoginVisual() {
   )
 }
 
-const phases = Array.from({ length: 6 }, (_, index) => index)
+const phases = Array.from({ length: 12 }, (_, index) => index)
 
 export function RegisterVisual() {
   const reduced = useReducedMotion()
@@ -152,7 +152,7 @@ export function RegisterVisual() {
     <VisualStage
       tone="register"
       eyebrow="Comece pelo começo"
-      title={<>Seis fases.<br /><span className={styles.accent}>Dezoito missões práticas.</span></>}
+      title={<>Doze trilhas.<br /><span className={styles.accent}>Missões práticas.</span></>}
       description="Do primeiro salário à proteção digital — pratique, simule e avance por competências demonstradas."
       caption="Mapa da jornada"
     >
@@ -164,7 +164,7 @@ export function RegisterVisual() {
       >
         <div className={styles.journeyTop}>
           <span>Mapa da jornada</span>
-          <span className={styles.journeyCount}>6 fases</span>
+          <span className={styles.journeyCount}>12 trilhas</span>
         </div>
 
         <div className={styles.journeyPath}>
@@ -200,7 +200,7 @@ export function RegisterVisual() {
             <small>Seu primeiro marco</small>
             <strong>Primeiro salário</strong>
           </div>
-          <span className={styles.journeyPoints}>Fase 1</span>
+          <span className={styles.journeyPoints}>Trilha 1</span>
         </div>
 
         <div className={styles.journeyNote}>

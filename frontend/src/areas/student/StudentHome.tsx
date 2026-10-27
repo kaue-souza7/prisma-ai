@@ -152,14 +152,14 @@ export function StudentHome() {
           </h1>
           <p>
             {currentPhase
-              ? `Você está na fase ${currentPhase.phase.number}, ${currentPhase.phase.name}. Continue de onde parou e transforme conhecimento em decisões melhores.`
+              ? `Você está na trilha ${currentPhase.phase.number}, ${currentPhase.phase.name}. Continue de onde parou e transforme conhecimento em decisões melhores.`
               : 'Sua jornada financeira começa com uma decisão de cada vez.'}
           </p>
         </div>
         <div className={styles.contextPill}>
           <span className={styles.contextDot} />
           <span>
-            {currentPhase ? `Fase ${currentPhase.phase.number} de 6` : 'Jornada pronta'}
+            {currentPhase ? `Trilha ${currentPhase.phase.number} de 12` : 'Jornada pronta'}
           </span>
         </div>
       </header>
@@ -175,7 +175,7 @@ export function StudentHome() {
               </strong>
             </div>
           </div>
-          <div className={styles.trailPath} aria-label="Ordem das fases">
+          <div className={styles.trailPath} aria-label="Ordem das trilhas">
             {trail.phases.map((phase, index) => (
               <span key={phase.number} className={styles.trailStep}>
                 <small>{index + 1}</small>
@@ -207,7 +207,7 @@ export function StudentHome() {
                     'Uma nova situação para praticar e consolidar o que você já sabe.'}
                 </p>
                 <div className={styles.nextMeta}>
-                  <span>{nextMission.mission.number}.ª missão da fase</span>
+                  <span>{nextMission.mission.number}.ª missão da trilha</span>
                   <span>
                     {nextMission.mission.is_required ? 'Obrigatória' : 'Opcional'}
                   </span>
@@ -240,7 +240,7 @@ export function StudentHome() {
                 <h2>Você concluiu o que está disponível.</h2>
                 <p>
                   {recommendation?.message ??
-                    'Seu progresso está salvo. As próximas fases entram quando o conteúdo for publicado.'}
+                   'Seu progresso está salvo. As próximas trilhas entram quando o conteúdo for publicado.'}
                 </p>
                 <div className={styles.nextActions}>
                   <Link to="/student/progress" className={styles.primaryAction}>
@@ -314,8 +314,8 @@ export function StudentHome() {
         <div className="st-section-heading">
           <div>
             <span className="st-eyebrow">Mapa da jornada</span>
-            <h2>Seis fases, uma evolução contínua.</h2>
-            <p>Cada fase conecta um conceito novo a decisões do dia a dia.</p>
+            <h2>Doze trilhas, uma evolução contínua.</h2>
+            <p>Cada trilha conecta um conceito novo a decisões do dia a dia.</p>
           </div>
           <Link to="/student/journey" className="st-link-arrow">
             Abrir jornada completa
@@ -357,7 +357,7 @@ export function StudentHome() {
                   </span>
                 </div>
                 <div className={styles.phaseCopy}>
-                  <span>Fase {String(item.phase.number).padStart(2, '0')}</span>
+                  <span>Trilha {String(item.phase.number).padStart(2, '0')}</span>
                   <h3>{item.phase.name}</h3>
                   <p>{item.phase.description}</p>
                   {availableMission && (

@@ -16,7 +16,7 @@ export function SolutionSection() {
         <SectionHeading
           eyebrow="O que é o Prisma.AI"
           title={<>Da teoria à prática: <span className="pl-gradient-text">você aprende fazendo.</span></>}
-          description="Seis fases de educação financeira com missões reais, simulações e feedback contextual. Cada fase desenvolve competências que se acumulam ao longo da jornada."
+          description="Doze trilhas de educação financeira com missões reais, simulações e feedback contextual. Cada trilha desenvolve competências que se acumulam ao longo da jornada."
         />
 
         <div className="pl-bento">
@@ -27,9 +27,9 @@ export function SolutionSection() {
                 <span className="pl-card-index">01 / JORNADA</span>
               </div>
               <div className="pl-journey-copy">
-                <h3>Seis fases. Uma progressão com propósito.</h3>
+                <h3>Doze trilhas. Uma progressão com propósito.</h3>
                 <p>
-                  Do primeiro salário à proteção digital, cada fase desenvolve
+                  Do primeiro salário à proteção digital, cada trilha desenvolve
                   competências financeiras concretas — com missões, simulações e critérios claros de conclusão.
                 </p>
               </div>

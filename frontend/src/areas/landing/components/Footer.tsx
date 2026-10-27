@@ -16,7 +16,7 @@ export function Footer() {
           <div className="pl-footer-brand">
             <Logo />
             <p>
-              Seis fases de educação financeira gamificada — do primeiro salário à proteção digital. Aprenda fazendo, avance por competências.
+              Doze trilhas de educação financeira gamificada — do primeiro salário à proteção digital. Aprenda fazendo, avance por competências.
             </p>
           </div>
 

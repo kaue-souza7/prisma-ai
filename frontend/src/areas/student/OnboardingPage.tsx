@@ -394,7 +394,7 @@ export function OnboardingPage() {
               </span>
               <h2>Sua trilha inicial está pronta.</h2>
               <p className={styles.muted}>
-                O Catalisador organizou as fases a partir do seu objetivo. Você
+                O Catalisador organizou as trilhas a partir do seu objetivo. Você
                 pode seguir esta sugestão ou usar a ordem padrão.
               </p>
 
@@ -408,13 +408,13 @@ export function OnboardingPage() {
                     </div>
                   </div>
 
-                  <ol className={styles.trailList} aria-label="Ordem sugerida das fases">
+                  <ol className={styles.trailList} aria-label="Ordem sugerida das trilhas">
                     {trail.phases.map((phase, index) => (
                       <li key={phase.number}>
                         <span className={styles.trailPosition}>{index + 1}</span>
                         <div>
                           <strong>
-                            Fase {phase.number} · {phase.name}
+                            Trilha {phase.number} · {phase.name}
                           </strong>
                           {phase.description && <small>{phase.description}</small>}
                         </div>
@@ -432,7 +432,7 @@ export function OnboardingPage() {
                       onClick={useStandardTrail}
                       disabled={trailLoading}
                     >
-                      {trailLoading ? 'Alterando...' : 'Prefiro a ordem padrão das fases'}
+                      {trailLoading ? 'Alterando...' : 'Prefiro a ordem padrão das trilhas'}
                     </button>
                   )}
                 </>

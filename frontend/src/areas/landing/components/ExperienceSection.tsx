@@ -28,7 +28,7 @@ const screens: Record<
 > = {
   trilha: {
     url: 'app.prisma.ai/jornada',
-    label: 'Tela de exemplo da jornada do estudante, com as fases e missões',
+    label: 'Tela de exemplo da jornada do estudante, com as trilhas e missões',
     screen: <JourneyScreen />,
   },
   missao: {
@@ -63,14 +63,14 @@ export function ExperienceSection() {
             <SectionHeading
               eyebrow="A experiência"
               title={<>Missões, feedback e <span className="pl-gradient-text">progresso visível.</span></>}
-              description="Jornada com 6 fases, minicursos com atividades e feedback contextual e conquistas que marcam cada avanço real na sua aprendizagem."
+              description="Jornada com 12 trilhas, minicursos com atividades e feedback contextual e conquistas que marcam cada avanço real na sua aprendizagem."
             />
 
             <Reveal delay={0.12}>
               <ul className="pl-experience-list">
-                <li><span><CheckIcon size={13} /></span>6 fases: do primeiro salário à proteção digital</li>
+                <li><span><CheckIcon size={13} /></span>12 trilhas: do primeiro salário à proteção digital</li>
                 <li><span><CheckIcon size={13} /></span>Atividades com feedback imediato, sem risco real</li>
-                <li><span><CheckIcon size={13} /></span>Pontos, conquistas e competências por fase</li>
+                <li><span><CheckIcon size={13} /></span>Pontos, conquistas e competências por trilha</li>
               </ul>
             </Reveal>
 

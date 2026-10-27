@@ -9,7 +9,7 @@ const AGENT_DETAILS = {
   catalyst: {
     role: 'Personaliza a trilha e o próximo passo',
     description:
-      'Organiza a ordem das fases a partir do seu objetivo e indica a missão mais adequada ao seu momento. As regras são explícitas e o backend valida cada sugestão.',
+      'Organiza a ordem das trilhas a partir do seu objetivo e indica a missão mais adequada ao seu momento. As regras são explícitas e o backend valida cada sugestão.',
     state: 'Ativo na jornada',
   },
   mentor: {

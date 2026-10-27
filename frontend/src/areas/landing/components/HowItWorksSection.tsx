@@ -9,7 +9,7 @@ const steps = [
     icon: CompassPathIcon,
     title: 'Onboarding: seu ponto de partida',
     description:
-      'Responda algumas perguntas rápidas, defina uma meta pessoal e descubra por qual fase começar. Nenhum dado bancário solicitado.',
+      'Responda algumas perguntas rápidas, defina uma meta pessoal e descubra por qual trilha começar. Nenhum dado bancário solicitado.',
     tag: 'Contexto e objetivos',
   },
   {
@@ -25,7 +25,7 @@ const steps = [
     icon: TargetIcon,
     title: 'Avance por competências demonstradas',
     description:
-      'O progresso depende do que você aprende, não do tempo gasto. Conquistas, pontos e próximas fases se desbloqueiam conforme você avança.',
+      'O progresso depende do que você aprende, não do tempo gasto. Conquistas, pontos e próximas trilhas se desbloqueiam conforme você avança.',
     tag: 'Progresso visível',
   },
 ]
@@ -49,7 +49,7 @@ export function HowItWorksSection() {
       <div className="pl-container">
         <SectionHeading
           eyebrow="Como funciona"
-          title={<>Três passos. Seis fases. <span className="pl-gradient-text">Uma nova relação</span> com o dinheiro.</>}
+          title={<>Três passos. Doze trilhas. <span className="pl-gradient-text">Uma nova relação</span> com o dinheiro.</>}
           description="Uma jornada progressiva com critérios claros de progressão. O foco está no que você aprende e consegue aplicar — não no tempo que passou na plataforma."
           align="center"
         />

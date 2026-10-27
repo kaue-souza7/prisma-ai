@@ -106,7 +106,7 @@ export function JourneyPage() {
             Seu caminho, <span>missão por missão.</span>
           </h1>
           <p>
-            A ordem das fases vem da sua trilha. Dentro de cada fase, as missões
+            A ordem das trilhas vem do seu objetivo. Dentro de cada trilha, as missões
             abrem conforme você conclui a anterior — sem pressa e sem atalhos.
           </p>
           <div className={styles.heroMeta}>
@@ -114,11 +114,11 @@ export function JourneyPage() {
               <SparkIcon size={12} />
               {currentPhase
                 ? currentPhase.status === 'in_progress'
-                  ? `Fase ${currentPhase.phase.number} em andamento`
-                  : `Fase ${currentPhase.phase.number} é seu ponto de partida`
+                  ? `Trilha ${currentPhase.phase.number} em andamento`
+                  : `Trilha ${currentPhase.phase.number} é seu ponto de partida`
                 : 'Jornada concluída'}
             </span>
-            <span className="st-chip">6 fases</span>
+            <span className="st-chip">12 trilhas</span>
           </div>
           {recommendation && (
             <div className={styles.catalystLine}>
@@ -149,10 +149,10 @@ export function JourneyPage() {
         <section className={styles.trailBanner} aria-label="Sua trilha personalizada">
           <div className={styles.trailHeader}>
             <div>
-              <span className="st-eyebrow">Sua trilha</span>
+              <span className="st-eyebrow">Sua jornada</span>
               <h2>
                 {trail.source === 'standard'
-                  ? 'Ordem padrão das fases'
+                  ? 'Ordem padrão das 12 trilhas'
                   : 'Personalizada a partir do seu objetivo'}
               </h2>
             </div>
@@ -162,7 +162,7 @@ export function JourneyPage() {
             {trail.phases.map((phase, index) => (
               <span key={phase.number} className={styles.trailStep}>
                 <small>{index + 1}</small>
-                Fase {phase.number} · {phase.name}
+                Trilha {phase.number} · {phase.name}
               </span>
             ))}
           </div>
@@ -170,7 +170,7 @@ export function JourneyPage() {
         </section>
       )}
 
-      <section className={styles.timeline} aria-label="Fases da jornada">
+      <section className={styles.timeline} aria-label="Trilhas da jornada">
         {phases.map((phase, index) => {
           const total = phase.missions.length
           const completed = phase.missions.filter(
@@ -210,7 +210,7 @@ export function JourneyPage() {
                     <PhaseArt number={phase.phase.number} size={66} />
                     <div>
                       <span className={styles.phaseKicker}>
-                        Fase {String(phase.phase.number).padStart(2, '0')}
+                        Trilha {String(phase.phase.number).padStart(2, '0')}
                       </span>
                       <h2>{phase.phase.name}</h2>
                       <p>{phase.phase.description}</p>
@@ -240,7 +240,7 @@ export function JourneyPage() {
                   <div className={styles.emptyPhase}>
                     <span aria-hidden="true"><LockIcon size={15} /></span>
                     <p>
-                      Esta fase será liberada em uma próxima etapa da jornada.
+                      Esta trilha será liberada em uma próxima etapa da jornada.
                       O mapa mostra o horizonte completo do seu aprendizado.
                     </p>
                   </div>

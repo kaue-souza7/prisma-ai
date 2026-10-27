@@ -16,7 +16,7 @@ export function FinalCTASection() {
                 <span className="pl-eyebrow-dot" aria-hidden="true" />
                 Comece agora
               </p>
-              <h2>Seis fases. Dezoito missões. Uma nova relação com o dinheiro.</h2>
+              <h2>Doze trilhas. Quarenta e cinco missões. Uma nova relação com o dinheiro.</h2>
               <p>
                 Do primeiro salário à proteção digital — pratique decisões financeiras
                 reais em cenários seguros e avance por competências demonstradas.

@@ -30,7 +30,7 @@ export function AutonomySection() {
           <Reveal delay={0.14}>
             <p>
               Entender salário, crédito, juros, poupança e golpes digitais não é teoria —
-              é o que você vai praticar em cenários reais ao longo das 6 fases.
+              é o que você vai praticar em cenários reais ao longo das 12 trilhas.
             </p>
           </Reveal>
           <Reveal delay={0.2}>
@@ -47,7 +47,7 @@ export function AutonomySection() {
           <div className="pl-autonomy-milestone">
             <span className="pl-autonomy-dot is-done" />
             <small>Começar</small>
-            <strong>Onboarding e Fase 1</strong>
+            <strong>Onboarding e Trilha 1</strong>
           </div>
           <div className="pl-autonomy-milestone">
             <span className="pl-autonomy-dot is-current" />

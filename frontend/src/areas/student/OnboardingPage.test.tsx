@@ -31,13 +31,13 @@ const trail = {
   source: 'rules',
   version: 1,
   goal_category: 'primeiro_salario',
-  phase_order: [1, 2, 3, 4, 5, 6],
+  phase_order: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   rationale: 'Começar pelo primeiro salário organiza a base.',
   focus_areas: ['Salário bruto e líquido', 'Orçamento'],
   pace: 'steady',
   phases: [
-    { number: 1, name: 'Primeiro salário', description: 'Organize sua primeira renda.' },
-    { number: 2, name: 'Seu dinheiro no digital', description: null },
+    { number: 1, name: 'Meu primeiro salário', description: 'Organize sua primeira renda.' },
+    { number: 2, name: 'Orçamento na prática', description: null },
   ],
 }
 
@@ -91,6 +91,6 @@ describe('OnboardingPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Começar jornada' }))
     expect(await screen.findByText('Área do estudante')).toBeInTheDocument()
     expect(useSessionStore.getState().profile?.onboarding_completed).toBe(true)
-    expect(useSessionStore.getState().profile?.trail?.phase_order).toEqual([1, 2, 3, 4, 5, 6])
+    expect(useSessionStore.getState().profile?.trail?.phase_order).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
   })
 })

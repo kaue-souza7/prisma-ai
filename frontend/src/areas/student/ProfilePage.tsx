@@ -134,7 +134,7 @@ export function ProfilePage() {
             </span>
             <div>
               <h2>Minha trilha</h2>
-              <p>A ordem das fases sugerida pelo Catalisador.</p>
+              <p>A ordem das trilhas sugerida pelo Catalisador.</p>
             </div>
           </div>
           {trail ? (
@@ -172,7 +172,7 @@ export function ProfilePage() {
             <>
               <p className={styles.muted}>
                 Você ainda não tem uma trilha personalizada. O Catalisador pode
-                organizar as fases a partir do seu objetivo e nível.
+                organizar as trilhas a partir do seu objetivo e nível.
               </p>
               <button
                 type="button"

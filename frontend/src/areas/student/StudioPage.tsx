@@ -340,7 +340,7 @@ export function StudioPage() {
               <div className={styles.form}>
                 <div className={styles.fieldRow}>
                   <label className={styles.field}>
-                    <span>Fase</span>
+                    <span>Trilha</span>
                     <select
                       value={phaseId}
                       onChange={(event) => {
@@ -350,7 +350,7 @@ export function StudioPage() {
                     >
                       {phases.map((phase) => (
                         <option key={phase.phase.id} value={phase.phase.id}>
-                          Fase {phase.phase.number} · {phase.phase.name}
+                          Trilha {phase.phase.number} · {phase.phase.name}
                         </option>
                       ))}
                     </select>
@@ -366,7 +366,7 @@ export function StudioPage() {
                         )
                       }
                     >
-                      <option value="">Fase inteira</option>
+                      <option value="">Trilha inteira</option>
                       {missionOptions.map((mission) => (
                         <option key={mission.mission.id} value={mission.mission.id}>
                           {mission.mission.number}. {mission.mission.name}

@@ -38,13 +38,13 @@ export function HomeScreen() {
             Olá, {PREVIEW_STUDENT.name}. <span>Vamos dar o próximo passo?</span>
           </h1>
           <p>
-            Você está na fase 2, Seu dinheiro no digital. Continue de onde parou
+            Você está na trilha 3, Pagamentos do dia a dia. Continue de onde parou
             e transforme conhecimento em decisões melhores.
           </p>
         </div>
         <span className="pl-app-context-pill">
           <span className="pl-app-context-dot" />
-          Fase 2 de 6
+          Trilha 3 de 12
         </span>
       </header>
 
@@ -60,11 +60,11 @@ export function HomeScreen() {
               <>
                 <h2>{nextMission.name}</h2>
                 <p>
-                  Entenda limite, fechamento, vencimento e fatura, e saiba o que
-                  acontece quando você paga só uma parte.
+                  Aplique uma checagem antes de confirmar qualquer pagamento e
+                  reconheça sinais de fraude.
                 </p>
                 <div className="pl-app-next-meta">
-                  <span>{nextMission.number}.ª missão da fase</span>
+                  <span>{nextMission.number}.ª missão da trilha</span>
                   <span>Obrigatória</span>
                   <span>Até 100 pts</span>
                 </div>
@@ -140,8 +140,8 @@ export function HomeScreen() {
         <div className="pl-app-section-head">
           <div>
             <span className="pl-app-eyebrow">Mapa da jornada</span>
-            <h2>Seis fases, uma evolução contínua.</h2>
-            <p>Cada fase conecta um conceito novo a decisões do dia a dia.</p>
+            <h2>Doze trilhas, uma evolução contínua.</h2>
+            <p>Cada trilha conecta um conceito novo a decisões do dia a dia.</p>
           </div>
           <span className="pl-app-card-link">
             Abrir jornada completa
@@ -150,7 +150,7 @@ export function HomeScreen() {
         </div>
 
         <div className="pl-app-phase-grid">
-          {PREVIEW_PHASES.map((phase) => {
+          {PREVIEW_PHASES.slice(0, 6).map((phase) => {
             const progress = phaseProgress(phase)
             const next = phase.missions.find(
               (mission) => mission.status === 'available' || mission.status === 'in_progress',
@@ -173,7 +173,7 @@ export function HomeScreen() {
                 </div>
 
                 <div className="pl-app-phase-copy">
-                  <span>Fase {String(phase.number).padStart(2, '0')}</span>
+                  <span>Trilha {String(phase.number).padStart(2, '0')}</span>
                   <h3>{phase.name}</h3>
                   <p>{phase.description}</p>
                   {next && <small>Próxima: {next.name}</small>}

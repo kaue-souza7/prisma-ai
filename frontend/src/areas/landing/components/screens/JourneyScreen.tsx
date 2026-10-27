@@ -44,22 +44,22 @@ export function JourneyScreen() {
             Seu caminho, <span>missão por missão.</span>
           </h1>
           <p>
-            Cada fase aprofunda uma parte da sua relação com o dinheiro. As
-            missões abrem conforme você conclui a anterior — sem pressa e sem
-            atalhos.
-          </p>
-          <div className="pl-app-chip-row">
-            <span className="pl-app-chip is-purple">
-              <SparkIcon size={10} />
-              Fase 2 em andamento
-            </span>
-            <span className="pl-app-chip">6 fases</span>
-          </div>
+            Cada trilha aprofunda uma parte da sua relação com o dinheiro. As
+              missões abrem conforme você conclui a anterior — sem pressa e sem
+              atalhos.
+            </p>
+            <div className="pl-app-chip-row">
+              <span className="pl-app-chip is-purple">
+                <SparkIcon size={10} />
+                Trilha 3 em andamento
+              </span>
+              <span className="pl-app-chip">12 trilhas</span>
+            </div>
         </div>
 
         <div className="pl-app-journey-action">
           <span>Próxima missão</span>
-          <strong>Entendendo o cartão</strong>
+          <strong>Antes de confirmar</strong>
           <span className="pl-app-primary-action">
             Começar agora
             <ArrowRightIcon size={13} />
@@ -67,7 +67,7 @@ export function JourneyScreen() {
         </div>
       </header>
 
-      <section className="pl-app-timeline" aria-label="Fases da jornada">
+      <section className="pl-app-timeline" aria-label="Trilhas da jornada">
         {PREVIEW_PHASES.slice(0, 3).map((phase, index) => {
           const progress = phaseProgress(phase)
           const next = phase.missions.find(
@@ -98,7 +98,7 @@ export function JourneyScreen() {
                     <PhaseArt number={phase.number} size={52} />
                     <div>
                       <span className="pl-app-phase-kicker">
-                        Fase {String(phase.number).padStart(2, '0')}
+                        Trilha {String(phase.number).padStart(2, '0')}
                       </span>
                       <h2>{phase.name}</h2>
                       <p>{phase.description}</p>
