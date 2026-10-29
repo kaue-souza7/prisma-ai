@@ -567,3 +567,133 @@
     grid-template-columns: 1fr;
   }
 }
+
+.catalystMessage {
+  padding: 12px 14px;
+  border: 1px solid rgba(17, 153, 142, 0.22);
+  border-radius: 14px;
+  background: rgba(17, 153, 142, 0.06);
+  color: var(--st-ink);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.autoBadge {
+  align-self: flex-start;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #e9fbf3;
+  color: #087f68;
+  font-size: 0.62rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 340px;
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid var(--st-border);
+  border-radius: 16px;
+  background: rgba(23, 21, 43, 0.03);
+}
+
+.chatMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.chatMessage strong {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.72;
+}
+
+.chatAssistant {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid var(--st-border);
+  color: var(--st-ink);
+}
+
+.chatUser {
+  align-self: flex-end;
+  background: var(--st-purple);
+  color: #fff;
+}
+
+.chatComposer {
+  display: flex;
+  gap: 8px;
+}
+
+.chatComposer input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--st-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--st-ink);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.chatComposer input:focus {
+  outline: 2px solid rgba(108, 59, 255, 0.35);
+  outline-offset: 1px;
+}
+
+.chatOptions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.chatOption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--st-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--st-ink);
+  text-align: left;
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.chatOption:hover {
+  border-color: rgba(108, 59, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.chatOption strong {
+  font-weight: 650;
+}
+
+.chatOption small {
+  color: var(--st-muted);
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.chatSkips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}

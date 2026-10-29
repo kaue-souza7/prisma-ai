@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usersApi } from '@/api'
 import { Button } from '@/design-system'
@@ -6,7 +7,8 @@ import { CheckIcon, ShieldIcon, SparkIcon } from '@/design-system/Icons'
 import { useSessionStore } from '@/store/session'
 import { useDocumentTitle } from '@/shared/useDocumentTitle'
 import type { Trail } from '@/types/student'
-import { BrandMark, PrismMascot } from './components/StudentVisuals'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
+import { BrandMark } from './components/StudentVisuals'
 import styles from './Onboarding.module.css'
 
 const GOALS = [
@@ -37,13 +39,137 @@ const URGENCIES = [
   { value: 'aprendizado_continuo', label: 'Quero aprender com constância' },
 ]
 
+const INCOME_PATTERNS = [
+  { value: 'sem_renda', label: 'Ainda não tenho renda' },
+  { value: 'variavel', label: 'Minha renda varia bastante' },
+  { value: 'fixa', label: 'Tenho uma renda fixa' },
+  { value: 'prefiro_nao_dizer', label: 'Prefiro não dizer' },
+]
+
+const MAIN_DIFFICULTIES = [
+  { value: 'dividas', label: 'Sair das dívidas' },
+  { value: 'reserva', label: 'Montar uma reserva' },
+  { value: 'gastos', label: 'Controlar os gastos' },
+  { value: 'investir', label: 'Começar a investir' },
+  { value: 'golpes', label: 'Me proteger de golpes' },
+  { value: 'outro', label: 'Outra dificuldade' },
+]
+
+const LEARNING_STYLES = [
+  { value: 'exemplos', label: 'Exemplos práticos do dia a dia' },
+  { value: 'passo_a_passo', label: 'Passo a passo detalhado' },
+  { value: 'desafios', label: 'Desafios rápidos' },
+]
+
 const PACE_LABELS: Record<string, string> = {
   supported: 'No seu ritmo, com mais apoio',
   steady: 'Ritmo equilibrado',
   accelerated: 'Ritmo mais rápido',
 }
 
+const MODE_LABELS: Record<string, string> = {
+  express: 'Expresso',
+  standard: 'Padrão',
+  full: 'Completo',
+}
+
 const CONSENT_VERSION = '2026-10-21'
+
+type ChatMessage = { role: 'assistant' | 'user'; content: string }
+
+type QuestionOption = { value: string; label: string; hint?: string }
+
+type FixedQuestion = {
+  id: string
+  prompt: string
+  kind: 'single' | 'text'
+  options?: QuestionOption[]
+  placeholder?: string
+  optional?: boolean
+}
+
+const ACKNOWLEDGMENTS: Record<string, string> = {
+  goal_category: 'Ótimo, esse é um ponto de partida importante.',
+  goal_detail: 'Que legal, isso ajuda a personalizar sua trilha.',
+  life_context: 'Entendi, isso muda o ponto de partida da jornada.',
+  work_experience: 'Boa, obrigado por compartilhar.',
+  income_pattern: 'Entendi, isso ajuda a ajustar o ritmo dos exemplos.',
+  main_difficulty: 'Obrigado por confiar; vamos focar nisso.',
+  urgency: 'Entendi a sua prioridade.',
+  knowledge_level: 'Perfeito, vamos respeitar o seu ritmo.',
+  learning_style: 'Boa, vou usar esse estilo nos exemplos.',
+  goal_12m: 'Adorei a meta! Vamos construir o caminho.',
+}
+
+// D-C1: 10 perguntas fixas para todos os usuários.
+const FIXED_QUESTIONS: FixedQuestion[] = [
+  {
+    id: 'goal_category',
+    prompt: 'Qual é o seu objetivo principal hoje?',
+    kind: 'single',
+    options: GOALS,
+  },
+  {
+    id: 'goal_detail',
+    prompt:
+      'Me conta em uma frase: o que mudaria na sua vida se você dominasse suas finanças?',
+    kind: 'text',
+    placeholder: 'Ex.: conseguir sair das dívidas e guardar dinheiro todo mês.',
+  },
+  {
+    id: 'life_context',
+    prompt: 'Como está sua situação de trabalho hoje?',
+    kind: 'single',
+    options: LIFE_CONTEXTS,
+  },
+  {
+    id: 'work_experience',
+    prompt: 'Há quanto tempo você trabalha com carteira assinada?',
+    kind: 'text',
+    placeholder: 'Ex.: 3 anos. Se não se aplicar, pode pular.',
+    optional: true,
+  },
+  {
+    id: 'income_pattern',
+    prompt: 'Como você descreveria sua renda hoje?',
+    kind: 'single',
+    options: INCOME_PATTERNS,
+  },
+  {
+    id: 'main_difficulty',
+    prompt: 'Qual é a sua maior dificuldade com dinheiro?',
+    kind: 'single',
+    options: MAIN_DIFFICULTIES,
+  },
+  {
+    id: 'urgency',
+    prompt: 'O que você precisa resolver primeiro?',
+    kind: 'single',
+    options: URGENCIES,
+  },
+  {
+    id: 'knowledge_level',
+    prompt: 'Como você se sente em relação a conceitos financeiros?',
+    kind: 'single',
+    options: KNOWLEDGE_LEVELS,
+  },
+  {
+    id: 'learning_style',
+    prompt: 'Como você prefere aprender?',
+    kind: 'single',
+    options: LEARNING_STYLES,
+  },
+  {
+    id: 'goal_12m',
+    prompt: 'Qual é o seu maior sonho financeiro para os próximos 12 meses?',
+    kind: 'text',
+    placeholder: 'Ex.: montar uma reserva de R$ 5.000.',
+  },
+]
+
+function labelFor(options: QuestionOption[] | undefined, value: string) {
+  return options?.find((option) => option.value === value)?.label ?? value
+}
 
 export function OnboardingPage() {
   useDocumentTitle('Onboarding — Prisma.AI')
@@ -51,21 +177,66 @@ export function OnboardingPage() {
   const user = useSessionStore((state) => state.user)
   const profile = useSessionStore((state) => state.profile)
   const setProfile = useSessionStore((state) => state.setProfile)
+
   const [step, setStep] = useState(1)
-  const [goalCategory, setGoalCategory] = useState('')
-  const [customGoal, setCustomGoal] = useState('')
-  const [knowledgeLevel, setKnowledgeLevel] = useState('')
-  const [lifeContext, setLifeContext] = useState('')
-  const [urgency, setUrgency] = useState('')
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [fixedIndex, setFixedIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [adaptiveQuestions, setAdaptiveQuestions] = useState<string[]>([])
+  const [adaptiveIndex, setAdaptiveIndex] = useState(0)
+  const [adaptiveLoading, setAdaptiveLoading] = useState(false)
+  const [textAnswer, setTextAnswer] = useState('')
   const [consent, setConsent] = useState(false)
   const [trail, setTrail] = useState<Trail | null>(null)
+  const [catalystAnimation, setCatalystAnimation] = useState('C-01')
   const [loading, setLoading] = useState(false)
   const [trailLoading, setTrailLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const personalGoal = goalCategory === 'outro' ? customGoal.trim() : (
-    GOALS.find((goal) => goal.value === goalCategory)?.label ?? ''
-  )
+  const goalCategory = answers.goal_category ?? ''
+  const knowledgeLevel = answers.knowledge_level ?? ''
+  const lifeContext = answers.life_context ?? ''
+  const urgency = answers.urgency ?? ''
+  const goalDetail = answers.goal_detail?.trim() ?? ''
+  const personalGoal =
+    goalCategory === 'outro'
+      ? goalDetail || 'Meu objetivo financeiro'
+      : labelFor(GOALS, goalCategory) || goalDetail
+
+  const currentQuestion =
+    fixedIndex < FIXED_QUESTIONS.length ? FIXED_QUESTIONS[fixedIndex] : null
+  const currentPrompt =
+    currentQuestion?.id === 'goal_detail' && goalCategory === 'outro'
+      ? 'Qual é o seu objetivo? Descreva com suas palavras.'
+      : currentQuestion?.prompt ?? ''
+  const adaptiveQuestion =
+    adaptiveIndex < adaptiveQuestions.length
+      ? adaptiveQuestions[adaptiveIndex]
+      : null
+  const conversationDone =
+    fixedIndex >= FIXED_QUESTIONS.length &&
+    !adaptiveLoading &&
+    adaptiveIndex >= adaptiveQuestions.length
+  const chatRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight
+    }
+  }, [messages, currentPrompt, adaptiveQuestion, adaptiveLoading, conversationDone])
+
+  useEffect(() => {
+    if (step === 1) setCatalystAnimation('C-01')
+    else if (step === 2 || step === 3) setCatalystAnimation('C-03')
+    else setCatalystAnimation('C-05')
+  }, [step])
+
+  useEffect(() => {
+    if (step !== 2 || messages.length === 0) return
+    setCatalystAnimation('C-04')
+    const timer = window.setTimeout(() => setCatalystAnimation('C-03'), 1100)
+    return () => window.clearTimeout(timer)
+  }, [messages.length, step])
 
   function persistProfile(nextTrail: Trail | null) {
     setProfile({
@@ -78,10 +249,108 @@ export function OnboardingPage() {
         goal_category: goalCategory,
         life_context: lifeContext || null,
         urgency: urgency || null,
-        onboarding_version: 2,
+        onboarding_version: 3,
+        fixed_answers: { ...answers },
       },
       trail: nextTrail,
     })
+  }
+
+  async function loadAdaptiveQuestions(
+    fixedAnswers: Record<string, string>,
+    history: ChatMessage[],
+  ) {
+    setAdaptiveLoading(true)
+    setError('')
+    try {
+      const response = await usersApi.getAdaptiveQuestions({
+        fixed_answers: {
+          ...fixedAnswers,
+          objetivo: fixedAnswers.goal_category ?? '',
+          goal_category: fixedAnswers.goal_category ?? '',
+          knowledge_level_declared: fixedAnswers.knowledge_level ?? '',
+        },
+        conversation_history: history,
+      })
+      setAdaptiveQuestions(response.data.questions ?? [])
+    } catch {
+      // O onboarding continua mesmo sem perguntas adaptativas.
+      setAdaptiveQuestions([])
+    } finally {
+      setAdaptiveLoading(false)
+    }
+  }
+
+  function commitFixedAnswer(value: string, label: string) {
+    if (!currentQuestion) return
+    const nextAnswers = { ...answers, [currentQuestion.id]: value }
+    const nextMessages: ChatMessage[] = [
+      ...messages,
+      { role: 'assistant', content: currentPrompt },
+      { role: 'user', content: label },
+      {
+        role: 'assistant',
+        content:
+          ACKNOWLEDGMENTS[currentQuestion.id] ?? 'Obrigado por compartilhar.',
+      },
+    ]
+    const nextIndex = fixedIndex + 1
+
+    setAnswers(nextAnswers)
+    setMessages(nextMessages)
+    setTextAnswer('')
+    setFixedIndex(nextIndex)
+
+    if (nextIndex >= FIXED_QUESTIONS.length) {
+      void loadAdaptiveQuestions(nextAnswers, nextMessages)
+    }
+  }
+
+  function handleFixedSingle(option: QuestionOption) {
+    commitFixedAnswer(option.value, option.label)
+  }
+
+  function handleFixedText() {
+    if (!currentQuestion || currentQuestion.kind !== 'text') return
+    const answer = textAnswer.trim()
+    if (!answer && !currentQuestion.optional) return
+    commitFixedAnswer(answer, answer || 'Prefiro não responder')
+  }
+
+  function handleAdaptiveSend() {
+    if (!adaptiveQuestion || !textAnswer.trim()) return
+    setMessages((current) => [
+      ...current,
+      { role: 'assistant', content: adaptiveQuestion },
+      { role: 'user', content: textAnswer.trim() },
+      { role: 'assistant', content: 'Obrigado, isso ajuda muito.' },
+    ])
+    setAdaptiveIndex((current) => current + 1)
+    setTextAnswer('')
+  }
+
+  function skipAdaptiveQuestion() {
+    if (!adaptiveQuestion) return
+    setMessages((current) => [
+      ...current,
+      { role: 'assistant', content: adaptiveQuestion },
+      { role: 'user', content: 'Prefiro não responder esta pergunta.' },
+      { role: 'assistant', content: 'Tudo bem, obrigado por avisar.' },
+    ])
+    setAdaptiveIndex((current) => current + 1)
+    setTextAnswer('')
+  }
+
+  function skipAdaptiveStage() {
+    setAdaptiveIndex(adaptiveQuestions.length)
+    setTextAnswer('')
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') return
+    event.preventDefault()
+    if (currentQuestion) handleFixedText()
+    else if (adaptiveQuestion) handleAdaptiveSend()
   }
 
   async function handleSubmit() {
@@ -90,6 +359,12 @@ export function OnboardingPage() {
     setError('')
 
     try {
+      const fixedAnswers = {
+        ...answers,
+        objetivo: goalCategory,
+        goal_category: goalCategory,
+        knowledge_level_declared: knowledgeLevel,
+      }
       const response = await usersApi.completeOnboarding({
         personal_goal: personalGoal,
         knowledge_level: knowledgeLevel,
@@ -100,8 +375,11 @@ export function OnboardingPage() {
           goal_category: goalCategory,
           life_context: lifeContext || null,
           urgency: urgency || null,
-          onboarding_version: 2,
+          onboarding_version: 3,
+          fixed_answers: fixedAnswers,
         },
+        fixed_answers: fixedAnswers,
+        conversation_history: messages,
       })
 
       const nextTrail = response.data.trail ?? null
@@ -109,7 +387,9 @@ export function OnboardingPage() {
       persistProfile(nextTrail)
       setStep(4)
     } catch (err: unknown) {
-      const apiError = err as { response?: { data?: { error?: { message?: string } } } }
+      const apiError = err as {
+        response?: { data?: { error?: { message?: string } } }
+      }
       setError(
         apiError.response?.data?.error?.message ||
           'Não foi possível concluir seu onboarding. Tente novamente.',
@@ -147,7 +427,7 @@ export function OnboardingPage() {
         </div>
         <div className={styles.visualArt} aria-hidden="true">
           <span className={styles.visualOrb} />
-          <PrismMascot size={250} />
+          <Mascot3D agent="catalyst" animation={catalystAnimation} size={250} />
         </div>
         <div className={styles.visualPoints}>
           <span><CheckIcon size={13} /> Sem dados bancários</span>
@@ -179,7 +459,7 @@ export function OnboardingPage() {
                 {item === 1
                   ? 'Boas-vindas'
                   : item === 2
-                    ? 'Sobre você'
+                    ? 'Conversa'
                     : item === 3
                       ? 'Consentimento'
                       : 'Sua trilha'}
@@ -214,126 +494,165 @@ export function OnboardingPage() {
 
           {step === 2 && (
             <div className={styles.stepContent}>
-              <h2>O que você quer entender melhor?</h2>
+              <h2>Vamos conversar.</h2>
               <p className={styles.muted}>
-                Escolha o objetivo que mais combina com o seu momento.
+                São 10 perguntas rápidas e, depois, algumas perguntas adaptativas
+                para o Catalisador entender o seu momento.
                 {user?.email ? ` Sua conta: ${user.email}.` : ''}
               </p>
 
-              <div className={styles.goalGrid} role="radiogroup" aria-label="Objetivo principal">
-                {GOALS.map((goal) => (
-                  <label
-                    key={goal.value}
+              <div ref={chatRef} className={styles.chat} aria-live="polite">
+                <div className={`${styles.chatMessage} ${styles.chatAssistant}`}>
+                  <strong>Catalisador</strong>
+                  <span>
+                    Oi! Vou te fazer algumas perguntas para montar uma trilha que
+                    faça sentido para você. Não existe resposta certa.
+                  </span>
+                </div>
+
+                {messages.map((message, index) => (
+                  <div
+                    key={`${message.role}-${index}`}
                     className={[
-                      styles.goalOption,
-                      goalCategory === goal.value ? styles.optionSelected : '',
+                      styles.chatMessage,
+                      message.role === 'assistant'
+                        ? styles.chatAssistant
+                        : styles.chatUser,
                     ].join(' ')}
                   >
-                    <input
-                      type="radio"
-                      name="goal"
-                      value={goal.value}
-                      checked={goalCategory === goal.value}
-                      onChange={() => setGoalCategory(goal.value)}
-                    />
-                    <span>{goal.label}</span>
-                  </label>
+                    <strong>
+                      {message.role === 'assistant' ? 'Catalisador' : 'Você'}
+                    </strong>
+                    <span>{message.content}</span>
+                  </div>
                 ))}
+
+                {currentQuestion && (
+                  <div className={`${styles.chatMessage} ${styles.chatAssistant}`}>
+                    <strong>Catalisador</strong>
+                    <span>{currentPrompt}</span>
+                  </div>
+                )}
+
+                {adaptiveLoading && (
+                  <div className={`${styles.chatMessage} ${styles.chatAssistant}`}>
+                    <strong>Catalisador</strong>
+                    <span>
+                      Só um instante — estou preparando algumas perguntas a partir
+                      das suas respostas.
+                    </span>
+                  </div>
+                )}
+
+                {!adaptiveLoading && adaptiveQuestion && (
+                  <div className={`${styles.chatMessage} ${styles.chatAssistant}`}>
+                    <strong>Catalisador</strong>
+                    <span>{adaptiveQuestion}</span>
+                  </div>
+                )}
+
+                {conversationDone && (
+                  <div className={`${styles.chatMessage} ${styles.chatAssistant}`}>
+                    <strong>Catalisador</strong>
+                    <span>
+                      Obrigado! Com isso consigo montar uma trilha com a sua cara.
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {goalCategory === 'outro' && (
-                <label className={styles.field}>
-                  <span>Qual é o seu objetivo?</span>
-                  <input
-                    value={customGoal}
-                    onChange={(event) => setCustomGoal(event.target.value)}
-                    maxLength={200}
-                    placeholder="Ex.: organizar o dinheiro do meu primeiro emprego"
-                  />
-                </label>
+              {currentQuestion?.kind === 'single' && (
+                <div className={styles.chatOptions}>
+                  {currentQuestion.options?.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={styles.chatOption}
+                      onClick={() => handleFixedSingle(option)}
+                    >
+                      <strong>{option.label}</strong>
+                      {option.hint && <small>{option.hint}</small>}
+                    </button>
+                  ))}
+                </div>
               )}
 
-              <h2 className={styles.secondHeading}>Como você se sente hoje?</h2>
-              <div className={styles.levelGrid} role="radiogroup" aria-label="Nível de conhecimento">
-                {KNOWLEDGE_LEVELS.map((level) => (
-                  <label
-                    key={level.value}
-                    className={[
-                      styles.levelOption,
-                      knowledgeLevel === level.value ? styles.optionSelected : '',
-                    ].join(' ')}
-                  >
+              {currentQuestion?.kind === 'text' && (
+                <>
+                  <div className={styles.chatComposer}>
                     <input
-                      type="radio"
-                      name="knowledge"
-                      value={level.value}
-                      checked={knowledgeLevel === level.value}
-                      onChange={() => setKnowledgeLevel(level.value)}
+                      value={textAnswer}
+                      onChange={(event) => setTextAnswer(event.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder={currentQuestion.placeholder}
+                      aria-label="Sua resposta ao Catalisador"
                     />
-                    <strong>{level.label}</strong>
-                    <small>{level.hint}</small>
-                  </label>
-                ))}
-              </div>
+                    <Button
+                      onClick={handleFixedText}
+                      disabled={!textAnswer.trim() && !currentQuestion.optional}
+                    >
+                      Enviar
+                    </Button>
+                  </div>
+                  {currentQuestion.optional && (
+                    <button
+                      type="button"
+                      className={styles.textAction}
+                      onClick={() => commitFixedAnswer('', 'Prefiro não responder')}
+                    >
+                      Pular esta pergunta
+                    </button>
+                  )}
+                </>
+              )}
 
-              <h2 className={styles.secondHeading}>Qual é o seu momento?</h2>
-              <p className={styles.muted}>
-                Isso ajuda o Catalisador a escolher o ponto de partida. É opcional.
-              </p>
-              <div className={styles.compactGrid} role="radiogroup" aria-label="Contexto de vida">
-                {LIFE_CONTEXTS.map((context) => (
-                  <label
-                    key={context.value}
-                    className={[
-                      styles.compactOption,
-                      lifeContext === context.value ? styles.optionSelected : '',
-                    ].join(' ')}
-                  >
+              {!currentQuestion && !adaptiveLoading && adaptiveQuestion && (
+                <>
+                  <div className={styles.chatComposer}>
                     <input
-                      type="radio"
-                      name="life_context"
-                      value={context.value}
-                      checked={lifeContext === context.value}
-                      onChange={() => setLifeContext(context.value)}
+                      value={textAnswer}
+                      onChange={(event) => setTextAnswer(event.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Escreva sua resposta..."
+                      aria-label="Sua resposta ao Catalisador"
                     />
-                    <span>{context.label}</span>
-                  </label>
-                ))}
-              </div>
+                    <Button onClick={handleAdaptiveSend} disabled={!textAnswer.trim()}>
+                      Enviar
+                    </Button>
+                  </div>
+                  <div className={styles.chatSkips}>
+                    <button
+                      type="button"
+                      className={styles.textAction}
+                      onClick={skipAdaptiveQuestion}
+                    >
+                      Pular esta pergunta
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.textAction}
+                      onClick={skipAdaptiveStage}
+                    >
+                      Pular perguntas adaptativas
+                    </button>
+                  </div>
+                </>
+              )}
 
-              <h2 className={styles.secondHeading}>Qual é a sua urgência?</h2>
-              <div className={styles.compactGrid} role="radiogroup" aria-label="Urgência">
-                {URGENCIES.map((item) => (
-                  <label
-                    key={item.value}
-                    className={[
-                      styles.compactOption,
-                      urgency === item.value ? styles.optionSelected : '',
-                    ].join(' ')}
-                  >
-                    <input
-                      type="radio"
-                      name="urgency"
-                      value={item.value}
-                      checked={urgency === item.value}
-                      onChange={() => setUrgency(item.value)}
-                    />
-                    <span>{item.label}</span>
-                  </label>
-                ))}
-              </div>
+              {conversationDone && (
+                <div className={styles.actions}>
+                  <Button variant="ghost" onClick={() => setStep(1)}>
+                    Voltar
+                  </Button>
+                  <Button onClick={() => setStep(3)}>Continuar</Button>
+                </div>
+              )}
 
-              <div className={styles.actions}>
-                <Button variant="ghost" onClick={() => setStep(1)}>
-                  Voltar
-                </Button>
-                <Button
-                  onClick={() => setStep(3)}
-                  disabled={!personalGoal || !knowledgeLevel}
-                >
-                  Continuar
-                </Button>
-              </div>
+              {error && (
+                <p className={styles.error} role="alert">
+                  {error}
+                </p>
+              )}
             </div>
           )}
 
@@ -400,6 +719,14 @@ export function OnboardingPage() {
 
               {trail ? (
                 <>
+                  {trail.next_message && (
+                    <p className={styles.catalystMessage}>{trail.next_message}</p>
+                  )}
+                  {trail.trail_1_auto_concluded && (
+                    <span className={styles.autoBadge}>
+                      Trilha 1 dominada no onboarding · +50 XP
+                    </span>
+                  )}
                   <div className={styles.trailSummary}>
                     <p>{trail.rationale}</p>
                     <div className={styles.trailMeta}>
@@ -417,6 +744,13 @@ export function OnboardingPage() {
                             Trilha {phase.number} · {phase.name}
                           </strong>
                           {phase.description && <small>{phase.description}</small>}
+                          {trail.trail_modes?.[String(phase.number)] && (
+                            <small>
+                              Modo{' '}
+                              {MODE_LABELS[trail.trail_modes[String(phase.number)]] ??
+                                trail.trail_modes[String(phase.number)]}
+                            </small>
+                          )}
                         </div>
                         {index === 0 && (
                           <span className={styles.trailStart}>Começa aqui</span>

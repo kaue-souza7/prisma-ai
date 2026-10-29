@@ -43,6 +43,11 @@ export const usersApi = {
   updateProfile: (data: object) => api.patch('/api/v1/users/me/profile', data),
   completeOnboarding: (data: object) =>
     api.post<{ message: string; trail: Trail | null }>('/api/v1/users/me/onboarding', data),
+  getAdaptiveQuestions: (data: object) =>
+    api.post<{ questions: string[]; source: string }>(
+      '/api/v1/users/me/onboarding/adaptive-questions',
+      data,
+    ),
   getTrail: () => api.get<Trail | null>('/api/v1/users/me/trail'),
   setTrailPreference: (mode: 'personalized' | 'standard') =>
     api.post<Trail>('/api/v1/users/me/trail/preference', { mode }),

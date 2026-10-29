@@ -57,6 +57,18 @@ def _trail_from_profile(profile: Profile) -> dict:
     )
 
 
+async def get_adaptive_questions(
+    fixed_answers: dict,
+    conversation_history: list[dict],
+) -> dict:
+    """Gera as perguntas adaptativas do onboarding via Catalisador."""
+    reply = await catalyst.generate_adaptive_questions(
+        fixed_answers=fixed_answers,
+        conversation_history=conversation_history,
+    )
+    return {"questions": reply.questions, "source": reply.source}
+
+
 async def complete_onboarding(
     db: AsyncSession,
     user_id: int,
@@ -66,6 +78,8 @@ async def complete_onboarding(
     preferences: dict | None = None,
     life_context: str | None = None,
     urgency: str | None = None,
+    conversation_history: list[dict] | None = None,
+    fixed_answers: dict | None = None,
 ) -> Profile:
     profile = await get_or_create_profile(db, user_id)
 
@@ -96,18 +110,49 @@ async def complete_onboarding(
     profile.consent_given_at = datetime.now(timezone.utc)
     profile.onboarding_completed = True
     profile.preferences = merged_preferences
-    profile.trail = catalyst.build_trail(
-        personal_goal=personal_goal,
-        goal_category=merged_preferences.get("goal_category"),
-        knowledge_level=knowledge_level,
-        preferences=merged_preferences,
+
+    # Monta o payload de respostas fixas para o Catalisador.
+    fixed_answers_payload = {
+        "objetivo": merged_preferences.get("goal_category", "outro"),
+        "life_context": life_context or merged_preferences.get("life_context", ""),
+        "urgency": urgency or merged_preferences.get("urgency", ""),
+        "knowledge_level_declared": knowledge_level,
+        **(merged_preferences.get("fixed_answers") or {}),
+        **(fixed_answers or {}),
+    }
+    merged_preferences["fixed_answers"] = fixed_answers_payload
+
+    # Conduz o onboarding via Catalisador IA (com fallback determinístico).
+    onboarding_reply = await catalyst.conduct_onboarding(
+        db=db,
+        fixed_answers=fixed_answers_payload,
+        conversation_history=conversation_history or [],
     )
+
+    profile.trail = {
+        "source": onboarding_reply.source,
+        "version": 2,
+        "goal_category": merged_preferences.get("goal_category", "outro"),
+        "phase_order": onboarding_reply.phase_order,
+        "trail_modes": onboarding_reply.trail_modes,
+        "trail_1_auto_concluded": onboarding_reply.trail_1_auto_concluded,
+        "rationale": onboarding_reply.rationale,
+        "focus_areas": onboarding_reply.focus_areas,
+        "next_message": onboarding_reply.next_message,
+        "knowledge_level": knowledge_level,
+        "life_context": life_context or merged_preferences.get("life_context"),
+        "urgency": urgency or merged_preferences.get("urgency"),
+    }
 
     await db.flush()
 
-    # Conceder conquista e pontos do onboarding
-    from app.modules.progress.service import grant_onboarding_bonus
+    # Conceder conquista e pontos do onboarding.
+    from app.modules.progress.service import grant_onboarding_bonus, grant_trail_1_auto_concluded_bonus
     await grant_onboarding_bonus(db, user_id)
+
+    # 50 XP extra se a Trilha 1 foi reconhecida como dominada no onboarding.
+    if onboarding_reply.trail_1_auto_concluded:
+        await grant_trail_1_auto_concluded_bonus(db, user_id)
 
     return profile
 

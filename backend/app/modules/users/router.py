@@ -7,6 +7,8 @@ from app.core.security import get_current_user
 from app.shared.models import User
 from app.modules.users import service
 from app.modules.users.schemas import (
+    AdaptiveQuestionsOut,
+    AdaptiveQuestionsRequest,
     MeResponse,
     ProfileUpdate,
     OnboardingComplete,
@@ -45,6 +47,17 @@ async def update_profile(
     return profile
 
 
+@router.post("/me/onboarding/adaptive-questions", response_model=AdaptiveQuestionsOut)
+async def adaptive_questions(
+    body: AdaptiveQuestionsRequest,
+    current_user: User = Depends(get_current_user),
+):
+    return await service.get_adaptive_questions(
+        fixed_answers=body.fixed_answers,
+        conversation_history=body.conversation_history,
+    )
+
+
 @router.post("/me/onboarding", response_model=OnboardingOut)
 async def complete_onboarding(
     body: OnboardingComplete,
@@ -60,6 +73,8 @@ async def complete_onboarding(
         body.preferences,
         body.life_context,
         body.urgency,
+        body.conversation_history,
+        body.fixed_answers,
     )
     trail = await service.get_trail(db, current_user.id)
     return {"message": "Onboarding concluído com sucesso.", "trail": trail}
