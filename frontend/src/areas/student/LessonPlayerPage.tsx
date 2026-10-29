@@ -25,11 +25,8 @@ import type {
   Lesson,
   LessonStep,
 } from '@/types/student'
-import {
-  AGENT_META,
-  AgentAvatar,
-  PrismMascot,
-} from './components/StudentVisuals'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
+import { AGENT_META, AgentAvatar } from './components/StudentVisuals'
 import { MentorChat } from './components/MentorChat'
 import styles from './LessonPlayer.module.css'
 
@@ -52,6 +49,7 @@ interface SubmitResult {
   can_retry_optionally?: boolean | null
   mission_insight?: AgentInsight | null
   next_step?: CatalystRecommendation | null
+  trail_celebration?: CatalystRecommendation | null
 }
 
 function agentKey(value?: string | null) {
@@ -161,6 +159,10 @@ export function LessonPlayerPage() {
     try {
       await journeyApi.startMission(id)
       setStarted(true)
+      // O conjunto de perguntas é sorteado no start; recarrega a lição para
+      // exibir as atividades da tentativa atual, não as do carregamento inicial.
+      const refreshed = await journeyApi.getLesson(id)
+      setLesson(refreshed.data)
       const response = await journeyApi.saveLessonStep(id, stepIndex)
       setLesson((current) =>
         current
@@ -568,7 +570,11 @@ function IntroStep({
       <div className={styles.introArt} aria-hidden="true">
         <span className={styles.introOrb} />
         <span className={styles.introRing} />
-        <PrismMascot size={260} />
+        <Mascot3D
+          agent={agent}
+          animation={agent === 'mentor' ? 'M-02' : agent === 'analyst' ? 'A-02' : 'C-03'}
+          size={260}
+        />
         <div className={styles.agentFloating}>
           <AgentAvatar agent={agent} size={40} />
           <span>
@@ -793,7 +799,17 @@ function QuestionStep({
           role="status"
           aria-live="polite"
         >
-          <AgentAvatar agent="mentor" size={44} />
+          <Mascot3D
+            agent="mentor"
+            animation={
+              result.is_correct === true
+                ? 'M-10'
+                : result.is_correct === false
+                  ? 'M-07'
+                  : 'M-08'
+            }
+            size={80}
+          />
           <div>
             <span className={styles.feedbackKicker}>
               {result.is_correct === true
@@ -916,6 +932,7 @@ function SummaryStep({
       : null)
   const insight = completion?.mission_insight ?? lesson.mission_insight ?? null
   const nextStep = completion?.next_step ?? lesson.next_step ?? null
+  const trailCelebration = completion?.trail_celebration ?? null
 
   useEffect(() => {
     onFinish()
@@ -934,7 +951,11 @@ function SummaryStep({
 
       <div className={styles.summaryContent}>
         <div className={styles.summaryArt} aria-hidden="true">
-          <PrismMascot size={190} tone={passed ? 'analyst' : 'violet'} />
+          <Mascot3D
+            agent="catalyst"
+            animation={trailCelebration ? 'C-12' : passed ? 'C-11' : 'C-10'}
+            size={190}
+          />
         </div>
 
         <span className="st-eyebrow">
@@ -1009,6 +1030,21 @@ function SummaryStep({
             <div>
               <span className={styles.feedbackKicker}>Analista de Progresso</span>
               <p>{insight.message}</p>
+            </div>
+          </div>
+        )}
+
+        {trailCelebration && (
+          <div className={styles.summaryCatalyst}>
+            <AgentAvatar agent="catalyst" size={34} />
+            <div>
+              <span className={styles.feedbackKicker}>
+                {trailCelebration.badge_label ?? 'Trilha concluída'}
+              </span>
+              <p>{trailCelebration.celebration_message ?? trailCelebration.message}</p>
+              {trailCelebration.next_step_message && (
+                <p>{trailCelebration.next_step_message}</p>
+              )}
             </div>
           </div>
         )}

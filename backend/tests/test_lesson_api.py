@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from app.shared.models import Mission, Phase, UserMissionProgress, MissionStatus
+from app.shared.models import Activity, Mission, Phase, UserMissionProgress, MissionStatus
 from tests.conftest import auth_headers, register_verified_user
 
 
@@ -93,11 +93,23 @@ async def test_lesson_progress_saves_and_resumes_after_feedback(client, db_sessi
     question_step = next(
         step for step in resumed["steps"] if step["type"] == "question"
     )
+    stored_activity = (
+        await db_session.execute(
+            select(Activity).where(Activity.id == question_step["activity"]["id"])
+        )
+    ).scalar_one()
+    if stored_activity.activity_type == "multiple_choice":
+        response_data = {
+            "selected_option": stored_activity.content.get("correct_answer")
+        }
+    else:
+        response_data = {"text": "Resposta de teste da lição."}
+
     answer = await client.post(
         f"/api/v1/journey/missions/{mission.id}/submit",
         json={
             "activity_id": question_step["activity"]["id"],
-            "response_data": {"selected_option": "b"},
+            "response_data": response_data,
         },
         headers=headers,
     )

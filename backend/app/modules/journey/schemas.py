@@ -42,6 +42,7 @@ class ActivityOut(BaseModel):
     activity_type: str
     content: dict
     points_value: int
+    question_set: int = 1
 
     model_config = {"from_attributes": True}
 
@@ -114,6 +115,12 @@ class CatalystRecommendationOut(BaseModel):
     phase_name: Optional[str] = None
     trail_position: Optional[int] = None
     trail_size: Optional[int] = None
+    rationale: Optional[str] = None
+    # Campos de celebração (kind=celebrate)
+    celebration_message: Optional[str] = None
+    next_step_message: Optional[str] = None
+    badge_label: Optional[str] = None
+    source: Optional[str] = None
 
 
 class JourneyOverviewOut(BaseModel):
@@ -147,6 +154,8 @@ class SubmitResponseOut(BaseModel):
     can_retry_optionally: Optional[bool] = None
     mission_insight: Optional[AgentInsightOut] = None
     next_step: Optional[CatalystRecommendationOut] = None
+    # Presente apenas quando a missão concluiu uma trilha pela primeira vez.
+    trail_celebration: Optional[CatalystRecommendationOut] = None
 
 
 class RetryMissionRequest(BaseModel):

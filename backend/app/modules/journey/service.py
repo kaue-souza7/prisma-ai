@@ -1,3 +1,5 @@
+import random
+import time
 from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -5,7 +7,8 @@ from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from app.shared.models import (
-    Phase, Mission, Activity, ContentItem, UserMissionProgress, UserResponse, MissionStatus
+    Phase, Mission, Activity, ContentItem, UserMissionProgress, UserResponse, MissionStatus,
+    UserMissionAttempt,
 )
 from app.modules.progress.service import (
     COINS_CORRECT_ANSWER,
@@ -17,6 +20,229 @@ from app.modules.progress.service import (
     record_competency_evidence,
 )
 from app.modules.agents import analyst, catalyst
+
+
+# ─────────────────────────────────────────────
+# Cache curto da recomendação do Catalisador
+# ─────────────────────────────────────────────
+
+_RECOMMENDATION_TTL_SECONDS = 60.0
+_RECOMMENDATION_CACHE: dict[tuple, tuple[float, dict]] = {}
+
+
+def _recommendation_cache_get(key: tuple) -> dict | None:
+    entry = _RECOMMENDATION_CACHE.get(key)
+    if not entry:
+        return None
+    created_at, value = entry
+    if time.monotonic() - created_at > _RECOMMENDATION_TTL_SECONDS:
+        _RECOMMENDATION_CACHE.pop(key, None)
+        return None
+    return value
+
+
+def _recommendation_cache_set(key: tuple, value: dict) -> None:
+    if len(_RECOMMENDATION_CACHE) > 1000:
+        _RECOMMENDATION_CACHE.clear()
+    _RECOMMENDATION_CACHE[key] = (time.monotonic(), value)
+
+
+def invalidate_recommendation_cache(user_id: int) -> None:
+    """Invalida recomendações do usuário após mudança de progresso."""
+    for key in [key for key in _RECOMMENDATION_CACHE if key[0] == user_id]:
+        _RECOMMENDATION_CACHE.pop(key, None)
+
+
+# ─────────────────────────────────────────────
+# Rotação de conjuntos de perguntas (D-Q1)
+# ─────────────────────────────────────────────
+
+async def _get_used_sets(db: AsyncSession, user_id: int, mission_id: int) -> list[int]:
+    """Retorna os question_set_used de todas as tentativas anteriores do usuário."""
+    result = await db.execute(
+        select(UserMissionAttempt.question_set_used).where(
+            UserMissionAttempt.user_id == user_id,
+            UserMissionAttempt.mission_id == mission_id,
+        )
+    )
+    return [row for row in result.scalars().all()]
+
+
+def _select_set(used: list[int], available_sets: list[int]) -> int:
+    """Seleciona o conjunto a usar na próxima tentativa.
+
+    Tentativas 1–3 (len(used) < 3): sorteia entre os conjuntos não usados.
+    Tentativa 4+ (len(used) >= 3): sorteia livremente entre todos os disponíveis.
+    """
+    if len(used) < 3:
+        remaining = [s for s in available_sets if s not in used]
+        pool = remaining if remaining else available_sets
+    else:
+        pool = available_sets
+    return random.choice(pool)
+
+
+async def get_active_activities_for_attempt(
+    db: AsyncSession,
+    user_id: int,
+    mission_id: int,
+    *,
+    trail_mode: str = "standard",
+) -> list[Activity]:
+    """Seleciona e registra o conjunto de atividades para a tentativa atual.
+
+    Regra D-Q1:
+    - Tentativas 1–3: conjunto sorteado aleatoriamente entre os não usados.
+    - Tentativa 4+: qualquer conjunto sorteado livremente.
+    - Fallback: se a missão tiver apenas question_set=1, retorna esse conjunto.
+
+    Sub-tarefa 7 — filtro por trail_mode:
+    - express: retorna apenas atividades ligadas a competências com is_essential=True.
+    - standard: retorna todas as atividades (comportamento atual).
+    - full: retorna todas as atividades + question_set=4 (reforço), se existir.
+
+    A nova tentativa é registrada em user_mission_attempts (somente para
+    missões com múltiplos conjuntos).
+    """
+    from app.shared.models import Competency
+
+    # Filtro base: ativas
+    base_conditions = [Activity.mission_id == mission_id, Activity.is_active == True]
+
+    # Filtro express: mantém apenas atividades cujos content.competency_codes
+    # intersectam os códigos de competências marcadas como is_essential=True.
+    # Se o filtro esvaziar a missão, cai para standard.
+    express_activity_ids: set[int] | None = None
+    if trail_mode == "express":
+        essential_result = await db.execute(
+            select(Competency.code).where(
+                Competency.mission_id == mission_id,
+                Competency.is_essential == True,
+                Competency.code.is_not(None),
+            )
+        )
+        essential_codes = set(essential_result.scalars().all())
+        if not essential_codes:
+            # Missão sem competências essenciais marcadas: usa standard
+            trail_mode = "standard"
+        else:
+            # Busca todos os IDs das atividades ativas
+            all_act_result = await db.execute(
+                select(Activity.id, Activity.content).where(*base_conditions)
+            )
+            filtered_ids = {
+                row.id
+                for row in all_act_result.all()
+                if set(row.content.get("competency_codes") or []) & essential_codes
+            }
+            if filtered_ids:
+                express_activity_ids = filtered_ids
+            else:
+                # Filtro esvaziou a missão: cai para standard
+                trail_mode = "standard"
+
+    # Descobrir quais conjuntos existem para esta missão
+    # Sub-tarefa 7: modo full inclui question_set=4
+    if trail_mode == "full":
+        sets_result = await db.execute(
+            select(Activity.question_set)
+            .where(*base_conditions)
+            .distinct()
+        )
+    else:
+        # express e standard: apenas conjuntos 1-3
+        sets_result = await db.execute(
+            select(Activity.question_set)
+            .where(*base_conditions, Activity.question_set <= 3)
+            .distinct()
+        )
+    available_sets = sorted(sets_result.scalars().all())
+    if not available_sets:
+        return []
+
+    # Fallback silencioso: missões que ainda não têm os 3 conjuntos seeded
+    if len(available_sets) == 1:
+        fetch_conds = [*base_conditions, Activity.question_set == available_sets[0]]
+        if express_activity_ids is not None:
+            fetch_conds.append(Activity.id.in_(express_activity_ids))
+        result = await db.execute(
+            select(Activity).where(*fetch_conds).order_by(Activity.order)
+        )
+        activities = list(result.scalars().all())
+        random.shuffle(activities)
+        return activities
+
+    used = await _get_used_sets(db, user_id, mission_id)
+    chosen_set = _select_set(used, available_sets)
+
+    # Número da tentativa = posição que este registro ocupará (1-based)
+    attempt_number = len(used) + 1
+    attempt = UserMissionAttempt(
+        user_id=user_id,
+        mission_id=mission_id,
+        attempt_number=attempt_number,
+        question_set_used=chosen_set,
+    )
+    db.add(attempt)
+    await db.flush()
+
+    fetch_conditions = [
+        *base_conditions,
+        Activity.question_set == chosen_set,
+    ]
+    if express_activity_ids is not None:
+        fetch_conditions.append(Activity.id.in_(express_activity_ids))
+
+    result = await db.execute(
+        select(Activity)
+        .where(*fetch_conditions)
+        .order_by(Activity.order)
+    )
+    activities = list(result.scalars().all())
+    random.shuffle(activities)
+    return activities
+
+
+async def get_current_attempt_set(db: AsyncSession, user_id: int, mission_id: int) -> int:
+    """Retorna o question_set_used da tentativa mais recente do usuário nesta missão.
+
+    Retorna 1 como fallback quando não há registro de tentativa.
+    """
+    result = await db.execute(
+        select(UserMissionAttempt.question_set_used)
+        .where(
+            UserMissionAttempt.user_id == user_id,
+            UserMissionAttempt.mission_id == mission_id,
+        )
+        .order_by(UserMissionAttempt.attempt_number.desc())
+        .limit(1)
+    )
+    value = result.scalar_one_or_none()
+    return value if value is not None else 1
+
+
+async def get_attempt_activities(
+    db: AsyncSession, user_id: int, mission: Mission
+) -> list[Activity]:
+    """Atividades ativas do conjunto sorteado para a tentativa atual.
+
+    O fluxo do módulo referencia atividades por `order`, mas cada conjunto tem
+    a mesma sequência de ordens. Sem filtrar pelo conjunto da tentativa, o
+    módulo exibe perguntas de outro conjunto, a tentativa nunca fecha e o
+    estudante não recebe o resultado nem a opção de refazer.
+
+    Missões antigas (sem registro de tentativa) usam o conjunto 1. Se o
+    conjunto sorteado não tiver atividades ativas, cai para o conjunto 1 para
+    não deixar o módulo vazio.
+    """
+    current_set = await get_current_attempt_set(db, user_id, mission.id)
+    active = [activity for activity in mission.activities if activity.is_active]
+    selected = [
+        activity for activity in active if activity.question_set == current_set
+    ]
+    if selected:
+        return selected
+    return [activity for activity in active if activity.question_set == 1] or active
 
 
 async def get_all_phases(db: AsyncSession) -> list[Phase]:
@@ -289,6 +515,35 @@ async def get_next_mission(
     return None
 
 
+async def _get_mission_trail_mode(db: AsyncSession, user_id: int, mission_id: int) -> str:
+    """Resolve o trail_mode para a missão a partir do perfil do usuário."""
+    from app.shared.models import Profile
+    profile_result = await db.execute(
+        select(Profile).where(Profile.user_id == user_id)
+    )
+    profile = profile_result.scalar_one_or_none()
+    if not profile:
+        return "standard"
+
+    # Descobre a fase (trail_id) da missão
+    mission_result = await db.execute(
+        select(Mission.phase_id).where(Mission.id == mission_id)
+    )
+    phase_id = mission_result.scalar_one_or_none()
+    if phase_id is None:
+        return "standard"
+
+    # Resolve o phase.number a partir do phase_id
+    phase_result = await db.execute(
+        select(Phase.number).where(Phase.id == phase_id)
+    )
+    phase_number = phase_result.scalar_one_or_none()
+    if phase_number is None:
+        return "standard"
+
+    return catalyst.get_trail_mode(profile, phase_number)
+
+
 async def start_mission(db: AsyncSession, user_id: int, mission_id: int) -> UserMissionProgress:
     mission = await get_mission_detail(db, mission_id)
     if not await is_mission_unlocked(db, user_id, mission):
@@ -314,6 +569,8 @@ async def start_mission(db: AsyncSession, user_id: int, mission_id: int) -> User
     if prog and prog.status == MissionStatus.completed:
         return prog
 
+    trail_mode = await _get_mission_trail_mode(db, user_id, mission_id)
+
     if not prog:
         prog = UserMissionProgress(
             user_id=user_id,
@@ -323,6 +580,9 @@ async def start_mission(db: AsyncSession, user_id: int, mission_id: int) -> User
             started_at=datetime.now(timezone.utc),
         )
         db.add(prog)
+        await db.flush()
+        # Registra a tentativa e sorteia o conjunto de perguntas para esta missão
+        await get_active_activities_for_attempt(db, user_id, mission_id, trail_mode=trail_mode)
     else:
         prog.status = MissionStatus.in_progress
         # `attempts` é o número da tentativa atual. Registros antigos podem
@@ -330,8 +590,14 @@ async def start_mission(db: AsyncSession, user_id: int, mission_id: int) -> User
         prog.attempts = max(prog.attempts or 0, 1)
         if not prog.started_at:
             prog.started_at = datetime.now(timezone.utc)
+        await db.flush()
+        # Se não existe ainda registro de tentativa (dados legados), cria agora
+        used = await _get_used_sets(db, user_id, mission_id)
+        if not used:
+            await get_active_activities_for_attempt(db, user_id, mission_id, trail_mode=trail_mode)
 
     await db.flush()
+    invalidate_recommendation_cache(user_id)
     return prog
 
 
@@ -376,6 +642,11 @@ async def retry_mission(
         progress.started_at = datetime.now(timezone.utc)
 
     await db.flush()
+    # Registra a nova tentativa e sorteia o conjunto de perguntas
+    trail_mode = await _get_mission_trail_mode(db, user_id, mission_id)
+    await get_active_activities_for_attempt(db, user_id, mission_id, trail_mode=trail_mode)
+    await db.flush()
+    invalidate_recommendation_cache(user_id)
     return progress
 
 
@@ -384,12 +655,64 @@ async def build_next_step_recommendation(
     user_id: int,
     next_mission: Mission | None,
 ) -> dict:
-    """Mensagem do Catalisador para o próximo passo, com base na trilha."""
+    """Mensagem do Catalisador para o próximo passo, com base na trilha.
+
+    Sub-tarefa 5: chama `catalyst.build_recommendation()` (agora assíncrono).
+    Sub-tarefa 5: inclui sinal `trail_1_review` quando Analista detecta
+    dificuldade em competências da Trilha 1 para usuários com
+    `trail_1_auto_concluded=true`.
+    """
+    from app.shared.models import UserCompetencyProgress, Competency as _Competency
+
     trail = await catalyst.get_trail_view(db, user_id)
-    reinforcement_topics = await analyst.reinforcement_topics(db, user_id)
+    reinforcement = await analyst.reinforcement_topics(db, user_id)
+
+    # Sub-tarefa 5: sinal trail_1_review — detecta dificuldade em competências
+    # da Trilha 1 para usuários com trail_1_auto_concluded=true.
+    analyst_signals: list[dict] = []
+    trail_1_auto_concluded = trail.get("trail_1_auto_concluded", False) if trail else False
+    if trail_1_auto_concluded:
+        comps_result = await db.execute(
+            select(UserCompetencyProgress, _Competency)
+            .join(_Competency, UserCompetencyProgress.competency_id == _Competency.id)
+            .where(UserCompetencyProgress.user_id == user_id)
+        )
+        all_comps = [
+            {
+                "code": row[1].code,
+                "name": row[1].name,
+                "reinforcement_suggested": row[0].reinforcement_suggested,
+            }
+            for row in comps_result.all()
+        ]
+        if analyst.has_trail_1_difficulty(all_comps):
+            analyst_signals.append({
+                "tipo": "trail_1_review",
+                "message": "Dificuldade em competências da Trilha 1 detectada.",
+            })
+
+    progress = (
+        await get_mission_progress(db, user_id, next_mission.id)
+        if next_mission
+        else None
+    )
+    is_in_progress = bool(
+        progress and progress.status == MissionStatus.in_progress
+    )
+
+    cache_key = (
+        user_id,
+        next_mission.id if next_mission else None,
+        is_in_progress,
+        tuple(reinforcement),
+        tuple(signal.get("tipo") for signal in analyst_signals),
+    )
+    cached = _recommendation_cache_get(cache_key)
+    if cached is not None:
+        return cached
 
     if not next_mission:
-        return catalyst.build_recommendation(
+        result = await catalyst.build_recommendation(
             trail=trail,
             mission_name=None,
             mission_id=None,
@@ -397,28 +720,32 @@ async def build_next_step_recommendation(
             phase_name=None,
             is_in_progress=False,
             has_mission=False,
-            reinforcement_topics=reinforcement_topics,
+            reinforcement_topics=reinforcement,
             trail_size=len(trail["phase_order"]) if trail else 6,
         )
+        _recommendation_cache_set(cache_key, result)
+        return result
 
     phase_result = await db.execute(select(Phase).where(Phase.id == next_mission.phase_id))
     phase = phase_result.scalar_one_or_none()
-    progress = await get_mission_progress(db, user_id, next_mission.id)
     order = trail["phase_order"] if trail else list(catalyst.DEFAULT_PHASE_ORDER)
     position = order.index(phase.number) + 1 if phase and phase.number in order else None
 
-    return catalyst.build_recommendation(
+    result = await catalyst.build_recommendation(
         trail=trail,
         mission_name=next_mission.name,
         mission_id=next_mission.id,
         phase_number=phase.number if phase else None,
         phase_name=phase.name if phase else None,
-        is_in_progress=bool(progress and progress.status == MissionStatus.in_progress),
+        is_in_progress=is_in_progress,
         has_mission=True,
-        reinforcement_topics=reinforcement_topics,
+        reinforcement_topics=reinforcement,
         trail_position=position,
         trail_size=len(order),
+        analyst_signals=analyst_signals,
     )
+    _recommendation_cache_set(cache_key, result)
+    return result
 
 
 async def submit_activity_response(
@@ -538,10 +865,52 @@ async def submit_activity_response(
 
     mission_insight = None
     next_step = None
+    trail_celebration = None
+    next_mission = None
     if mission_completed:
+        invalidate_recommendation_cache(user_id)
         mission_insight = await analyst.mission_insight(db, user_id, mission_id)
         next_mission = await get_next_mission(db, user_id, mission)
         next_step = await build_next_step_recommendation(db, user_id, next_mission)
+
+        # Celebração de trilha: apenas na primeira conclusão da fase.
+        completed_trail_id = completion.get("completed_trail_id")
+        completed_trail_name = completion.get("completed_trail_name")
+        if completed_trail_id and completed_trail_name:
+            synthesis = await analyst.generate_trail_synthesis(
+                db,
+                user_id,
+                completed_trail_id,
+                use_cache=True,
+                allow_ai=True,
+            )
+            next_trail_id = None
+            next_trail_name = None
+            if next_mission:
+                next_phase_result = await db.execute(
+                    select(Phase).where(Phase.id == next_mission.phase_id)
+                )
+                next_phase = next_phase_result.scalar_one_or_none()
+                if next_phase and next_phase.id != completed_trail_id:
+                    next_trail_id = next_phase.id
+                    next_trail_name = next_phase.name
+            trail_celebration = await catalyst.celebrate_trail_completion(
+                db=db,
+                user_id=user_id,
+                trail_id=completed_trail_id,
+                trail_name=completed_trail_name,
+                analyst_synthesis={
+                    "short": synthesis.short,
+                    "full": {
+                        "competencies_demonstrated": synthesis.full.competencies_demonstrated,
+                        "competencies_with_difficulty": synthesis.full.competencies_with_difficulty,
+                        "summary": synthesis.full.summary,
+                        "reinforcement_suggestion": synthesis.full.reinforcement_suggestion,
+                    },
+                },
+                next_trail_id=next_trail_id,
+                next_trail_name=next_trail_name,
+            )
 
     return {
         "is_correct": is_correct,
@@ -562,6 +931,7 @@ async def submit_activity_response(
         "can_retry_optionally": completion["can_retry_optionally"],
         "mission_insight": mission_insight,
         "next_step": next_step,
+        "trail_celebration": trail_celebration,
     }
 
 
@@ -664,7 +1034,13 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
     )
     content_items = content_result.scalars().all()
 
-    flow = mission.lesson_flow or _fallback_flow(content_items, mission.activities)
+    # A lição precisa usar as atividades do conjunto sorteado para a tentativa.
+    # Os três conjuntos repetem as mesmas ordens, então filtrar é essencial
+    # para que `activity_order` resolva sempre para a pergunta certa.
+    attempt_activities = await get_attempt_activities(db, user_id, mission)
+
+    flow = mission.lesson_flow or _fallback_flow(content_items, attempt_activities)
+
     if not flow:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -698,7 +1074,7 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
     content_by_key = {
         (item.content_type, item.order): item for item in content_items
     }
-    activities_by_order = {activity.order: activity for activity in mission.activities}
+    activities_by_order = {activity.order: activity for activity in attempt_activities}
     steps = []
 
     for index, step in enumerate(flow):
@@ -766,6 +1142,50 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
         })
 
     completed_steps = sorted(set(completed_steps))
+    valid_step_indices = {step["index"] for step in steps}
+    completed_steps = [
+        index for index in completed_steps if index in valid_step_indices
+    ]
+    question_step_indices = {
+        step["index"] for step in steps if step["activity"] is not None
+    }
+    answered_question_steps = {
+        step["index"]
+        for step in steps
+        if step["activity"] is not None and step["user_response"] is not None
+    }
+    # Uma pergunta só conta como etapa concluída se foi respondida na tentativa
+    # atual. Isso limpa marcas deixadas por tentativas antigas que misturavam
+    # conjuntos de perguntas.
+    completed_steps = sorted(
+        (set(completed_steps) - question_step_indices) | answered_question_steps
+    )
+    for step in steps:
+        step["completed"] = step["index"] in completed_steps
+
+    # Se o cursor estava no resumo sem todas as atividades respondidas (dados
+    # gerados antes da correção dos conjuntos), volta para a primeira pergunta
+    # pendente para o estudante conseguir concluir a tentativa.
+    if progress and progress.status != MissionStatus.completed:
+        pending_step = next(
+            (
+                step["index"]
+                for step in steps
+                if step["activity"] is not None and step["user_response"] is None
+            ),
+            None,
+        )
+        if pending_step is not None and current_step > pending_step:
+            current_step = pending_step
+
+        if (
+            progress.current_step != current_step
+            or sorted(set(progress.completed_steps or [])) != completed_steps
+        ):
+            progress.current_step = current_step
+            progress.completed_steps = completed_steps
+            await db.flush()
+
     next_candidate = await get_next_mission(db, user_id, mission)
     next_mission = None
     if next_candidate:
@@ -780,9 +1200,8 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
     mission_completed = bool(progress and progress.status == MissionStatus.completed)
 
     answered_activity_ids = {response.activity_id for response in responses}
-    active_activities = [activity for activity in mission.activities if activity.is_active]
-    all_answered = bool(active_activities) and all(
-        activity.id in answered_activity_ids for activity in active_activities
+    all_answered = bool(attempt_activities) and all(
+        activity.id in answered_activity_ids for activity in attempt_activities
     )
     score_percent = progress.score_percent if progress else None
     passed = mission_completed or mission_has_passed(progress)
@@ -850,7 +1269,8 @@ async def update_lesson_progress(
         )
     )
     content_items = content_result.scalars().all()
-    flow = mission.lesson_flow or _fallback_flow(content_items, mission.activities)
+    attempt_activities = await get_attempt_activities(db, user_id, mission)
+    flow = mission.lesson_flow or _fallback_flow(content_items, attempt_activities)
     if step_index < 0 or step_index >= len(flow):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

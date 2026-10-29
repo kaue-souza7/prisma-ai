@@ -125,7 +125,9 @@ export function JourneyPage() {
               <AgentAvatar agent="catalyst" size={28} />
               <span>
                 <strong>Catalisador</strong>
-                {recommendation.message}
+                {recommendation.kind === 'celebrate'
+                  ? recommendation.celebration_message ?? recommendation.message
+                  : recommendation.message}
               </span>
             </div>
           )}

@@ -133,10 +133,14 @@ export interface TrailPhase {
 }
 
 export interface Trail {
-  source: 'rules' | 'standard' | 'ai' | string
+  source: 'rules' | 'standard' | 'ai' | 'fallback' | string
   version: number
   goal_category?: string | null
   phase_order: number[]
+  /** trail_modes: chave = número da trilha (string), valor = 'express' | 'standard' | 'full' */
+  trail_modes?: Record<string, 'express' | 'standard' | 'full' | string> | null
+  trail_1_auto_concluded?: boolean | null
+  next_message?: string | null
   rationale: string
   focus_areas: string[]
   pace: 'supported' | 'steady' | 'accelerated' | string
@@ -147,8 +151,24 @@ export interface Trail {
   phases: TrailPhase[]
 }
 
+export interface TrailSynthesisFull {
+  competencies_demonstrated: string[]
+  competencies_with_difficulty: string[]
+  summary: string
+  reinforcement_suggestion?: string | null
+}
+
+export interface TrailSynthesis {
+  trail_id: number
+  trail_number?: number
+  trail_name?: string
+  short: string
+  full: TrailSynthesisFull
+  source: 'ai' | 'fallback' | string
+}
+
 export interface CatalystRecommendation {
-  kind: 'start' | 'continue' | 'review' | 'complete' | string
+  kind: 'start' | 'continue' | 'review' | 'complete' | 'celebrate' | 'trail_1_review' | string
   message: string
   mission_id: number | null
   mission_name: string | null
@@ -156,6 +176,12 @@ export interface CatalystRecommendation {
   phase_name: string | null
   trail_position: number | null
   trail_size: number | null
+  rationale?: string | null
+  /** Campos presentes quando kind === 'celebrate' */
+  celebration_message?: string | null
+  next_step_message?: string | null
+  badge_label?: string | null
+  source?: 'ai' | 'fallback' | string
 }
 
 export interface AgentInsight {
@@ -236,6 +262,8 @@ export interface ProgressSummary {
   missions_completed: number
   missions_in_progress: number
   analyst_insight?: AgentInsight | null
+  /** Sínteses produzidas pelo Analista por trilha concluída (D-A1). */
+  trail_synthesis?: TrailSynthesis[]
 }
 
 export type StudioFormat = 'revisao' | 'flashcards' | 'exercicios'

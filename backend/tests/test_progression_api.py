@@ -405,17 +405,22 @@ async def test_competency_is_demonstrated_only_after_all_linked_evidence(client,
 
     _, tokens = await register_verified_user(client, db_session)
     headers = auth_headers(tokens)
+    await client.post(f"/api/v1/journey/missions/{mission.id}/start", headers=headers)
     detail = await client.get(f"/api/v1/journey/missions/{mission.id}", headers=headers)
     activities = detail.json()["activities"]
-    mc_1 = next(a for a in activities if a["order"] == 1)
+    mc_1 = next(a for a in activities if a["activity_type"] == "multiple_choice")
     open_text = next(a for a in activities if a["activity_type"] == "open_text")
 
-    await client.post(f"/api/v1/journey/missions/{mission.id}/start", headers=headers)
+    stored_mc = (
+        await db_session.execute(select(Activity).where(Activity.id == mc_1["id"]))
+    ).scalar_one()
     correct = await client.post(
         f"/api/v1/journey/missions/{mission.id}/submit",
         json={
             "activity_id": mc_1["id"],
-            "response_data": {"selected_option": "b"},
+            "response_data": {
+                "selected_option": stored_mc.content.get("correct_answer")
+            },
         },
         headers=headers,
     )
@@ -480,31 +485,47 @@ async def test_phase_achievement_requires_all_three_seeded_missions(client, db_s
         )
     await db_session.flush()
 
-    detail = await client.get(f"/api/v1/journey/missions/{mission_3.id}", headers=headers)
-    activities = {
-        activity["order"]: activity for activity in detail.json()["activities"]
-    }
     await client.post(f"/api/v1/journey/missions/{mission_3.id}/start", headers=headers)
 
-    answers = {
-        1: {"selected_option": "a"},
-        2: {"selected_option": "b"},
-        3: {"selected_option": "a"},
-        4: {"selected_option": "a"},
-        5: {"text": "Férias brutas: R$ 2.200 + R$ 733,33 = R$ 2.933,33. O líquido é menor porque INSS e IRRF incidem sobre o valor."},
-        6: {"selected_option": "a"},
-    }
+    # Descobre o question_set da tentativa ativa diretamente no banco
+    from sqlalchemy import select as sa_select
+    from app.shared.models import Activity as ActivityModel, UserMissionAttempt
+    attempt_row = await db_session.execute(
+        sa_select(UserMissionAttempt.question_set_used)
+        .where(
+            UserMissionAttempt.user_id == user_id,
+            UserMissionAttempt.mission_id == mission_3.id,
+        )
+        .order_by(UserMissionAttempt.id.desc())
+        .limit(1)
+    )
+    active_set = attempt_row.scalar_one_or_none() or 1
+
+    # Busca todas as atividades do conjunto ativo para obter as respostas corretas
+    act_rows = await db_session.execute(
+        sa_select(ActivityModel)
+        .where(
+            ActivityModel.mission_id == mission_3.id,
+            ActivityModel.question_set == active_set,
+            ActivityModel.is_active == True,
+        )
+        .order_by(ActivityModel.order)
+    )
+    active_activities = list(act_rows.scalars().all())
+
     last = None
-    for order, response_data in answers.items():
+    for activity in active_activities:
+        content = activity.content
+        if activity.activity_type == "multiple_choice":
+            response_data = {"selected_option": content.get("correct_answer", "a")}
+        else:
+            response_data = {"text": "Aprovado — resposta de avaliação do teste."}
         last = await client.post(
             f"/api/v1/journey/missions/{mission_3.id}/submit",
-            json={
-                "activity_id": activities[order]["id"],
-                "response_data": response_data,
-            },
+            json={"activity_id": activity.id, "response_data": response_data},
             headers=headers,
         )
-        assert last.status_code == 200
+        assert last.status_code == 200, f"Submit falhou para atividade {activity.id}: {last.json()}"
 
     assert last.json()["mission_completed"] is True
     assert "Planejador iniciante" in last.json()["new_achievements"]
@@ -516,38 +537,76 @@ async def test_phase_achievement_requires_all_three_seeded_missions(client, db_s
 
 
 async def test_repeated_errors_request_reinforcement(client, db_session):
-    mission = await _seeded_mission(db_session, 1)
+    mission = await _seeded_mission(db_session, 2)
     if not mission:
         import pytest
 
         pytest.skip("Conteúdo da Fase 1 não aplicado neste banco.")
 
-    _, tokens = await register_verified_user(client, db_session)
+    user, tokens = await register_verified_user(client, db_session)
     headers = auth_headers(tokens)
-    detail = await client.get(f"/api/v1/journey/missions/{mission.id}", headers=headers)
-    mc_1 = next(a for a in detail.json()["activities"] if a["order"] == 1)
+    mission_1 = await _seeded_mission(db_session, 1)
+    if mission_1:
+        db_session.add(
+            UserMissionProgress(
+                user_id=user.id,
+                mission_id=mission_1.id,
+                status=MissionStatus.completed,
+                score=100,
+                score_percent=100,
+                attempts=1,
+            )
+        )
+        await db_session.flush()
     await client.post(f"/api/v1/journey/missions/{mission.id}/start", headers=headers)
+    detail = await client.get(f"/api/v1/journey/missions/{mission.id}", headers=headers)
+    activities = [
+        item
+        for item in detail.json()["activities"]
+        if item["activity_type"] in {"multiple_choice", "simulation"}
+    ]
 
-    for attempt in range(3):
-        await client.post(
+    pair = None
+    for index, first_item in enumerate(activities):
+        first_codes = set(first_item["content"].get("competency_codes") or [])
+        for second_item in activities[index + 1:]:
+            second_codes = set(second_item["content"].get("competency_codes") or [])
+            if "1.2.2" in (first_codes & second_codes):
+                pair = (first_item, second_item)
+                break
+        if pair:
+            break
+    if not pair:
+        import pytest
+
+        pytest.skip("Não há duas atividades objetivas da competência 1.2.2.")
+
+    rows = await db_session.execute(
+        select(Activity).where(Activity.id.in_([pair[0]["id"], pair[1]["id"]]))
+    )
+    by_id = {activity.id: activity for activity in rows.scalars().all()}
+
+    for item in pair:
+        stored = by_id[item["id"]]
+        correct = stored.content.get("correct_answer")
+        wrong = next(
+            option["value"]
+            for option in stored.content.get("options", [])
+            if str(option["value"]) != str(correct)
+        )
+        response = await client.post(
             f"/api/v1/journey/missions/{mission.id}/submit",
             json={
-                "activity_id": mc_1["id"],
-                "response_data": {"selected_option": "a"},
+                "activity_id": item["id"],
+                "response_data": {"selected_option": wrong},
             },
             headers=headers,
         )
-        if attempt < 2:
-            retry = await client.post(
-                f"/api/v1/journey/missions/{mission.id}/retry",
-                json={"voluntary": False},
-                headers=headers,
-            )
-            assert retry.status_code == 200
+        assert response.status_code == 200, response.text
 
     summary = await client.get("/api/v1/progress/summary", headers=headers)
     competency = next(
-        c for c in summary.json()["competencies"] if c["code"] == "1.1.1"
+        c for c in summary.json()["competencies"] if c["code"] == "1.2.2"
     )
-    assert competency["incorrect_count"] == 3
+    assert competency["incorrect_count"] >= 2
     assert competency["reinforcement_suggested"] is True

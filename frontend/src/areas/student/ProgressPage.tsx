@@ -10,6 +10,7 @@ import {
 } from '@/design-system/Icons'
 import type { ProgressSummary } from '@/types/student'
 import { useDocumentTitle } from '@/shared/useDocumentTitle'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
 import { AgentAvatar, ProgressRing } from './components/StudentVisuals'
 import { pluralize } from './format'
 import styles from './Progress.module.css'
@@ -83,6 +84,12 @@ export function ProgressPage() {
   const demonstrated = summary.competencies.filter(
     (competency) => competency.status === 'demonstrated',
   ).length
+  const analystAnimation =
+    summary.analyst_insight?.severity === 'attention'
+      ? 'A-03'
+      : summary.analyst_insight?.severity === 'positive'
+        ? 'A-05'
+        : 'A-02'
 
   return (
     <div className={`st-app-page ${styles.page}`}>
@@ -167,7 +174,7 @@ export function ProgressPage() {
           ].join(' ')}
           aria-label="Recomendação do Analista de Progresso"
         >
-          <AgentAvatar agent="analyst" size={44} />
+          <Mascot3D agent="analyst" animation={analystAnimation} size={90} />
           <div>
             <span className="st-eyebrow">Analista de Progresso</span>
             <strong>
@@ -183,6 +190,47 @@ export function ProgressPage() {
             {summary.analyst_insight.action === 'review' ? 'Revisar' : 'Continuar'}
             <ArrowRightIcon size={13} />
           </Link>
+        </section>
+      )}
+
+      {summary.trail_synthesis && summary.trail_synthesis.length > 0 && (
+        <section className={styles.section} aria-labelledby="synthesis-title">
+          <div className="st-section-heading">
+            <div>
+              <span className="st-eyebrow">Síntese das trilhas</span>
+              <h2 id="synthesis-title">O que você demonstrou saber.</h2>
+              <p>Uma leitura do Analista sobre cada trilha concluída.</p>
+            </div>
+          </div>
+          <div className={styles.synthesisGrid}>
+            {summary.trail_synthesis.map((item) => (
+              <article key={item.trail_id} className={styles.synthesisCard}>
+                <div className={styles.synthesisTop}>
+                  <AgentAvatar agent="analyst" size={30} />
+                  <span>
+                    {item.trail_name ?? `Trilha ${item.trail_number ?? item.trail_id}`}
+                  </span>
+                  {item.source === 'ai' && (
+                    <span className={styles.synthesisBadge}>IA</span>
+                  )}
+                </div>
+                <h3>{item.short}</h3>
+                {item.full.summary && <p>{item.full.summary}</p>}
+                {item.full.competencies_demonstrated.length > 0 && (
+                  <div className={styles.synthesisTags}>
+                    {item.full.competencies_demonstrated.map((code) => (
+                      <span key={code}>{code}</span>
+                    ))}
+                  </div>
+                )}
+                {item.full.reinforcement_suggestion && (
+                  <p className={styles.synthesisHint}>
+                    {item.full.reinforcement_suggestion}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
         </section>
       )}
 

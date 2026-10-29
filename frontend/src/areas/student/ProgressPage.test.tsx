@@ -44,6 +44,21 @@ describe('ProgressPage', () => {
           competencies: ['Distinguir salário bruto de líquido'],
           message: 'Você demonstrou o conceito nesta etapa.',
         },
+        trail_synthesis: [
+          {
+            trail_id: 1,
+            trail_number: 1,
+            trail_name: 'Meu primeiro salário',
+            short: 'Você domina a diferença entre bruto e líquido.',
+            full: {
+              competencies_demonstrated: ['1.1.1'],
+              competencies_with_difficulty: [],
+              summary: 'Sua leitura de contracheque está consistente.',
+              reinforcement_suggestion: null,
+            },
+            source: 'ai',
+          },
+        ],
       },
     })
   })
@@ -63,5 +78,12 @@ describe('ProgressPage', () => {
     expect(screen.getByRole('link', { name: /Prismas · Ir para o Estúdio/ })).toBeInTheDocument()
     expect(screen.getAllByText('1 competência demonstrada')).toHaveLength(2)
     expect(screen.getByText('Você demonstrou o conceito nesta etapa.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Você domina a diferença entre bruto e líquido.'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Sua leitura de contracheque está consistente.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('IA')).toBeInTheDocument()
   })
 })

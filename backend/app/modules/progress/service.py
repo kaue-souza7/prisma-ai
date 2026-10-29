@@ -1,6 +1,10 @@
+import asyncio
 from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, func, or_, select
+
+from app.core.config import settings
+from app.core.logging import logger
 
 from app.shared.models import (
     UserPoints, UserAchievement, Achievement, UserMissionProgress,
@@ -169,6 +173,20 @@ async def grant_onboarding_bonus(db: AsyncSession, user_id: int) -> None:
     await add_points(db, user_id, POINTS_ONBOARDING)
     await add_coins(db, user_id, COINS_ONBOARDING)
     await grant_achievement(db, user_id, "primeiro_passo")
+
+
+async def grant_trail_1_auto_concluded_bonus(db: AsyncSession, user_id: int) -> None:
+    """Concede 50 XP e achievement quando o Catalisador reconhece a Trilha 1 no onboarding.
+
+    Idempotente: se o achievement já foi concedido, nenhum XP adicional é dado.
+    Fonte: "catalyst_onboarding" — distingue da pontuação normal de missão.
+    """
+    # grant_achievement já é idempotente (retorna None se já possuído).
+    already_granted = await grant_achievement(db, user_id, "trilha_1_dominada_onboarding")
+    if already_granted is None:
+        # já possuída — não duplicar pontos
+        return
+    await add_points(db, user_id, 50)
 
 
 def calculate_mission_score(
@@ -361,25 +379,32 @@ async def _calculate_competency_status(
     if not linked:
         return CompetencyStatus.not_started
 
-    has_any_response = False
-    all_evidence = True
-
+    # A rotação usa um conjunto por tentativa. A competência é considerada
+    # demonstrada quando TODAS as atividades de PELO MENOS UM conjunto têm
+    # evidência válida; não é necessário responder às três variantes.
+    activities_by_set: dict[int, list[Activity]] = {}
     for activity in linked:
-        query = select(UserResponse.id).where(
-            UserResponse.user_id == user_id,
-            UserResponse.activity_id == activity.id,
-        )
-        if activity.activity_type != "open_text":
-            query = query.where(UserResponse.is_correct == True)
+        activities_by_set.setdefault(activity.question_set, []).append(activity)
 
-        response = (await db.execute(query.limit(1))).scalar_one_or_none()
-        if response is None:
-            all_evidence = False
-        else:
-            has_any_response = True
+    has_any_response = False
+    for activities in activities_by_set.values():
+        all_evidence = True
+        for activity in activities:
+            query = select(UserResponse.id).where(
+                UserResponse.user_id == user_id,
+                UserResponse.activity_id == activity.id,
+            )
+            if activity.activity_type != "open_text":
+                query = query.where(UserResponse.is_correct == True)
 
-    if all_evidence:
-        return CompetencyStatus.demonstrated
+            response = (await db.execute(query.limit(1))).scalar_one_or_none()
+            if response is None:
+                all_evidence = False
+            else:
+                has_any_response = True
+        if all_evidence:
+            return CompetencyStatus.demonstrated
+
     if has_any_response:
         return CompetencyStatus.developing
     return CompetencyStatus.not_started
@@ -406,21 +431,39 @@ async def _should_suggest_reinforcement(
     if not objective:
         return False
 
+    objective_by_set: dict[int, list[Activity]] = {}
+    for activity in objective:
+        objective_by_set.setdefault(activity.question_set, []).append(activity)
+
     result = await db.execute(
-        select(UserResponse.activity_id, func.count(UserResponse.id))
+        select(
+            Activity.question_set,
+            UserResponse.activity_id,
+            func.count(UserResponse.id),
+        )
+        .join(Activity, UserResponse.activity_id == Activity.id)
         .where(
             UserResponse.user_id == user_id,
             UserResponse.activity_id.in_([a.id for a in objective]),
             UserResponse.is_correct == False,
         )
-        .group_by(UserResponse.activity_id)
+        .group_by(Activity.question_set, UserResponse.activity_id)
     )
-    errors = result.all()
-    if len(errors) >= 2:
-        return True
 
-    total_errors = sum(count for _, count in errors)
-    return len(objective) == 1 and total_errors >= 3
+    errors_by_set: dict[int, dict[int, int]] = {}
+    for question_set, activity_id, count in result.all():
+        errors_by_set.setdefault(question_set, {})[activity_id] = count
+
+    for question_set, errors in errors_by_set.items():
+        # 2 atividades objetivas diferentes do mesmo conjunto com erro.
+        if len(errors) >= 2:
+            return True
+        # 3 erros na mesma atividade quando o conjunto só tem uma objetiva.
+        activities_in_set = objective_by_set.get(question_set, [])
+        if len(activities_in_set) == 1 and sum(errors.values()) >= 3:
+            return True
+
+    return False
 
 
 async def apply_mission_completion(
@@ -434,10 +477,10 @@ async def apply_mission_completion(
     módulo continua em andamento e precisa ser refeito; a partir de 70% ele é
     aprovado e libera o próximo módulo.
     """
-    from app.modules.journey.service import get_mission_detail
+    from app.modules.journey.service import get_attempt_activities, get_mission_detail
 
     mission = await get_mission_detail(db, mission_id)
-    required_activities = [activity for activity in mission.activities if activity.is_active]
+    required_activities = await get_attempt_activities(db, user_id, mission)
 
     prog_result = await db.execute(
         select(UserMissionProgress).where(
@@ -563,8 +606,11 @@ async def apply_mission_completion(
     prog.started_at = prog.started_at or now
     await db.flush()
 
+    completed_phase = None
     if passed:
-        phase_achievement, phase_coins = await _check_phase_completion(
+        # Novas evidências invalidam a síntese antiga da trilha.
+        await analyst.invalidate_trail_synthesis(db, user_id, mission.phase_id)
+        phase_achievement, phase_coins, completed_phase = await _check_phase_completion(
             db, user_id, mission.phase_id
         )
         if phase_achievement:
@@ -581,21 +627,92 @@ async def apply_mission_completion(
         "passed": passed,
         "must_retry": must_retry,
         "can_retry_optionally": can_retry_optionally,
+        "completed_trail_id": completed_phase.id if completed_phase else None,
+        "completed_trail_name": completed_phase.name if completed_phase else None,
     }
+
+
+_SYNTHESIS_TASKS: set[asyncio.Task] = set()
+_SYNTHESIS_INFLIGHT: set[tuple[int, int]] = set()
+
+
+async def _run_synthesis_in_background(user_id: int, phase_id: int) -> None:
+    """Gera a síntese com uma sessão própria, fora do request."""
+    from app.core.database import AsyncSessionLocal
+
+    try:
+        async with AsyncSessionLocal() as session:
+            await analyst.generate_trail_synthesis(
+                session, user_id, phase_id, use_cache=False
+            )
+            await session.commit()
+    except Exception as exc:  # noqa: BLE001 — background nunca derruba o fluxo
+        logger.warning(
+            "Síntese de trilha em background falhou user=%s trail=%s: %s",
+            user_id,
+            phase_id,
+            exc.__class__.__name__,
+        )
+    finally:
+        _SYNTHESIS_INFLIGHT.discard((user_id, phase_id))
+
+
+def _spawn_trail_synthesis(user_id: int, phase_id: int) -> None:
+    """Dispara a síntese uma única vez por usuário/trilha."""
+    key = (user_id, phase_id)
+    if key in _SYNTHESIS_INFLIGHT:
+        return
+    _SYNTHESIS_INFLIGHT.add(key)
+    task = asyncio.create_task(_run_synthesis_in_background(user_id, phase_id))
+    _SYNTHESIS_TASKS.add(task)
+    task.add_done_callback(_SYNTHESIS_TASKS.discard)
+
+
+async def _completed_phase_records(
+    db: AsyncSession,
+    mission_progress: list[UserMissionProgress],
+) -> list[Phase]:
+    """Retorna apenas as trilhas com todas as missões obrigatórias concluídas."""
+    completed_ids = {
+        progress.mission_id
+        for progress in mission_progress
+        if progress.status == MissionStatus.completed
+    }
+    if not completed_ids:
+        return []
+
+    phases_result = await db.execute(select(Phase).where(Phase.is_active == True))
+    phases = phases_result.scalars().all()
+    completed_phases: list[Phase] = []
+    for phase in phases:
+        required_result = await db.execute(
+            select(Mission.id).where(
+                Mission.phase_id == phase.id,
+                Mission.is_required == True,
+            )
+        )
+        required_ids = list(required_result.scalars().all())
+        if required_ids and all(mission_id in completed_ids for mission_id in required_ids):
+            completed_phases.append(phase)
+    return completed_phases
 
 
 async def _check_phase_completion(
     db: AsyncSession, user_id: int, phase_id: int
-) -> tuple[str | None, int]:
+) -> tuple[str | None, int, Phase | None]:
     """Verifica a conclusão da fase e, na primeira vez, concede a conquista e
-    as Prismas do marco. Retorna (nome_da_conquista, prismas_creditadas)."""
+    as Prismas do marco. Retorna (nome_da_conquista, prismas_creditadas, phase).
+
+    A `Phase` retornada permite ao chamador gerar a síntese e a celebração
+    com os dados recém-gravados na mesma sessão.
+    """
     missions_result = await db.execute(
         select(Mission).where(Mission.phase_id == phase_id, Mission.is_required == True)
     )
     required_missions = missions_result.scalars().all()
 
     if not required_missions:
-        return None, 0
+        return None, 0, None
 
     for mission in required_missions:
         prog_result = await db.execute(
@@ -606,23 +723,28 @@ async def _check_phase_completion(
             )
         )
         if not prog_result.scalar_one_or_none():
-            return None, 0
+            return None, 0, None
 
     # Todas concluídas — verificar qual conquista de fase conceder
     phase_result = await db.execute(select(Phase).where(Phase.id == phase_id))
     phase = phase_result.scalar_one_or_none()
     if not phase:
-        return None, 0
+        return None, 0, None
 
     achievement_key = PHASE_ACHIEVEMENT_KEYS.get(
         phase.number, f"fase_{phase.number}_concluida"
     )
     name = await grant_achievement(db, user_id, achievement_key)
     if not name:
-        return None, 0
+        # Já concluída antes — não duplica síntese.
+        return None, 0, None
 
     await add_coins(db, user_id, COINS_PHASE_COMPLETION)
-    return name, COINS_PHASE_COMPLETION
+
+    # A síntese é gerada no fluxo de conclusão da missão (com a sessão do
+    # request, para enxergar os dados recém-gravados) e usada na celebração.
+    # O painel de progresso apenas lê o cache.
+    return name, COINS_PHASE_COMPLETION, phase
 
 
 async def get_user_progress_summary(db: AsyncSession, user_id: int) -> dict:
@@ -649,6 +771,41 @@ async def get_user_progress_summary(db: AsyncSession, user_id: int) -> dict:
         .order_by(Competency.code)
     )
     competencies = competencies_result.all()
+
+    # Expõe apenas a síntese de trilhas realmente concluídas.
+    # O painel nunca espera o LLM: usa cache ou fallback imediato e atualiza
+    # a versão com IA em background.
+    completed_phases = await _completed_phase_records(db, mission_progress)
+    trail_synthesis_list: list[dict] = []
+    for phase in completed_phases:
+        synthesis = await analyst.get_cached_trail_synthesis(db, user_id, phase.id)
+        if not synthesis:
+            synthesis = await analyst.generate_trail_synthesis(
+                db,
+                user_id,
+                phase.id,
+                use_cache=True,
+                allow_ai=False,
+                save=False,
+            )
+            if settings.analyst_enabled:
+                _spawn_trail_synthesis(user_id, phase.id)
+        elif synthesis.source == "fallback" and settings.analyst_enabled:
+            # Tenta melhorar o cache com a versão do Analista IA.
+            _spawn_trail_synthesis(user_id, phase.id)
+        trail_synthesis_list.append({
+            "trail_id": phase.id,
+            "trail_number": phase.number,
+            "trail_name": phase.name,
+            "short": synthesis.short,
+            "full": {
+                "competencies_demonstrated": synthesis.full.competencies_demonstrated,
+                "competencies_with_difficulty": synthesis.full.competencies_with_difficulty,
+                "summary": synthesis.full.summary,
+                "reinforcement_suggestion": synthesis.full.reinforcement_suggestion,
+            },
+            "source": synthesis.source,
+        })
 
     return {
         "total_points": user_points.total_points if user_points else 0,
@@ -677,6 +834,7 @@ async def get_user_progress_summary(db: AsyncSession, user_id: int) -> dict:
         "missions_completed": sum(1 for m in mission_progress if m.status == MissionStatus.completed),
         "missions_in_progress": sum(1 for m in mission_progress if m.status == MissionStatus.in_progress),
         "analyst_insight": await analyst.overall_insight(db, user_id),
+        "trail_synthesis": trail_synthesis_list,
     }
 
 

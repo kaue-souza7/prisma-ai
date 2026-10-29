@@ -588,3 +588,82 @@
     flex-wrap: wrap;
   }
 }
+
+.synthesisGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.synthesisCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--st-border);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(17, 153, 142, 0.06), transparent 12rem),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: var(--st-shadow-soft);
+}
+
+.synthesisTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--st-muted);
+  font-size: 0.72rem;
+}
+
+.synthesisTop > span:nth-child(2) {
+  flex: 1;
+  font-weight: 600;
+  color: var(--st-ink);
+}
+
+.synthesisBadge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e9fbf3;
+  color: #087f68;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.synthesisCard h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.synthesisCard p {
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.synthesisTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.synthesisTags span {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(23, 21, 43, 0.06);
+  color: var(--st-muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+.synthesisHint {
+  padding-top: 6px;
+  border-top: 1px dashed var(--st-border);
+  font-style: italic;
+}
