@@ -15,8 +15,14 @@ async def test_register_verify_login_and_me(client, db_session):
     assert "access_token" not in response.text
 
 
-async def test_login_requires_verified_email(client, db_session):
+async def test_login_requires_verified_email_when_flag_is_enabled(
+    client, db_session, monkeypatch
+):
     from uuid import uuid4
+
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "require_email_verification", True)
 
     email = f"nao-verificado.{uuid4().hex}@example.com"
     register = await client.post(
@@ -31,6 +37,31 @@ async def test_login_requires_verified_email(client, db_session):
     )
     assert login.status_code == 403
     assert login.json()["error"]["message"] == "E-mail não verificado. Verifique sua caixa de entrada."
+
+
+async def test_register_creates_verified_user_and_allows_login(client, db_session):
+    from uuid import uuid4
+
+    email = f"acesso-direto.{uuid4().hex}@example.com"
+    register = await client.post(
+        "/api/v1/auth/register",
+        json={"email": email, "password": "Senha123"},
+    )
+    assert register.status_code == 201
+
+    login = await client.post(
+        "/api/v1/auth/login",
+        json={"email": email, "password": "Senha123"},
+    )
+    assert login.status_code == 200
+    assert login.json()["access_token"]
+
+    me = await client.get(
+        "/api/v1/users/me",
+        headers={"Authorization": f"Bearer {login.json()['access_token']}"},
+    )
+    assert me.status_code == 200
+    assert me.json()["user"]["is_verified"] is True
 
 
 async def test_duplicate_registration_is_rejected(client, db_session):

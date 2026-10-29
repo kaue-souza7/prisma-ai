@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.modules.auth import service
 from app.modules.auth.schemas import (
@@ -14,7 +15,9 @@ router = APIRouter()
 @router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     await service.register_user(db, body.email, body.password)
-    return {"message": "Cadastro realizado. Verifique seu e-mail para ativar a conta."}
+    if settings.require_email_verification:
+        return {"message": "Cadastro realizado. Verifique seu e-mail para ativar a conta."}
+    return {"message": "Cadastro realizado. Sua conta já está ativa; faça login para começar."}
 
 
 @router.get("/verify-email", response_model=MessageResponse)

@@ -133,8 +133,17 @@ describe('Prisma.AI auth screens', () => {
     expect(apiMocks.register).not.toHaveBeenCalled()
   })
 
-  it('registers and shows the email confirmation state', async () => {
+  it('registers, logs in and enters the student area directly', async () => {
     apiMocks.register.mockResolvedValue({ data: { message: 'Cadastro realizado.' } })
+    apiMocks.login.mockResolvedValue({
+      data: { access_token: 'access-token', refresh_token: 'refresh-token' },
+    })
+    apiMocks.getMe.mockResolvedValue({
+      data: {
+        user: { id: 1, email: 'ana@prisma.ai', role: 'student', is_verified: true },
+        profile: { onboarding_completed: true },
+      },
+    })
 
     renderRoute(<RegisterPage />, '/register')
 
@@ -142,9 +151,10 @@ describe('Prisma.AI auth screens', () => {
     fillField('Senha', 'Senha123')
     fireEvent.click(screen.getByRole('button', { name: /Criar minha conta/ }))
 
-    expect(await screen.findByRole('heading', { name: /Confirme seu e-mail/i })).toBeInTheDocument()
-    expect(screen.getByText('ana@prisma.ai')).toBeInTheDocument()
+    expect(await screen.findByText('Área do estudante')).toBeInTheDocument()
     expect(apiMocks.register).toHaveBeenCalledWith('ana@prisma.ai', 'Senha123')
+    expect(apiMocks.login).toHaveBeenCalledWith('ana@prisma.ai', 'Senha123')
+    expect(sessionMocks.setSession).toHaveBeenCalled()
   })
 
   it('shows recovery instructions after requesting a password reset', async () => {

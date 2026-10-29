@@ -105,8 +105,9 @@ async def register_verified_user(client: AsyncClient, db_session, password: str 
 
     result = await db_session.execute(select(User).where(User.email == email))
     user = result.scalar_one()
-    verify = await client.get(f"/api/v1/auth/verify-email?token={user.verification_token}")
-    assert verify.status_code == 200, verify.text
+    if not user.is_verified:
+        verify = await client.get(f"/api/v1/auth/verify-email?token={user.verification_token}")
+        assert verify.status_code == 200, verify.text
 
     login = await client.post(
         "/api/v1/auth/login",

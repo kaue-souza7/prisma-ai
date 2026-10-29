@@ -15,10 +15,12 @@ async def register_user(db: AsyncSession, email: str, password: str) -> User:
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="E-mail já cadastrado.")
 
-    token = secrets.token_urlsafe(32)
+    verification_required = settings.require_email_verification
+    token = secrets.token_urlsafe(32) if verification_required else None
     user = User(
         email=email,
         hashed_password=hash_password(password),
+        is_verified=not verification_required,
         verification_token=token,
     )
     db.add(user)
@@ -30,8 +32,11 @@ async def register_user(db: AsyncSession, email: str, password: str) -> User:
 
     await db.flush()
 
-    await _send_verification_email(email, token)
-    logger.info(f"Novo usuário registrado: id={user.id}")
+    if verification_required:
+        await _send_verification_email(email, token)
+        logger.info(f"Novo usuário registrado (verificação pendente): id={user.id}")
+    else:
+        logger.info(f"Novo usuário registrado com acesso direto: id={user.id}")
     return user
 
 
@@ -41,7 +46,8 @@ async def verify_email(db: AsyncSession, token: str) -> User:
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token de verificação inválido.")
     if user.is_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="E-mail já verificado.")
+        # Idempotente: links antigos ou duplo clique não devem gerar erro.
+        return user
 
     user.is_verified = True
     user.verification_token = None

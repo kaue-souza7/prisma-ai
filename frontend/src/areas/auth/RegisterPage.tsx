@@ -5,13 +5,12 @@ import { Button } from '@/design-system'
 import {
   AlertCircleIcon,
   ArrowRightIcon,
-  CheckIcon,
   LockIcon,
   MailIcon,
   ShieldIcon,
-  SparkIcon,
 } from '@/design-system/Icons'
-import { authApi } from '@/api'
+import { authApi, usersApi } from '@/api'
+import { useSessionStore } from '@/store/session'
 import { AuthShell, GradientWord } from './components/AuthShell'
 import { RegisterVisual } from './components/AuthVisuals'
 import { AuthField } from './components/AuthField'
@@ -27,6 +26,7 @@ interface FieldErrors {
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const setSession = useSessionStore((state) => state.setSession)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const [email, setEmail] = useState('')
@@ -34,7 +34,6 @@ export function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
   const passwordStrengthId = 'register-password-strength'
 
   function clearError(field: keyof FieldErrors) {
@@ -62,86 +61,23 @@ export function RegisterPage() {
     setLoading(true)
     try {
       await authApi.register(email.trim(), password)
-      setSuccess(true)
+      // Cadastro com acesso direto: autentica em seguida e entra na jornada.
+      const { data } = await authApi.login(email.trim(), password)
+      const meRes = await usersApi.getMe(data.access_token)
+      setSession(
+        meRes.data.user,
+        data.access_token,
+        data.refresh_token,
+        meRes.data.profile ?? null,
+      )
+      navigate(
+        meRes.data.profile?.onboarding_completed === false ? '/onboarding' : '/student',
+      )
     } catch (error) {
       setServerError(getAuthErrorMessage(error, 'Não foi possível criar sua conta. Tente novamente.'))
     } finally {
       setLoading(false)
     }
-  }
-
-  if (success) {
-    return (
-      <AuthShell
-        mode="register"
-        documentTitle="Confirme seu e-mail — Prisma.AI"
-        eyebrow="Quase lá!"
-        heading={<>Confirme <GradientWord>seu e-mail.</GradientWord></>}
-        description="Conta criada. Verifique sua caixa de entrada para ativar o acesso e começar a Trilha 1."
-        visual={<RegisterVisual />}
-        footer={(
-          <p className={styles.crossLink}>
-            Já confirmou? <Link to="/login">Entrar na plataforma</Link>
-          </p>
-        )}
-      >
-        <div className={styles.statusPanel}>
-          <span className={`${styles.statusIcon} ${styles.statusIconSuccess}`} aria-hidden="true">
-            <CheckIcon size={30} />
-          </span>
-
-          <p className={styles.statusCopy}>
-            Enviamos um link de verificação para <span className={styles.statusEmail}>{email.trim()}</span>.
-            Abra sua caixa de entrada para ativar a conta.
-          </p>
-
-          <ul className={styles.successSteps}>
-            <li>
-              <span aria-hidden="true"><MailIcon size={13} /></span>
-              <div>
-                <strong>Abra o e-mail de verificação</strong>
-                <small>O link confirma que a conta é sua.</small>
-              </div>
-            </li>
-            <li>
-              <span aria-hidden="true"><CheckIcon size={13} /></span>
-              <div>
-                <strong>Ative sua conta</strong>
-                <small>Depois da confirmação, o acesso está liberado.</small>
-              </div>
-            </li>
-            <li>
-              <span aria-hidden="true"><SparkIcon size={13} /></span>
-              <div>
-                <strong>Comece a Trilha 1</strong>
-                <small>Onboarding guiado e primeira missão: Meu primeiro salário.</small>
-              </div>
-            </li>
-          </ul>
-
-          {import.meta.env.DEV && (
-            <p className={styles.devHint}>
-              Ambiente local: o token de verificação aparece no log do backend com
-              <code>docker compose logs backend | grep MOCK</code>
-            </p>
-          )}
-
-          <div className={styles.statusActions}>
-            <Button
-              type="button"
-              fullWidth
-              className={styles.primaryAction}
-              onClick={() => navigate('/login')}
-            >
-              Ir para o login
-            </Button>
-            <Link to="/" className={styles.secondaryAction}>
-              Voltar ao início
-            </Link>
-          </div>
-        </div>
-      </AuthShell>
-    )
   }
 
   return (
