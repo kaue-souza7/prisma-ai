@@ -10,7 +10,7 @@ from app.core.database import Base
 import app.shared.models  # noqa: F401 — importar todos os modelos
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", settings.migration_database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

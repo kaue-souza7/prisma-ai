@@ -4,7 +4,8 @@ from app.core.config import settings
 
 
 engine = create_async_engine(
-    settings.database_url,
+    # A propriedade normaliza para postgresql+asyncpg e traduz sslmode/channel_binding.
+    settings.async_database_url,
     echo=settings.sql_echo,
     pool_pre_ping=True,
 )
