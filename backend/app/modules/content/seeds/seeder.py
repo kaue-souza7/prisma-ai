@@ -56,6 +56,7 @@ activities = sa.Table(
     sa.Column("content", JSONB),
     sa.Column("points_value", sa.Integer),
     sa.Column("is_active", sa.Boolean),
+    sa.Column("question_set", sa.Integer),
 )
 
 content_items = sa.Table(
@@ -177,10 +178,12 @@ def _upsert_competency(bind, mission_id: int, data: dict) -> None:
 
 
 def _upsert_activity(bind, mission_id: int, data: dict) -> None:
+    question_set = data.get("question_set", 1)
     existing_id = bind.execute(
         sa.select(activities.c.id).where(
             activities.c.mission_id == mission_id,
             activities.c.order == data["order"],
+            activities.c.question_set == question_set,
         )
     ).scalar_one_or_none()
 
@@ -191,6 +194,7 @@ def _upsert_activity(bind, mission_id: int, data: dict) -> None:
         "content": data["content"],
         "points_value": data["points_value"],
         "is_active": True,
+        "question_set": question_set,
     }
 
     if existing_id is None:

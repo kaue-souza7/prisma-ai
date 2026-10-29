@@ -166,6 +166,54 @@ describe('LessonPlayerPage', () => {
     expect(apiMocks.saveLessonStep).toHaveBeenCalledWith(10, 0)
   })
 
+  it('reloads the lesson after starting so the drawn question set is used', async () => {
+    const refreshedLesson = {
+      ...baseLesson,
+      status: 'in_progress',
+      steps: baseLesson.steps.map((step) =>
+        step.index === 2
+          ? {
+              ...step,
+              title: 'Pergunta do conjunto sorteado',
+              activity: {
+                ...activity,
+                id: 202,
+                content: {
+                  ...activity.content,
+                  prompt: 'Pergunta do conjunto sorteado',
+                },
+              },
+            }
+          : step,
+      ),
+    }
+    apiMocks.getLesson
+      .mockResolvedValueOnce({ data: baseLesson })
+      .mockResolvedValueOnce({ data: refreshedLesson })
+    apiMocks.saveLessonStep
+      .mockResolvedValueOnce({
+        data: { current_step: 1, completed_steps: [0], mission_completed: false },
+      })
+      .mockResolvedValueOnce({
+        data: { current_step: 2, completed_steps: [0, 1], mission_completed: false },
+      })
+
+    renderLesson()
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: /Começar módulo/ }),
+    )
+
+    await waitFor(() => expect(apiMocks.getLesson).toHaveBeenCalledTimes(2))
+    fireEvent.click(await screen.findByRole('button', { name: /^Continuar$/ }))
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Pergunta do conjunto sorteado',
+      }),
+    ).toBeInTheDocument()
+  })
+
   it('requires confirmation and shows feedback before advancing', async () => {
     apiMocks.getLesson.mockResolvedValue({
       data: {

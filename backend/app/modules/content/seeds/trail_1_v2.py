@@ -6,13 +6,18 @@ Fonte editorial: docs/trilhas/trilha-01.md
 As missões 1.2 e 1.3 são novas. A missão 1.1 já existe via phase_1_v1.py.
 O seeder usa upsert por chave natural — não duplica conteúdo existente.
 Faixas INSS 2026: verificar vigência antes de publicar atualizações.
+
+Conjuntos de perguntas (question_set):
+- question_set=1: perguntas originais (preservadas para não quebrar progresso)
+- question_set=2: variações — mesma competência, texto e opções diferentes
+- question_set=3: variações — mesma competência, contexto diferente
 """
 
 TRAIL_1_V2 = {
     "phase_number": 1,
     "missions": [
         # ──────────────────────────────────────────────────────────────────
-        # Missão 1.2 — Holerite linha a linha (nova)
+        # Missão 1.2 — Holerite linha a linha
         # ──────────────────────────────────────────────────────────────────
         {
             "number": 2,
@@ -54,8 +59,10 @@ TRAIL_1_V2 = {
                 },
             ],
             "activities": [
+                # ── question_set=1 (original) ───────────────────────────
                 {
                     "order": 1,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -106,6 +113,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 2,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -143,6 +151,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 3,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -181,6 +190,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 4,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -216,6 +226,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 5,
+                    "question_set": 1,
                     "activity_type": "open_text",
                     "points_value": 0,
                     "content": {
@@ -249,6 +260,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 6,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -275,6 +287,440 @@ TRAIL_1_V2 = {
                             "salário, descontos, FGTS (informativo) etc. "
                             "O saldo bancário do trabalhador é dado do banco — "
                             "não tem relação com o holerite."
+                        ),
+                    },
+                },
+                # ── question_set=2 ──────────────────────────────────────
+                {
+                    "order": 1,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Um salário de R$ 1.600,00 está em qual situação "
+                            "em relação às faixas INSS 2026?\n\n"
+                            "Faixas de referência:\n"
+                            "- Até R$ 1.518: 7,5%\n"
+                            "- R$ 1.518,01 a R$ 2.793,88: 9%\n"
+                            "(Valores para fins didáticos.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "options": [
+                            {"value": "a", "label": "Totalmente na faixa de 7,5%."},
+                            {
+                                "value": "b",
+                                "label": (
+                                    "Parte na faixa de 7,5% e parte na faixa de 9% — "
+                                    "R$ 1.518 na faixa de 7,5% e R$ 82 na faixa de 9%."
+                                ),
+                            },
+                            {"value": "c", "label": "Totalmente na faixa de 9%."},
+                            {"value": "d", "label": "Na faixa de 12%."},
+                        ],
+                        "correct_answer": "b",
+                        "feedback_correct": (
+                            "Correto! R$ 1.600 supera o limite da 1ª faixa (R$ 1.518). "
+                            "Até R$ 1.518: alíquota de 7,5%. Os R$ 82 acima: alíquota de 9%. "
+                            "O sistema é progressivo — cada faixa incide apenas sobre a "
+                            "parte do salário que está dentro dela."
+                        ),
+                        "feedback_incorrect": (
+                            "O INSS é progressivo: R$ 1.600 cruza duas faixas. "
+                            "Até R$ 1.518 → 7,5%. Os R$ 82 restantes → 9%. "
+                            "Não existe uma alíquota única sobre o salário inteiro."
+                        ),
+                    },
+                },
+                {
+                    "order": 2,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Qual é o INSS aproximado de quem ganha R$ 1.600,00 bruto?\n\n"
+                            "- Faixa 1: até R$ 1.518 → 7,5%\n"
+                            "- Faixa 2: R$ 1.518,01 a R$ 2.793,88 → 9%\n"
+                            "(Valores para fins didáticos.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "options": [
+                            {"value": "a", "label": "R$ 113,85 + R$ 7,38 = R$ 121,23."},
+                            {"value": "b", "label": "R$ 144,00 (9% sobre R$ 1.600)."},
+                            {"value": "c", "label": "R$ 120,00 (7,5% sobre R$ 1.600)."},
+                            {"value": "d", "label": "R$ 128,00."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Progressivo:\n"
+                            "- Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "- Faixa 2: (R$ 1.600 − R$ 1.518) × 9% = R$ 82 × 9% = R$ 7,38\n"
+                            "- Total: R$ 121,23\n\n"
+                            "*(Valores didáticos. Verifique tabela vigente.)*"
+                        ),
+                        "feedback_incorrect": (
+                            "Progressivo, não alíquota única:\n"
+                            "Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "Faixa 2: R$ 82 × 9% = R$ 7,38\n"
+                            "Total: R$ 121,23\n\n"
+                            "*(Valores didáticos.)*"
+                        ),
+                    },
+                },
+                {
+                    "order": 3,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Ana recebeu vale-refeição de R$ 400 no cartão de benefícios, "
+                            "pago integralmente pela empresa. Como esse valor aparece no holerite?"
+                        ),
+                        "competency_codes": ["1.2.1"],
+                        "options": [
+                            {"value": "a", "label": "Não aparece — é benefício externo ao holerite."},
+                            {
+                                "value": "b",
+                                "label": (
+                                    "Aparece como crédito informativo — não é desconto, "
+                                    "pois a empresa paga 100%."
+                                ),
+                            },
+                            {"value": "c", "label": "Aparece como desconto do salário líquido."},
+                            {"value": "d", "label": "Aparece como parte do FGTS."},
+                        ],
+                        "correct_answer": "b",
+                        "feedback_correct": (
+                            "Correto! Quando a empresa paga 100% do vale-refeição, "
+                            "o valor aparece como informativo (crédito) no holerite — "
+                            "não reduz o salário líquido."
+                        ),
+                        "feedback_incorrect": (
+                            "Se a empresa paga integralmente o benefício, não há desconto. "
+                            "O valor aparece no holerite como crédito informativo, "
+                            "mostrando o benefício recebido sem reduzir o líquido."
+                        ),
+                    },
+                },
+                {
+                    "order": 4,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": "O FGTS aparece no holerite como desconto do salário?",
+                        "competency_codes": ["1.2.3"],
+                        "options": [
+                            {
+                                "value": "a",
+                                "label": (
+                                    "Não — o FGTS é pago pelo empregador e aparece "
+                                    "como informativo, sem reduzir o salário líquido."
+                                ),
+                            },
+                            {"value": "b", "label": "Sim — é descontado diretamente do salário bruto."},
+                            {"value": "c", "label": "Depende: para salários acima de R$ 3.000, é descontado."},
+                            {"value": "d", "label": "Não aparece no holerite."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! O FGTS (8% do salário bruto) é pago pelo empregador "
+                            "diretamente na conta vinculada do trabalhador. "
+                            "Aparece no holerite como informativo — não reduz o salário líquido."
+                        ),
+                        "feedback_incorrect": (
+                            "O FGTS não sai do salário do trabalhador. "
+                            "É uma obrigação do empregador — ele deposita 8% do salário bruto "
+                            "na conta vinculada do trabalhador. Aparece como informativo no holerite."
+                        ),
+                    },
+                },
+                {
+                    "order": 5,
+                    "question_set": 2,
+                    "activity_type": "open_text",
+                    "points_value": 0,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Mariana ganha R$ 4.000,00 brutos. Usando as faixas de "
+                            "referência INSS 2026 abaixo, calcule o INSS dela:\n\n"
+                            "- Faixa 1: até R$ 1.518,00 → 7,5%\n"
+                            "- Faixa 2: R$ 1.518,01 a R$ 2.793,88 → 9%\n"
+                            "- Faixa 3: R$ 2.793,89 a R$ 4.190,83 → 12%\n\n"
+                            "Mostre o cálculo de cada faixa e o total.\n"
+                            "(Faixas para fins didáticos — verificar vigência.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "feedback_static": (
+                            "Sua resposta foi registrada.\n\n"
+                            "Cálculo esperado:\n"
+                            "- Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "- Faixa 2: (R$ 2.793,88 − R$ 1.518) × 9% = R$ 1.275,88 × 9% = R$ 114,83\n"
+                            "- Faixa 3: (R$ 4.000 − R$ 2.793,88) × 12% = R$ 1.206,12 × 12% = R$ 144,73\n"
+                            "- Total INSS: R$ 373,41\n\n"
+                            "*(Valores didáticos. Verifique faixas vigentes.)*"
+                        ),
+                        "evaluation_criteria": [
+                            "Calcula cada faixa separadamente.",
+                            "Aplica a alíquota correta a cada faixa.",
+                            "Soma os valores das três faixas.",
+                        ],
+                        "max_length": 2000,
+                    },
+                },
+                {
+                    "order": 6,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Qual das opções abaixo NÃO é considerada desconto no holerite?"
+                        ),
+                        "competency_codes": ["1.2.3"],
+                        "options": [
+                            {"value": "a", "label": "INSS."},
+                            {"value": "b", "label": "Vale-transporte (parte do trabalhador)."},
+                            {
+                                "value": "c",
+                                "label": (
+                                    "FGTS — é depósito do empregador, "
+                                    "não desconto do salário."
+                                ),
+                            },
+                            {"value": "d", "label": "Adiantamento salarial."},
+                        ],
+                        "correct_answer": "c",
+                        "feedback_correct": (
+                            "Correto! O FGTS não é desconto — é depositado pelo empregador "
+                            "na conta vinculada do trabalhador. INSS, vale-transporte "
+                            "(parte do trabalhador) e adiantamentos são descontos do salário."
+                        ),
+                        "feedback_incorrect": (
+                            "INSS, vale-transporte e adiantamentos são descontos do salário. "
+                            "O FGTS não é desconto: é pago pelo empregador, não sai "
+                            "do salário do trabalhador."
+                        ),
+                    },
+                },
+                # ── question_set=3 ──────────────────────────────────────
+                {
+                    "order": 1,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Pedro ganha R$ 3.200,00 brutos. Quantas faixas do INSS 2026 "
+                            "são atingidas pelo seu salário?\n\n"
+                            "Faixas de referência:\n"
+                            "- Faixa 1: até R$ 1.518\n"
+                            "- Faixa 2: R$ 1.518,01 a R$ 2.793,88\n"
+                            "- Faixa 3: R$ 2.793,89 a R$ 4.190,83\n"
+                            "(Valores para fins didáticos.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "options": [
+                            {"value": "a", "label": "Uma faixa (a de 9%)."},
+                            {"value": "b", "label": "Duas faixas (7,5% e 9%)."},
+                            {"value": "c", "label": "Três faixas (7,5%, 9% e 12%)."},
+                            {"value": "d", "label": "Quatro faixas."},
+                        ],
+                        "correct_answer": "c",
+                        "feedback_correct": (
+                            "Correto! R$ 3.200 ultrapassa os limites da 1ª e da 2ª faixa, "
+                            "atingindo a 3ª faixa (12%). As três faixas são atingidas — "
+                            "cada uma incide apenas sobre a parte do salário dentro dela."
+                        ),
+                        "feedback_incorrect": (
+                            "R$ 3.200 > R$ 2.793,88 (teto da 2ª faixa), portanto "
+                            "as três primeiras faixas são atingidas: 7,5%, 9% e 12%. "
+                            "O INSS progressivo aplica cada alíquota somente ao trecho "
+                            "do salário dentro daquela faixa."
+                        ),
+                    },
+                },
+                {
+                    "order": 2,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Qual é o INSS aproximado de quem ganha R$ 2.400,00 bruto?\n\n"
+                            "- Faixa 1: até R$ 1.518 → 7,5%\n"
+                            "- Faixa 2: R$ 1.518,01 a R$ 2.793,88 → 9%\n"
+                            "(Valores para fins didáticos.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "options": [
+                            {"value": "a", "label": "R$ 113,85 + R$ 78,50 = R$ 192,35."},
+                            {"value": "b", "label": "R$ 216,00 (9% sobre R$ 2.400)."},
+                            {"value": "c", "label": "R$ 180,00 (7,5% sobre R$ 2.400)."},
+                            {"value": "d", "label": "R$ 200,00."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Progressivo:\n"
+                            "- Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "- Faixa 2: (R$ 2.400 − R$ 1.518) × 9% = R$ 882 × 9% = R$ 79,38\n"
+                            "Aproximado: R$ 192,35 a R$ 193,23 dependendo do arredondamento.\n\n"
+                            "*(Valores didáticos. Verifique tabela vigente.)*"
+                        ),
+                        "feedback_incorrect": (
+                            "Progressivo, não alíquota única:\n"
+                            "Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "Faixa 2: (R$ 2.400 − R$ 1.518) × 9% = R$ 882 × 9% ≈ R$ 79,38\n"
+                            "Total ≈ R$ 193,23\n\n"
+                            "*(Valores didáticos.)*"
+                        ),
+                    },
+                },
+                {
+                    "order": 3,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "João recebeu vale-transporte de R$ 200. A empresa desconta "
+                            "até 6% do salário bruto do trabalhador. O salário de João "
+                            "é R$ 2.000. Quanto é descontado no holerite de vale-transporte?"
+                        ),
+                        "competency_codes": ["1.2.1"],
+                        "options": [
+                            {"value": "a", "label": "R$ 200 (valor total do VT)."},
+                            {"value": "b", "label": "R$ 120 (6% de R$ 2.000)."},
+                            {
+                                "value": "c",
+                                "label": (
+                                    "R$ 120 — pois 6% de R$ 2.000 = R$ 120, "
+                                    "que é menor que o VT recebido (R$ 200)."
+                                ),
+                            },
+                            {"value": "d", "label": "Nada — VT é gratuito."},
+                        ],
+                        "correct_answer": "c",
+                        "feedback_correct": (
+                            "Correto! O desconto máximo de VT é 6% do salário bruto. "
+                            "6% de R$ 2.000 = R$ 120. Como R$ 120 < R$ 200 (custo real), "
+                            "desconta-se apenas R$ 120. A diferença (R$ 80) é custeada pela empresa."
+                        ),
+                        "feedback_incorrect": (
+                            "O desconto de VT é limitado a 6% do salário bruto do trabalhador. "
+                            "6% de R$ 2.000 = R$ 120. Mesmo que o VT custe R$ 200, "
+                            "o desconto no holerite é apenas R$ 120."
+                        ),
+                    },
+                },
+                {
+                    "order": 4,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Qual é a diferença entre 'vencimentos' e 'descontos' "
+                            "em um holerite?"
+                        ),
+                        "competency_codes": ["1.2.1"],
+                        "options": [
+                            {
+                                "value": "a",
+                                "label": (
+                                    "Vencimentos são créditos (o que a empresa paga ao trabalhador); "
+                                    "descontos são débitos (o que é abatido do salário)."
+                                ),
+                            },
+                            {"value": "b", "label": "São sinônimos — significam o mesmo no holerite."},
+                            {"value": "c", "label": "Vencimentos são apenas o salário base; descontos incluem tudo."},
+                            {"value": "d", "label": "Descontos são pagamentos extras da empresa."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Vencimentos = o que entra (salário base, horas extras, PLR). "
+                            "Descontos = o que sai (INSS, IRRF, VT, adiantamentos). "
+                            "Líquido = total vencimentos − total descontos."
+                        ),
+                        "feedback_incorrect": (
+                            "Vencimentos são todos os créditos: salário base, horas extras, PLR etc. "
+                            "Descontos são todos os débitos: INSS, IRRF, VT, adiantamentos etc. "
+                            "O salário líquido é a diferença entre os dois totais."
+                        ),
+                    },
+                },
+                {
+                    "order": 5,
+                    "question_set": 3,
+                    "activity_type": "open_text",
+                    "points_value": 0,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Roberta ganha R$ 2.600,00 brutos. Usando as faixas de "
+                            "referência INSS 2026 abaixo, calcule o INSS dela:\n\n"
+                            "- Faixa 1: até R$ 1.518,00 → 7,5%\n"
+                            "- Faixa 2: R$ 1.518,01 a R$ 2.793,88 → 9%\n\n"
+                            "Mostre o cálculo de cada faixa e o total.\n"
+                            "(Faixas para fins didáticos — verificar vigência.)"
+                        ),
+                        "competency_codes": ["1.2.2"],
+                        "feedback_static": (
+                            "Sua resposta foi registrada.\n\n"
+                            "Cálculo esperado:\n"
+                            "- Faixa 1: R$ 1.518 × 7,5% = R$ 113,85\n"
+                            "- Faixa 2: (R$ 2.600 − R$ 1.518) × 9% = R$ 1.082 × 9% = R$ 97,38\n"
+                            "- Total INSS: R$ 211,23\n\n"
+                            "*(Valores didáticos. Verifique faixas vigentes.)*"
+                        ),
+                        "evaluation_criteria": [
+                            "Calcula cada faixa separadamente.",
+                            "Aplica a alíquota correta a cada faixa.",
+                            "Soma os valores das duas faixas.",
+                        ],
+                        "max_length": 2000,
+                    },
+                },
+                {
+                    "order": 6,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Um trabalhador recebe plano de saúde onde a empresa "
+                            "paga 70% e ele paga 30% (R$ 90). Como aparece no holerite?"
+                        ),
+                        "competency_codes": ["1.2.3"],
+                        "options": [
+                            {"value": "a", "label": "Aparece como desconto de R$ 90 no salário."},
+                            {"value": "b", "label": "Não aparece — benefício externo."},
+                            {"value": "c", "label": "Aparece como desconto do valor total do plano."},
+                            {"value": "d", "label": "Aparece como FGTS adicional."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Apenas a parte paga pelo trabalhador (R$ 90) "
+                            "aparece como desconto no holerite. "
+                            "A parte da empresa (70%) é custo dela — não sai do seu salário."
+                        ),
+                        "feedback_incorrect": (
+                            "Quando há coparticipação, apenas a parte do trabalhador "
+                            "é descontada do salário. A parte da empresa não aparece "
+                            "como desconto — é custo dela, não seu."
                         ),
                     },
                 },
@@ -424,7 +870,7 @@ TRAIL_1_V2 = {
             ],
         },
         # ──────────────────────────────────────────────────────────────────
-        # Missão 1.3 — 13º salário e férias (nova)
+        # Missão 1.3 — 13º salário e férias
         # ──────────────────────────────────────────────────────────────────
         {
             "number": 3,
@@ -465,8 +911,10 @@ TRAIL_1_V2 = {
                 },
             ],
             "activities": [
+                # ── question_set=1 (original) ───────────────────────────
                 {
                     "order": 1,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -496,6 +944,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 2,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -526,6 +975,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 3,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -556,6 +1006,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 4,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -584,6 +1035,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 5,
+                    "question_set": 1,
                     "activity_type": "open_text",
                     "points_value": 0,
                     "content": {
@@ -614,6 +1066,7 @@ TRAIL_1_V2 = {
                 },
                 {
                     "order": 6,
+                    "question_set": 1,
                     "activity_type": "multiple_choice",
                     "points_value": 10,
                     "content": {
@@ -646,6 +1099,374 @@ TRAIL_1_V2 = {
                             "O 13º tem regras próprias de tributação definidas pela "
                             "Receita Federal. Ele não é somado ao salário do mês "
                             "para calcular o IR — usa uma tabela específica."
+                        ),
+                    },
+                },
+                # ── question_set=2 ──────────────────────────────────────
+                {
+                    "order": 1,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Lucas foi admitido em março. Em dezembro, "
+                            "quantos avos de 13º ele terá?\n"
+                            "(Admissão em março = meses trabalhados: março a dezembro = 10 meses.)"
+                        ),
+                        "competency_codes": ["1.3.1"],
+                        "options": [
+                            {"value": "a", "label": "12/12 (integral)."},
+                            {"value": "b", "label": "10/12 (proporcional a 10 meses)."},
+                            {"value": "c", "label": "9/12 (proporcional a 9 meses)."},
+                            {"value": "d", "label": "3/12 (apenas o trimestre final)."},
+                        ],
+                        "correct_answer": "b",
+                        "feedback_correct": (
+                            "Correto! Mês conta se trabalhado mais de 15 dias. "
+                            "De março a dezembro = 10 meses. "
+                            "13º = salário × (10/12)."
+                        ),
+                        "feedback_incorrect": (
+                            "De março a dezembro são 10 meses completos. "
+                            "13º proporcional = salário × (meses/12) = salário × (10/12)."
+                        ),
+                    },
+                },
+                {
+                    "order": 2,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Fernanda foi admitida em outubro. Em dezembro, "
+                            "qual é o 13º bruto dela? (Salário: R$ 2.400; 3 meses trabalhados.)"
+                        ),
+                        "competency_codes": ["1.3.1"],
+                        "options": [
+                            {"value": "a", "label": "R$ 2.400,00 (integral)."},
+                            {"value": "b", "label": "R$ 600,00 (3/12 de R$ 2.400)."},
+                            {"value": "c", "label": "R$ 800,00."},
+                            {"value": "d", "label": "R$ 1.200,00."},
+                        ],
+                        "correct_answer": "b",
+                        "feedback_correct": (
+                            "Correto! 13º proporcional = R$ 2.400 × (3/12) = R$ 2.400 × 0,25 = **R$ 600**."
+                        ),
+                        "feedback_incorrect": (
+                            "3 meses de 12 = 25%. "
+                            "R$ 2.400 × (3/12) = R$ 600."
+                        ),
+                    },
+                },
+                {
+                    "order": 3,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Qual é o valor bruto das férias de Marcos, "
+                            "que ganha R$ 2.100,00 brutos, com o adicional de 1/3?"
+                        ),
+                        "competency_codes": ["1.3.2"],
+                        "options": [
+                            {"value": "a", "label": "R$ 2.800,00 (R$ 2.100 + R$ 700)."},
+                            {"value": "b", "label": "R$ 2.100,00 (apenas o salário)."},
+                            {"value": "c", "label": "R$ 4.200,00 (salário dobrado)."},
+                            {"value": "d", "label": "R$ 2.310,00."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Férias brutas = R$ 2.100 + (R$ 2.100/3) = "
+                            "R$ 2.100 + R$ 700 = **R$ 2.800**."
+                        ),
+                        "feedback_incorrect": (
+                            "Férias brutas = salário + 1/3 do salário. "
+                            "R$ 2.100 + (R$ 2.100 ÷ 3) = R$ 2.100 + R$ 700 = R$ 2.800."
+                        ),
+                    },
+                },
+                {
+                    "order": 4,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Patrícia ganha R$ 3.000 brutos e vai tirar férias. "
+                            "O INSS incidirá sobre as férias dela?"
+                        ),
+                        "competency_codes": ["1.3.3"],
+                        "options": [
+                            {
+                                "value": "a",
+                                "label": (
+                                    "Sim — o INSS incide sobre o valor bruto das férias, "
+                                    "reduzindo o líquido recebido."
+                                ),
+                            },
+                            {"value": "b", "label": "Não — férias são isentas de INSS."},
+                            {"value": "c", "label": "Apenas se o valor superar R$ 5.000."},
+                            {"value": "d", "label": "Apenas na 2ª parcela das férias."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! O INSS incide sobre o valor bruto das férias. "
+                            "Por isso o líquido recebido é menor do que o bruto calculado."
+                        ),
+                        "feedback_incorrect": (
+                            "As férias não são isentas de INSS. "
+                            "O INSS é calculado sobre o valor bruto das férias, "
+                            "assim como sobre o salário mensal."
+                        ),
+                    },
+                },
+                {
+                    "order": 5,
+                    "question_set": 2,
+                    "activity_type": "open_text",
+                    "points_value": 0,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Roberto foi admitido em abril e ganha R$ 3.000,00 brutos.\n\n"
+                            "1. Quantos meses ele terá trabalhado até dezembro?\n"
+                            "2. Qual é o valor bruto do 13º proporcional?\n"
+                            "3. O valor líquido será igual ao bruto? Por quê?"
+                        ),
+                        "competency_codes": ["1.3.1", "1.3.3"],
+                        "feedback_static": (
+                            "Sua resposta foi registrada.\n\n"
+                            "1. Abril a dezembro = 9 meses.\n\n"
+                            "2. 13º bruto = R$ 3.000 × (9/12) = R$ 3.000 × 0,75 = **R$ 2.250**.\n\n"
+                            "3. Não — o líquido será menor pois INSS e possivelmente IRRF "
+                            "incidem sobre o 13º."
+                        ),
+                        "evaluation_criteria": [
+                            "Conta corretamente os meses (9).",
+                            "Calcula o 13º proporcional (R$ 2.250).",
+                            "Explica que INSS/IR reduzem o líquido.",
+                        ],
+                        "max_length": 2000,
+                    },
+                },
+                {
+                    "order": 6,
+                    "question_set": 2,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "O 13º salário é somado ao salário do mês de dezembro "
+                            "para o cálculo do IRRF?"
+                        ),
+                        "competency_codes": ["1.3.3"],
+                        "options": [
+                            {
+                                "value": "a",
+                                "label": (
+                                    "Não — o 13º tem tabela de IRRF própria e "
+                                    "é tributado separadamente do salário mensal."
+                                ),
+                            },
+                            {"value": "b", "label": "Sim — é somado ao salário de dezembro."},
+                            {"value": "c", "label": "Sim — mas apenas a 2ª parcela é somada."},
+                            {"value": "d", "label": "O 13º nunca paga IRRF."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! A Receita Federal determina que o 13º tem base "
+                            "de cálculo do IRRF própria — não é somado ao salário mensal. "
+                            "Isso pode resultar em tributação diferente."
+                        ),
+                        "feedback_incorrect": (
+                            "O 13º não é somado ao salário de dezembro para o IR. "
+                            "Ele tem tabela de IRRF exclusiva definida pela Receita Federal."
+                        ),
+                    },
+                },
+                # ── question_set=3 ──────────────────────────────────────
+                {
+                    "order": 1,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Carla ganha R$ 1.500,00 brutos e foi admitida em janeiro. "
+                            "Qual é o 13º bruto integral em dezembro?"
+                        ),
+                        "competency_codes": ["1.3.1"],
+                        "options": [
+                            {"value": "a", "label": "R$ 1.500,00 (12 meses completos)."},
+                            {"value": "b", "label": "R$ 750,00 (metade do salário)."},
+                            {"value": "c", "label": "R$ 125,00 (1/12 do salário)."},
+                            {"value": "d", "label": "R$ 2.000,00 (com adicional de 1/3)."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! 12 meses completos = 12/12 × R$ 1.500 = **R$ 1.500**. "
+                            "O 13º integral equivale a 1 mês de salário bruto."
+                        ),
+                        "feedback_incorrect": (
+                            "Para 12 meses completos: 13º = salário × (12/12) = salário inteiro. "
+                            "R$ 1.500 × 1 = R$ 1.500."
+                        ),
+                    },
+                },
+                {
+                    "order": 2,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Thiago foi admitido em setembro. Em dezembro, "
+                            "qual é o 13º bruto? (Salário: R$ 2.200; 4 meses trabalhados.)"
+                        ),
+                        "competency_codes": ["1.3.1"],
+                        "options": [
+                            {"value": "a", "label": "R$ 2.200,00 (integral)."},
+                            {"value": "b", "label": "R$ 733,33 (4/12 de R$ 2.200)."},
+                            {"value": "c", "label": "R$ 550,00 (1/4 de R$ 2.200)."},
+                            {"value": "d", "label": "R$ 880,00."},
+                        ],
+                        "correct_answer": "b",
+                        "feedback_correct": (
+                            "Correto! 13º proporcional = R$ 2.200 × (4/12) = "
+                            "R$ 2.200 × 0,333... = **R$ 733,33**."
+                        ),
+                        "feedback_incorrect": (
+                            "4 meses de 12: R$ 2.200 × (4/12) = R$ 733,33."
+                        ),
+                    },
+                },
+                {
+                    "order": 3,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "O adicional de 1/3 de férias incide sobre qual base?"
+                        ),
+                        "competency_codes": ["1.3.2"],
+                        "options": [
+                            {"value": "a", "label": "Sobre o salário bruto mensal normal."},
+                            {"value": "b", "label": "Sobre o salário líquido (já com descontos)."},
+                            {"value": "c", "label": "Sobre o 13º salário."},
+                            {"value": "d", "label": "Sobre as horas extras do mês."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! O adicional de 1/3 é calculado sobre o salário bruto "
+                            "das férias (= salário mensal bruto). "
+                            "Férias brutas = salário + 1/3 do salário."
+                        ),
+                        "feedback_incorrect": (
+                            "O adicional de 1/3 incide sobre o salário bruto das férias, "
+                            "não sobre o líquido ou sobre o 13º."
+                        ),
+                    },
+                },
+                {
+                    "order": 4,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Sandra ganha R$ 2.700,00 brutos. Qual é o adicional "
+                            "constitucional de férias dela?"
+                        ),
+                        "competency_codes": ["1.3.2"],
+                        "options": [
+                            {"value": "a", "label": "R$ 900,00 (1/3 de R$ 2.700)."},
+                            {"value": "b", "label": "R$ 1.350,00 (1/2 de R$ 2.700)."},
+                            {"value": "c", "label": "R$ 270,00 (10% de R$ 2.700)."},
+                            {"value": "d", "label": "R$ 2.700,00 (salário dobrado)."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! Adicional de férias = 1/3 do salário. "
+                            "R$ 2.700 / 3 = **R$ 900,00**. "
+                            "Total férias brutas = R$ 2.700 + R$ 900 = R$ 3.600."
+                        ),
+                        "feedback_incorrect": (
+                            "Adicional de férias = 1/3 do salário bruto. "
+                            "R$ 2.700 ÷ 3 = R$ 900."
+                        ),
+                    },
+                },
+                {
+                    "order": 5,
+                    "question_set": 3,
+                    "activity_type": "open_text",
+                    "points_value": 0,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Ana ganha R$ 2.500,00 brutos e tem 12 meses trabalhados.\n\n"
+                            "1. Qual é o valor bruto das férias com adicional de 1/3?\n"
+                            "2. Qual é o 13º bruto integral?\n"
+                            "3. Se os dois fossem pagos no mesmo mês, por que o Ana "
+                            "não deve somar os dois valores brutos para planejar gastos?"
+                        ),
+                        "competency_codes": ["1.3.2", "1.3.3"],
+                        "feedback_static": (
+                            "Sua resposta foi registrada.\n\n"
+                            "1. Férias brutas = R$ 2.500 + (R$ 2.500/3) = R$ 2.500 + R$ 833,33 = **R$ 3.333,33**\n\n"
+                            "2. 13º bruto = R$ 2.500 (12/12 = integral)\n\n"
+                            "3. Porque ambos têm INSS e possivelmente IRRF incidindo. "
+                            "O planejamento deve usar os valores líquidos, não os brutos."
+                        ),
+                        "evaluation_criteria": [
+                            "Calcula férias brutas corretamente (R$ 3.333,33).",
+                            "Calcula 13º bruto corretamente (R$ 2.500).",
+                            "Menciona que INSS/IR incidem e que se deve usar o líquido.",
+                        ],
+                        "max_length": 2000,
+                    },
+                },
+                {
+                    "order": 6,
+                    "question_set": 3,
+                    "activity_type": "multiple_choice",
+                    "points_value": 10,
+                    "content": {
+                        "schema_version": 1,
+                        "prompt": (
+                            "Quando as férias são pagas (prazo legal)?"
+                        ),
+                        "competency_codes": ["1.3.3"],
+                        "options": [
+                            {"value": "a", "label": "Até 2 dias antes do início do período de descanso."},
+                            {"value": "b", "label": "No primeiro dia das férias."},
+                            {"value": "c", "label": "No último dia do mês anterior às férias."},
+                            {"value": "d", "label": "Junto com o salário do mês em que as férias terminam."},
+                        ],
+                        "correct_answer": "a",
+                        "feedback_correct": (
+                            "Correto! A CLT determina que o pagamento das férias deve ocorrer "
+                            "até 2 dias antes do início do período de descanso. "
+                            "Isso garante que o trabalhador tenha o dinheiro disponível "
+                            "antes de sair de férias."
+                        ),
+                        "feedback_incorrect": (
+                            "A lei trabalhista (CLT) exige que as férias sejam pagas "
+                            "até 2 dias antes do início do descanso — "
+                            "não no dia do início nem no mês seguinte."
                         ),
                     },
                 },

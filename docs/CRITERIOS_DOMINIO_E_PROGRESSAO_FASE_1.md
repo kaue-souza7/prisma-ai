@@ -1,8 +1,8 @@
 # Critérios de domínio e progressão — Fase 1
 
-**Arquivo:** `docs/CRITERIOS_DOMINIO_E_PROGRESSAO_FASE_1.md`  
-**Versão:** 1.0 — proposta técnica para validação de produto  
-**Data:** 21/10/2026  
+**Arquivo:** `docs/CRITERIOS_DOMINIO_E_PROGRESSAO_FASE_1.md`
+**Versão:** 1.1 — atualizado com regra de rotação de conjuntos de perguntas (D-Q1)
+**Data:** 21/10/2026
 **Implementação:** `backend/app/modules/progress/service.py` e `backend/app/modules/journey/service.py`
 
 > **Natureza desta decisão:** os critérios abaixo são explícitos, reproduzíveis
@@ -18,11 +18,12 @@
 1. **Conclusão de missão** exige evidência em todas as atividades ativas.
 2. **Domínio de competência** exige evidência em todas as atividades ligadas
    àquela competência, não apenas participação.
-3. **Erro não bloqueia para sempre**: o estudante pode tentar novamente.
+3. **Erro não bloqueia para sempre**: o estudante pode tentar novamente, sem limite de tentativas.
 4. **Reforço é um sinal pedagógico**, não uma punição.
 5. **Pontuação e domínio são coisas diferentes**: a pontuação recompensa a
    constância; o domínio descreve a evidência de aprendizagem.
 6. **A IA não concede pontos, conquistas ou desbloqueios.**
+7. **Variedade de perguntas entre tentativas**: nas primeiras 3 tentativas de uma missão, o usuário sempre vê um conjunto diferente de perguntas — garantido pelo backend via rotação de conjuntos (D-Q1).
 
 ---
 
@@ -154,6 +155,40 @@ exatamente três na Fase 1.
 
 ---
 
+## 5.4 Rotação de conjuntos de perguntas por missão (D-Q1)
+
+Aplica-se a todos os tipos de atividade: `multiple_choice`, questões abertas e simulações.
+
+**Estrutura no banco:**
+- Cada missão possui **3 conjuntos fixos** de perguntas (seeds), identificados por `question_set` (valores: `1`, `2`, `3`).
+- Cada conjunto tem o mesmo número de perguntas que os demais, mas com questões diferentes.
+- Exemplo: missão com 6 perguntas → 18 registros de atividades no banco (`activities.question_set IN (1,2,3)`).
+
+**Regra de seleção por tentativa (`mission_attempt_number`):**
+
+| Tentativa | Conjunto selecionado | Observação |
+|---|---|---|
+| 1ª | Sorteado aleatoriamente entre os 3 | Nenhum ainda usado |
+| 2ª | Sorteado entre os 2 não usados | Garante variedade |
+| 3ª | O único restante | Todos os 3 conjuntos vistos |
+| 4ª em diante | Sorteado livremente entre os 3 | Repetição permitida |
+
+**Implementação:**
+- `backend/app/modules/journey/service.py` — função `get_active_activities_for_attempt(mission_id, attempt_number)`:
+  - consulta o histórico de conjuntos usados pelo usuário naquela missão;
+  - seleciona aleatoriamente entre os não usados (tentativas 1–3) ou entre todos (4ª em diante);
+  - retorna as atividades do conjunto selecionado em ordem randomizada.
+- A ordem interna das atividades do conjunto é randomizada por `random.shuffle()` antes de retornar.
+- O conjunto selecionado é registrado em `user_mission_attempts.question_set` para controle histórico.
+
+**Regras de controle:**
+- O backend controla toda a lógica de rotação — nenhum agente decide qual conjunto usar.
+- Não há limite de tentativas.
+- Após não passar no módulo, o sistema exibe sugestão de revisão **opcional** baseada nas dificuldades identificadas pelo Analista. O usuário pode ignorar e tentar novamente.
+- O sistema nunca diz que o usuário "falhou" ou precisa "recomeçar".
+
+---
+
 ## 6. Casos de teste obrigatórios
 
 | Cenário | Resultado esperado |
@@ -168,6 +203,12 @@ exatamente três na Fase 1.
 | 3 erros na única atividade objetiva | `reinforcement_suggested = true` |
 | Concluir as três missões | `planejador_iniciante` |
 | Fase 2 antes da Fase 1 completa | Permanece bloqueada |
+| 1ª tentativa de missão | Conjunto sorteado aleatoriamente entre os 3 |
+| 2ª tentativa | Conjunto diferente do usado na 1ª |
+| 3ª tentativa | Conjunto diferente dos usados na 1ª e 2ª |
+| 4ª tentativa | Qualquer conjunto (repetição permitida) |
+| Duas tentativas com mesmo conjunto nas 3 primeiras | Nunca deve ocorrer |
+| Ordem das perguntas entre tentativas do mesmo conjunto | Deve variar (randomizada) |
 
 Cobertura automatizada:
 `backend/tests/test_progression_api.py` (integração, requer PostgreSQL) e
@@ -182,6 +223,7 @@ Cobertura automatizada:
 - [ ] Produto validar a sequência obrigatória das três missões.
 - [ ] Jurídico validar a base legal e o texto de consentimento do onboarding.
 - [ ] Após o piloto, revisar os critérios com dados reais de aprendizagem.
+- [x] **D-Q1 aprovada:** rotação de 3 conjuntos fixos de perguntas, seleção aleatória sem repetição nas primeiras 3 tentativas.
 
-Até a aprovação, os critérios estão implementados como **proposta versionada**,
+Até a aprovação dos itens pendentes, os critérios estão implementados como **proposta versionada**,
 não como decisão pedagógica final.

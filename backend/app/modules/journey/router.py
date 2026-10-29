@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user
 from app.shared.models import User, UserResponse
 from app.modules.journey import service
+from app.modules.journey.service import get_current_attempt_set
 from app.modules.journey.schemas import (
     PhaseOut, MissionDetailOut, UserMissionProgressOut,
     SubmitResponseRequest, SubmitResponseOut, LessonOut,
@@ -64,6 +65,10 @@ async def get_mission(
     is_unlocked = await service.is_mission_unlocked(db, current_user.id, mission)
 
     public_mission = MissionDetailOut.model_validate(mission)
+    current_set = await get_current_attempt_set(db, current_user.id, mission_id)
+    public_mission.activities = [
+        a for a in public_mission.activities if a.question_set == current_set
+    ]
     if progress and progress.status.value in {"in_progress", "completed"}:
         public_mission.user_status = progress.status.value
     else:
