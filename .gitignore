@@ -25,3 +25,6 @@ coverage/
 # Pacote de origem dos mascotes 3D (assets já integrados em backend/app/static)
 identidade-agentes.zip
 identidade-agentes/
+
+# Workspace local de ferramentas de IA
+.bob/
