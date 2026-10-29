@@ -458,6 +458,49 @@ de entrada e saída.
 
 ---
 
+## 5.5 Avaliação imediata de respostas abertas
+
+Quando a atividade é `open_text`, `submit_activity_response()` chama
+`app.modules.agents.evaluator.evaluate_open_text()` antes de persistir a
+resposta. O payload enviado ao Mentor contém:
+
+```json
+{
+  "task": "evaluate_open_response",
+  "activity": {
+    "prompt": "<enunciado>",
+    "evaluation_criteria": ["<critério privado>"],
+    "competency_codes": ["1.1.1"]
+  },
+  "student_answer": "<resposta do estudante>",
+  "mission": {"number": 1, "name": "De onde vem o dinheiro?"},
+  "phase": {"number": 1, "name": "Meu primeiro salário"},
+  "user_context": {"personal_goal": "...", "knowledge_level": "beginner"}
+}
+```
+
+O agente deve responder somente JSON:
+
+```json
+{
+  "verdict": "correct | incorrect | ambiguous",
+  "feedback": "1 a 3 frases em português do Brasil"
+}
+```
+
+O backend valida o veredito e persiste em `user_responses`:
+
+- `is_correct`: `true`, `false` ou `null` (ambíguo/indisponível);
+- `feedback`: texto exibido ao estudante;
+- `evaluation_status`: `correct`, `incorrect`, `ambiguous` ou `unavailable`.
+
+Se o Mentor estiver desligado, der timeout ou retornar formato inválido, a
+resposta usa `feedback_static` e `evaluation_status=unavailable`, sem bloquear a
+conclusão da missão. A avaliação aberta é formativa e não altera a pontuação
+objetiva da missão.
+
+---
+
 ## 6. Ordem de integração quando o acesso chegar
 
 1. Executar o spike do §22 da Arquitetura.

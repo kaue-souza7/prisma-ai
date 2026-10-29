@@ -51,9 +51,10 @@ está em `calculate_mission_score()`.
 no mínimo 70, a conclusão já representa a nota mínima. O campo permanece para
 compatibilidade e futuras regras.
 
-**Respostas abertas:** enquanto não houver IA, são registradas e contam para a
-conclusão, mas não penalizam a pontuação. A avaliação qualitativa entra na
-Etapa 2, sem alterar retroativamente pontos já concedidos.
+**Respostas abertas:** quando o Mentor está ativo, são avaliadas imediatamente
+e recebem um veredito (`correct`, `incorrect` ou `ambiguous`) com feedback. O
+veredito fica persistido, mas não penaliza a pontuação objetiva da missão. Se a
+IA estiver indisponível, a resposta é registrada e conta para a conclusão.
 
 ---
 

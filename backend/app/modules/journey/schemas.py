@@ -141,6 +141,7 @@ class SubmitResponseOut(BaseModel):
     score: int
     feedback: str
     feedback_agent: str = "mentor"
+    evaluation_status: Optional[str] = None
     attempt_number: int
     reinforcement: Optional[AgentInsightOut] = None
     mission_completed: bool

@@ -289,6 +289,10 @@ class UserResponse(Base):
     response_data: Mapped[dict] = mapped_column(JSONB, nullable=False)
     is_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # Feedback exibido ao estudante e status da avaliação (correct,
+    # incorrect, ambiguous ou unavailable). Respostas antigas podem ter NULL.
+    feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evaluation_status: Mapped[str | None] = mapped_column(String(20), nullable=True)
     attempt_number: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     # Tentativa do módulo à qual esta resposta pertence. Cada atividade pode
     # ser respondida uma única vez por tentativa; o histórico fica preservado.

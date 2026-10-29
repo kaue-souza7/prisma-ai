@@ -8,7 +8,7 @@ from fastapi import HTTPException, status
 
 from app.shared.models import (
     Phase, Mission, Activity, ContentItem, UserMissionProgress, UserResponse, MissionStatus,
-    UserMissionAttempt,
+    UserMissionAttempt, Profile,
 )
 from app.modules.progress.service import (
     COINS_CORRECT_ANSWER,
@@ -19,7 +19,7 @@ from app.modules.progress.service import (
     mission_passed_sql,
     record_competency_evidence,
 )
-from app.modules.agents import analyst, catalyst
+from app.modules.agents import analyst, catalyst, evaluator
 
 
 # ─────────────────────────────────────────────
@@ -774,15 +774,23 @@ async def submit_activity_response(
     current_attempt = max(progress.attempts or 0, 1) if progress else 1
 
     # Uma atividade só pode ser respondida uma vez por tentativa do módulo.
-    # Refazer o módulo abre uma nova tentativa e mantém o histórico anterior.
+    # Exceção: se o Mentor pediu esclarecimento (ambiguous), o estudante pode
+    # reescrever a resposta na mesma tentativa.
     existing_result = await db.execute(
-        select(UserResponse.id).where(
+        select(UserResponse)
+        .where(
             UserResponse.user_id == user_id,
             UserResponse.activity_id == activity_id,
             UserResponse.mission_attempt == current_attempt,
-        ).limit(1)
+        )
+        .order_by(UserResponse.created_at.desc())
+        .limit(1)
     )
-    if existing_result.scalar_one_or_none() is not None:
+    existing_response = existing_result.scalar_one_or_none()
+    if (
+        existing_response is not None
+        and existing_response.evaluation_status != "ambiguous"
+    ):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(
@@ -801,9 +809,58 @@ async def submit_activity_response(
     previous = prev_result.scalars().all()
     attempt_number = len(previous) + 1
 
-    # Avaliar resposta (determinístico)
-    is_correct, feedback, correct_answer = evaluate_response(activity, response_data)
-    score = activity.points_value if is_correct else 0
+    # Avaliar resposta. Objetivas usam o gabarito determinístico; abertas
+    # passam pelo Mentor em tempo real e guardam o veredito para o histórico.
+    if activity.activity_type == "open_text":
+        text = str(response_data.get("text") or "").strip()
+        if not text:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Escreva sua resposta antes de enviar.",
+            )
+        max_length = int(activity.content.get("max_length") or 2000)
+        if len(text) > max_length:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"A resposta pode ter no máximo {max_length} caracteres.",
+            )
+
+        phase_result = await db.execute(
+            select(Phase).where(Phase.id == mission.phase_id)
+        )
+        phase = phase_result.scalar_one_or_none()
+        profile_result = await db.execute(
+            select(Profile).where(Profile.user_id == user_id)
+        )
+        profile = profile_result.scalar_one_or_none()
+
+        evaluation = await evaluator.evaluate_open_text(
+            activity=activity,
+            student_answer=text,
+            mission=mission,
+            phase=phase,
+            profile=profile,
+        )
+        is_correct = evaluation.is_correct
+        feedback = evaluation.feedback
+        correct_answer = None
+        evaluation_status = evaluation.verdict
+    else:
+        is_correct, feedback, correct_answer = evaluate_response(activity, response_data)
+        evaluation_status = (
+            "correct"
+            if is_correct is True
+            else "incorrect"
+            if is_correct is False
+            else "unavailable"
+        )
+
+    # Respostas abertas são formativas: não somam pontos na missão.
+    score = (
+        activity.points_value
+        if is_correct is True and activity.activity_type != "open_text"
+        else 0
+    )
 
     # Prismas por acerto valem apenas na primeira vez que a atividade é
     # acertada. Refazer um módulo já aprovado não pode virar farm de moedas.
@@ -820,6 +877,8 @@ async def submit_activity_response(
         response_data=response_data,
         is_correct=is_correct,
         score=score,
+        feedback=feedback,
+        evaluation_status=evaluation_status,
         attempt_number=attempt_number,
         mission_attempt=current_attempt,
         created_at=datetime.now(timezone.utc),
@@ -918,6 +977,7 @@ async def submit_activity_response(
         "score": score,
         "feedback": feedback,
         "feedback_agent": feedback_agent,
+        "evaluation_status": evaluation_status,
         "attempt_number": attempt_number,
         "reinforcement": reinforcement,
         "mission_completed": mission_completed,
@@ -1102,12 +1162,32 @@ async def get_lesson(db: AsyncSession, user_id: int, mission_id: int) -> dict:
             activity_responses = responses_by_activity.get(activity.id, [])
             if activity_responses:
                 latest = max(activity_responses, key=lambda item: item.created_at)
-                is_correct, feedback, correct_answer = evaluate_response(
-                    activity, latest.response_data
-                )
+                evaluation_status = latest.evaluation_status
+                if activity.activity_type == "open_text":
+                    is_correct = latest.is_correct
+                    feedback = latest.feedback or activity.content.get(
+                        "feedback_static",
+                        "Sua resposta foi registrada.",
+                    )
+                    correct_answer = None
+                    if evaluation_status is None:
+                        evaluation_status = "unavailable"
+                else:
+                    is_correct, feedback, correct_answer = evaluate_response(
+                        activity, latest.response_data
+                    )
+                    if evaluation_status is None:
+                        evaluation_status = (
+                            "correct"
+                            if is_correct is True
+                            else "incorrect"
+                            if is_correct is False
+                            else "unavailable"
+                        )
                 user_response = {
                     "is_correct": is_correct,
                     "feedback": feedback,
+                    "evaluation_status": evaluation_status,
                     "attempt_number": latest.attempt_number,
                     "response_data": latest.response_data,
                     # A resposta correta só aparece depois da submissão e

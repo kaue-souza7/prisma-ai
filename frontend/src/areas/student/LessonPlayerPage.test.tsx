@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -243,6 +243,133 @@ describe('LessonPlayerPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Continuar/ }))
 
     expect(await screen.findByRole('heading', { name: 'Seu contracheque agora faz sentido' })).toBeInTheDocument()
+  })
+
+  it('lets the student rewrite an open answer when the Mentor needs clarification', async () => {
+    const openTextActivity = {
+      id: 303,
+      order: 1,
+      activity_type: 'open_text',
+      points_value: 0,
+      content: {
+        prompt: 'Explique a diferença entre salário bruto e líquido.',
+        max_length: 2000,
+      },
+    }
+    apiMocks.getLesson.mockResolvedValue({
+      data: {
+        ...baseLesson,
+        current_step: 2,
+        completed_steps: [0, 1],
+        status: 'in_progress',
+        steps: baseLesson.steps.map((step) =>
+          step.index === 2
+            ? {
+                ...step,
+                title: openTextActivity.content.prompt,
+                activity: openTextActivity,
+              }
+            : step,
+        ),
+      },
+    })
+    apiMocks.submitResponse.mockResolvedValue({
+      data: {
+        is_correct: null,
+        score: 0,
+        feedback: 'Pode complementar sua resposta com um exemplo?',
+        evaluation_status: 'ambiguous',
+        attempt_number: 1,
+        mission_completed: false,
+        points_earned: 0,
+        new_achievements: [],
+      },
+    })
+
+    renderLesson()
+
+    const textarea = await screen.findByPlaceholderText(
+      'Escreva com as suas palavras...',
+    )
+    fireEvent.change(textarea, { target: { value: 'Acho que tem a ver com descontos.' } })
+    fireEvent.click(screen.getByRole('button', { name: /Confirmar resposta/ }))
+
+    expect(await screen.findByText('Preciso de mais contexto')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Reescrever resposta' }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reescrever resposta' }))
+
+    expect(screen.getByRole('button', { name: /Confirmar resposta/ })).toBeInTheDocument()
+    expect(textarea).not.toBeDisabled()
+  })
+
+  it('animates the Mentor while the open answer is being analyzed', async () => {
+    const openTextActivity = {
+      id: 304,
+      order: 1,
+      activity_type: 'open_text',
+      points_value: 0,
+      content: {
+        prompt: 'Explique a diferença entre salário bruto e líquido.',
+        max_length: 2000,
+      },
+    }
+    apiMocks.getLesson.mockResolvedValue({
+      data: {
+        ...baseLesson,
+        current_step: 2,
+        completed_steps: [0, 1],
+        status: 'in_progress',
+        steps: baseLesson.steps.map((step) =>
+          step.index === 2
+            ? {
+                ...step,
+                title: openTextActivity.content.prompt,
+                activity: openTextActivity,
+              }
+            : step,
+        ),
+      },
+    })
+
+    let resolveSubmit!: (value: unknown) => void
+    const pendingSubmit = new Promise((resolve) => {
+      resolveSubmit = resolve
+    })
+    apiMocks.submitResponse.mockReturnValue(pendingSubmit)
+
+    renderLesson()
+
+    const textarea = await screen.findByPlaceholderText(
+      'Escreva com as suas palavras...',
+    )
+    fireEvent.change(textarea, { target: { value: 'O bruto é antes dos descontos.' } })
+    fireEvent.click(screen.getByRole('button', { name: /Confirmar resposta/ }))
+
+    expect(await screen.findByText('Analisando sua resposta...')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Mentor analisando/ }),
+    ).toBeDisabled()
+
+    await act(async () => {
+      resolveSubmit({
+        data: {
+          is_correct: true,
+          score: 0,
+          feedback: 'Boa explicação.',
+          evaluation_status: 'correct',
+          attempt_number: 1,
+          mission_completed: false,
+          points_earned: 0,
+          new_achievements: [],
+        },
+      })
+    })
+
+    expect(await screen.findByText('Resposta correta')).toBeInTheDocument()
+    expect(screen.queryByText('Analisando sua resposta...')).not.toBeInTheDocument()
   })
 
   it('adds the Analyst recommendation when an error repeats', async () => {

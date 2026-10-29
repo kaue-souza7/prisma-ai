@@ -133,11 +133,17 @@ A resposta do estudante usa `response_data.choice`.
 | `evaluation_criteria` | array de string | sim | Critérios que a IA usará na Etapa 2. **Privado.** |
 | `max_length` | inteiro | não | Entre 100 e 5.000; padrão 2.000. |
 
-A resposta do estudante usa `response_data.text`.
+A resposta do estudante usa `response_data.text`. Quando o Mentor está
+configurado, ele avalia a resposta imediatamente com base nos
+`evaluation_criteria` e devolve um veredito (`correct`, `incorrect` ou
+`ambiguous`) com feedback em português. O veredito é persistido em
+`user_responses` (`is_correct`, `feedback`, `evaluation_status`) para continuar
+visível quando o estudante reabrir a lição.
 
-Enquanto a IA não está disponível, a resposta aberta é considerada **registrada**
-para fins de conclusão da missão. Ela não conta como acerto nem como erro na
-pontuação e não altera `correct_count` / `incorrect_count`.
+Se o agente estiver indisponível ou retornar um formato inválido, a resposta é
+registrada com `evaluation_status=unavailable` e o `feedback_static` do
+conteúdo, sem bloquear a conclusão da missão. A avaliação aberta é formativa:
+não altera a pontuação objetiva da missão.
 
 ---
 

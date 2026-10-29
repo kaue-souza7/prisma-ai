@@ -99,6 +99,7 @@ export interface LessonStep {
   user_response: {
     is_correct: boolean | null
     feedback: string
+    evaluation_status?: 'correct' | 'incorrect' | 'ambiguous' | 'unavailable' | string | null
     attempt_number: number
     response_data: Record<string, unknown>
     correct_answer?: string | null

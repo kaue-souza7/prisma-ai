@@ -36,6 +36,7 @@ interface SubmitResult {
   score: number
   feedback: string
   feedback_agent?: 'mentor' | 'analyst' | string
+  evaluation_status?: 'correct' | 'incorrect' | 'ambiguous' | 'unavailable' | string | null
   attempt_number: number
   reinforcement?: AgentInsight | null
   mission_completed: boolean
@@ -667,6 +668,7 @@ function QuestionStep({
           correct_answer: previous.correct_answer ?? null,
           score: 0,
           feedback: previous.feedback,
+          evaluation_status: previous.evaluation_status ?? undefined,
           attempt_number: previous.attempt_number,
           mission_completed: false,
           points_earned: 0,
@@ -681,6 +683,18 @@ function QuestionStep({
     : result?.is_correct === false
       ? 'Pode explicar por que a minha resposta não estava completa?'
       : 'Pode me dar um retorno sobre a minha resposta?'
+
+  const evaluationStatus =
+    result?.evaluation_status ??
+    (result?.is_correct === true
+      ? 'correct'
+      : result?.is_correct === false
+        ? 'incorrect'
+        : 'unavailable')
+  const isCorrectResult = evaluationStatus === 'correct'
+  const isIncorrectResult = evaluationStatus === 'incorrect'
+  const isAmbiguousResult = evaluationStatus === 'ambiguous'
+  const isUnavailableResult = evaluationStatus === 'unavailable' && isOpenText
 
   async function handleSubmit() {
     if (result || submitting) return
@@ -715,6 +729,12 @@ function QuestionStep({
     }
   }
 
+  function handleRevise() {
+    setResult(null)
+    setError('')
+    effects.play('tap')
+  }
+
   return (
     <div className={styles.questionLayout}>
       <div className={styles.questionMeta}>
@@ -746,7 +766,7 @@ function QuestionStep({
               setError('')
             }}
             maxLength={activity.content.max_length ?? 2000}
-            disabled={result !== null}
+            disabled={result !== null || submitting}
             rows={6}
             placeholder="Escreva com as suas palavras..."
           />
@@ -779,7 +799,7 @@ function QuestionStep({
                   setSelected(option.value)
                   setError('')
                 }}
-                disabled={result !== null}
+                disabled={result !== null || submitting}
               />
               <span className={styles.optionLetter}>{optionLetter(index)}</span>
               <span>{option.label}</span>
@@ -790,40 +810,67 @@ function QuestionStep({
 
       {error && <p className={styles.questionError} role="alert">{error}</p>}
 
+      {submitting && isOpenText && (
+        <div className={styles.mentorAnalyzing} role="status" aria-live="polite">
+          <div className={styles.analyzingMascot} aria-hidden="true">
+            <Mascot3D agent="mentor" animation="M-03" size={88} />
+          </div>
+          <div>
+            <span className={styles.feedbackKicker}>Mentor</span>
+            <strong>Analisando sua resposta...</strong>
+            <p>
+              Estou comparando o que você escreveu com os critérios desta
+              atividade.
+            </p>
+            <span className={styles.analyzingDots} aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+        </div>
+      )}
+
       {result && (
         <div
           className={[
             styles.feedback,
-            result.is_correct === false ? styles.feedbackWrong : styles.feedbackCorrect,
+            isIncorrectResult
+              ? styles.feedbackWrong
+              : isCorrectResult
+                ? styles.feedbackCorrect
+                : styles.feedbackNeutral,
           ].join(' ')}
           role="status"
           aria-live="polite"
         >
           <Mascot3D
             agent="mentor"
-            animation={
-              result.is_correct === true
-                ? 'M-10'
-                : result.is_correct === false
-                  ? 'M-07'
-                  : 'M-08'
-            }
+            animation={isCorrectResult ? 'M-10' : isIncorrectResult ? 'M-07' : 'M-08'}
             size={80}
           />
           <div>
             <span className={styles.feedbackKicker}>
-              {result.is_correct === true
+              {isCorrectResult
                 ? 'Resposta correta'
-                : result.is_correct === false
+                : isIncorrectResult
                   ? 'Feedback do Mentor'
-                  : 'Resposta registrada'}
+                  : isAmbiguousResult
+                    ? 'Preciso de mais contexto'
+                    : isUnavailableResult
+                      ? 'Avaliação indisponível'
+                      : 'Resposta registrada'}
             </span>
             <strong>
-              {result.is_correct === true
+              {isCorrectResult
                 ? 'Você aplicou o conceito.'
-                : result.is_correct === false
+                : isIncorrectResult
                   ? 'Vale revisar o raciocínio.'
-                  : 'Obrigado por compartilhar.'}
+                  : isAmbiguousResult
+                    ? 'Complementa sua resposta?'
+                    : isUnavailableResult
+                      ? 'Sua resposta foi registrada.'
+                      : 'Obrigado por compartilhar.'}
             </strong>
             <p>{result.feedback}</p>
           </div>
@@ -854,7 +901,11 @@ function QuestionStep({
             onClick={handleSubmit}
             disabled={submitting}
           >
-            {submitting ? 'Confirmando...' : 'Confirmar resposta'}
+            {submitting
+              ? isOpenText
+                ? 'Mentor analisando...'
+                : 'Confirmando...'
+              : 'Confirmar resposta'}
             {!submitting && <ArrowRightIcon size={16} />}
           </button>
         )}
@@ -862,6 +913,15 @@ function QuestionStep({
           <button type="button" className={styles.primaryButton} onClick={onContinue}>
             Continuar
             <ArrowRightIcon size={16} />
+          </button>
+        )}
+        {isAmbiguousResult && (
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={handleRevise}
+          >
+            Reescrever resposta
           </button>
         )}
         {result && (
