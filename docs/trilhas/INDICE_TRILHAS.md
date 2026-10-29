@@ -4,7 +4,7 @@
 **Versão curricular:** 2.0 (12 trilhas)  
 **Substitui:** Estrutura de 6 fases (versão 1.0)  
 **Data de criação:** 2026-10-24  
-**Contrato técnico:** `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`
+**Contrato técnico:** `docs/CONTRATO_CURRICULAR_TRILHAS.md`
 
 ---
 

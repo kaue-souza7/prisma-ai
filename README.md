@@ -10,7 +10,7 @@
 
 <p align="center">
   Educação financeira para jovens adultos que aprendem fazendo:<br />
-  12 trilhas, 45 missões e uma experiência que transforma decisões do dia a dia em autonomia.
+  Trilhas de aprendizagem, 45 missões e uma experiência que transforma decisões do dia a dia em autonomia.
 </p>
 
 <p align="center">
@@ -81,9 +81,9 @@ Na pesquisa de letramento do Banco Central, jovens de 16 a 24 anos tiraram **64,
 
 **A jornada começa onde a vida financeira começa:** no primeiro salário, no primeiro cartão, no primeiro limite.
 
-### Doze trilhas, quatro movimentos
+### Trilhas, quatro movimentos
 
-![Mapa das 12 trilhas do Prisma.AI, organizadas em quatro atos: começar, decidir, entender e crescer e proteger](docs/assets/jornada-12-trilhas.svg)
+![Mapa das trilhas do Prisma.AI, organizadas em quatro atos: começar, decidir, entender e crescer e proteger](docs/assets/jornada-trilhas.svg)
 
 Do primeiro salário à proteção digital, as trilhas avançam por quatro movimentos: **começar, decidir, entender e crescer e proteger**. Cada uma combina conceito, prática e evidência — e a ordem pode ser personalizada para o momento do usuário.
 
@@ -178,7 +178,7 @@ Essa é a direção: uma plataforma cada vez mais **inteligente, conectada e út
 ---
 
 <p align="center">
-  <sub>Para mergulhar na visão completa, explore a <a href="docs/Conteudo_e_Jornada_de_Aprendizagem.md">jornada de aprendizagem</a>, o <a href="docs/CONTRATO_CURRICULAR_12_TRILHAS.md">contrato curricular das 12 trilhas</a> e o <a href="docs/trilhas/INDICE_TRILHAS.md">índice das trilhas</a>.</sub>
+  <sub>Para mergulhar na visão completa, explore a <a href="docs/Conteudo_e_Jornada_de_Aprendizagem.md">jornada de aprendizagem</a>, o <a href="docs/CONTRATO_CURRICULAR_TRILHAS.md">contrato curricular das trilhas</a> e o <a href="docs/trilhas/INDICE_TRILHAS.md">índice das trilhas</a>.</sub>
 </p>
 
 <p align="center">

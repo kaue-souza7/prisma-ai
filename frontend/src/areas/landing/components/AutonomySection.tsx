@@ -30,7 +30,7 @@ export function AutonomySection() {
           <Reveal delay={0.14}>
             <p>
               Entender salário, crédito, juros, poupança e golpes digitais não é teoria —
-              é o que você vai praticar em cenários reais ao longo das 12 trilhas.
+              é o que você vai praticar em cenários reais ao longo das trilhas.
             </p>
           </Reveal>
           <Reveal delay={0.2}>

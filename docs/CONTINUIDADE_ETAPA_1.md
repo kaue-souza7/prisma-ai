@@ -1107,7 +1107,7 @@ docker compose exec backend alembic check
 
 Expandir as trilhas 1–6 (antes limitadas a 2–3 missões cada) e criar as trilhas
 7–12 do zero, completando o currículo de 12 trilhas × 3–4 missões conforme o
-contrato curricular `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`.
+contrato curricular `docs/CONTRATO_CURRICULAR_TRILHAS.md`.
 
 ### 15.2 Mapeamento phase/trilha
 

@@ -53,7 +53,7 @@ export function JourneyScreen() {
                 <SparkIcon size={10} />
                 Trilha 3 em andamento
               </span>
-              <span className="pl-app-chip">12 trilhas</span>
+              <span className="pl-app-chip">Trilhas e missões</span>
             </div>
         </div>
 

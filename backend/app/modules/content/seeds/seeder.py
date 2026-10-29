@@ -179,12 +179,20 @@ def _upsert_competency(bind, mission_id: int, data: dict) -> None:
 
 def _upsert_activity(bind, mission_id: int, data: dict) -> None:
     question_set = data.get("question_set", 1)
+    activity_columns = {
+        column["name"] for column in sa.inspect(bind).get_columns("activities")
+    }
+    has_question_set = "question_set" in activity_columns
+
+    conditions = [
+        activities.c.mission_id == mission_id,
+        activities.c.order == data["order"],
+    ]
+    if has_question_set:
+        conditions.append(activities.c.question_set == question_set)
+
     existing_id = bind.execute(
-        sa.select(activities.c.id).where(
-            activities.c.mission_id == mission_id,
-            activities.c.order == data["order"],
-            activities.c.question_set == question_set,
-        )
+        sa.select(activities.c.id).where(*conditions)
     ).scalar_one_or_none()
 
     values = {
@@ -194,8 +202,9 @@ def _upsert_activity(bind, mission_id: int, data: dict) -> None:
         "content": data["content"],
         "points_value": data["points_value"],
         "is_active": True,
-        "question_set": question_set,
     }
+    if has_question_set:
+        values["question_set"] = question_set
 
     if existing_id is None:
         bind.execute(sa.insert(activities).values(**values))

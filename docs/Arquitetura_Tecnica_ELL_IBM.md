@@ -38,7 +38,7 @@ Os fluxos textuais têm prioridade. O áudio não é prioridade de implementaç�
 
 ### Incluído
 
-- Jornada de aprendizagem com **doze trilhas** (Meu primeiro salário / Orçamento na prática / Pagamentos do dia a dia / Cartão e fatura / Metas e reserva / Guardar sem perder o controle / Juros e parcelas / Dívida que cresce / Inflação e poder de compra / Onde o dinheiro rende / Golpes e proteção de dados / Desafio integrador). Decisão revisada em D1; estrutura detalhada em `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`.
+- Jornada de aprendizagem com **doze trilhas** (Meu primeiro salário / Orçamento na prática / Pagamentos do dia a dia / Cartão e fatura / Metas e reserva / Guardar sem perder o controle / Juros e parcelas / Dívida que cresce / Inflação e poder de compra / Onde o dinheiro rende / Golpes e proteção de dados / Desafio integrador). Decisão revisada em D1; estrutura detalhada em `docs/CONTRATO_CURRICULAR_TRILHAS.md`.
 - Conteúdo educacional estruturado.
 - Catalisador, Mentor e Analista de Progresso, coordenados por watsonx Orchestrate.
 - Perfil, respostas, avaliações, progresso, gamificação e histórico relevante de conversas.

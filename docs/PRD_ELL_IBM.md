@@ -87,7 +87,7 @@ A experiência deve considerar usuários com diferentes níveis de conhecimento 
 
 ## 5. Jornada de aprendizagem
 
-> **Decisão confirmada (D1 — revisada):** a jornada é estruturada em **doze trilhas progressivas**, precedidas por onboarding obrigatório. Os nomes e o conteúdo das trilhas seguem o Contrato Curricular em `docs/CONTRATO_CURRICULAR_12_TRILHAS.md`. A estrutura anterior de seis fases foi substituída pela reestruturação curricular documentada na migration `0015_twelve_trails.py`.
+> **Decisão confirmada (D1 — revisada):** a jornada é estruturada em **doze trilhas progressivas**, precedidas por onboarding obrigatório. Os nomes e o conteúdo das trilhas seguem o Contrato Curricular em `docs/CONTRATO_CURRICULAR_TRILHAS.md`. A estrutura anterior de seis fases foi substituída pela reestruturação curricular documentada na migration `0015_twelve_trails.py`.
 
 Cada trilha reúne objetivos de aprendizagem, missões, simulações, intervenções dos agentes e critérios de conclusão por competências demonstradas. A trilha 12 (Desafio integrador) é sempre a última e avalia a aplicação conjunta de todas as competências anteriores.
 

@@ -73,7 +73,7 @@ export function HeroSection() {
           </h1>
 
           <motion.p className="pl-hero-copy-text" variants={line}>
-            Doze trilhas de aprendizagem prática — do primeiro salário à proteção digital.
+            Trilhas de aprendizagem prática — do primeiro salário à proteção digital.
             Missões reais, simulações e agentes de IA que acompanham o seu raciocínio.
           </motion.p>
 
@@ -123,7 +123,7 @@ export function HeroSection() {
 
       <div className="pl-container pl-hero-foot">
         <div className="pl-hero-proof">
-          <span>12 trilhas de aprendizagem</span>
+          <span>Trilhas de aprendizagem</span>
           <span>45 missões práticas</span>
           <span>Agentes de IA</span>
         </div>

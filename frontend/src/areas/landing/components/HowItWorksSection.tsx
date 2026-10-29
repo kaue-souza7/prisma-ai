@@ -49,7 +49,7 @@ export function HowItWorksSection() {
       <div className="pl-container">
         <SectionHeading
           eyebrow="Como funciona"
-          title={<>Três passos. Doze trilhas. <span className="pl-gradient-text">Uma nova relação</span> com o dinheiro.</>}
+          title={<>Três passos. Uma jornada de trilhas. <span className="pl-gradient-text">Uma nova relação</span> com o dinheiro.</>}
           description="Uma jornada progressiva com critérios claros de progressão. O foco está no que você aprende e consegue aplicar — não no tempo que passou na plataforma."
           align="center"
         />

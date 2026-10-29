@@ -1,0 +1,68 @@
+# Blueprint do Render para o Prisma.AI.
+#
+# Serviços:
+#   - prisma-ai-api-kaue: backend FastAPI (Docker)
+#   - prisma-ai-web-kaue: frontend React/Vite (site estático)
+#
+# Banco: Neon PostgreSQL (external). Defina DATABASE_URL no painel do Render
+# com o formato:
+#   postgresql+asyncpg://USUARIO:SENHA@HOST/BANCO?sslmode=require
+#
+# As URLs abaixo assumem que os nomes dos serviços estarão disponíveis.
+# Se o Render adicionar um sufixo, ajuste ALLOWED_ORIGINS e VITE_API_BASE_URL.
+
+services:
+  - type: web
+    name: prisma-ai-api-kaue
+    runtime: docker
+    plan: free
+    region: virginia
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - backend/**
+        - render.yaml
+    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      # Opcional: URL direta do Neon para migrations. Se vazio, usa DATABASE_URL.
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://prisma-ai-web-kaue.onrender.com
+      - key: REQUIRE_EMAIL_VERIFICATION
+        value: "false"
+      - key: MAIL_ENABLED
+        value: "false"
+      - key: ORCHESTRATE_ENABLED
+        value: "false"
+      - key: ORCHESTRATE_STUDIO_ENABLED
+        value: "false"
+
+  - type: web
+    name: prisma-ai-web-kaue
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci --include=dev && npm run build
+    staticPublishPath: ./dist
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - frontend/**
+        - render.yaml
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://prisma-ai-api-kaue.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -44,7 +44,7 @@ export function HomeScreen() {
         </div>
         <span className="pl-app-context-pill">
           <span className="pl-app-context-dot" />
-          Trilha 3 de 12
+          Trilha 3
         </span>
       </header>
 
@@ -140,7 +140,7 @@ export function HomeScreen() {
         <div className="pl-app-section-head">
           <div>
             <span className="pl-app-eyebrow">Mapa da jornada</span>
-            <h2>Doze trilhas, uma evolução contínua.</h2>
+            <h2>Uma evolução contínua.</h2>
             <p>Cada trilha conecta um conceito novo a decisões do dia a dia.</p>
           </div>
           <span className="pl-app-card-link">

@@ -63,12 +63,12 @@ export function ExperienceSection() {
             <SectionHeading
               eyebrow="A experiência"
               title={<>Missões, feedback e <span className="pl-gradient-text">progresso visível.</span></>}
-              description="Jornada com 12 trilhas, minicursos com atividades e feedback contextual e conquistas que marcam cada avanço real na sua aprendizagem."
+              description="Jornada com trilhas de aprendizagem, minicursos com atividades e feedback contextual, e conquistas que marcam cada avanço real na sua aprendizagem."
             />
 
             <Reveal delay={0.12}>
               <ul className="pl-experience-list">
-                <li><span><CheckIcon size={13} /></span>12 trilhas: do primeiro salário à proteção digital</li>
+                <li><span><CheckIcon size={13} /></span>Trilhas que vão do primeiro salário à proteção digital</li>
                 <li><span><CheckIcon size={13} /></span>Atividades com feedback imediato, sem risco real</li>
                 <li><span><CheckIcon size={13} /></span>Pontos, conquistas e competências por trilha</li>
               </ul>
