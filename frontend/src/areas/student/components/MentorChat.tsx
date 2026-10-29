@@ -10,6 +10,8 @@ interface MentorChatProps {
   compact?: boolean
   initialQuestion?: string
   onClose?: () => void
+  /** Permite que a página anime o mascote 3D conforme o chat. */
+  onActivity?: (animationId: string) => void
 }
 
 function nowIso() {
@@ -27,6 +29,7 @@ export function MentorChat({
   compact = false,
   initialQuestion = '',
   onClose,
+  onActivity,
 }: MentorChatProps) {
   const [messages, setMessages] = useState<MentorMessage[]>([])
   const [input, setInput] = useState(initialQuestion)
@@ -94,6 +97,7 @@ export function MentorChat({
     setInput('')
     setError('')
     setSending(true)
+    onActivity?.('M-03')
     setMessages((current) => [
       ...current,
       { role: 'user', content: text, timestamp: nowIso() },
@@ -110,11 +114,15 @@ export function MentorChat({
         },
       ])
       setStatus(response.data.status ?? status)
+      onActivity?.(
+        response.data.status === 'available' ? 'M-08' : 'M-07',
+      )
       if (response.data.suggestions?.length) {
         setSuggestions(response.data.suggestions)
       }
     } catch {
       setError('Não foi possível enviar sua mensagem. Tente novamente.')
+      onActivity?.('M-07')
       setMessages((current) => [
         ...current,
         {

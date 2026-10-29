@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRightIcon, ChatIcon, CheckIcon, SparkIcon } from '@/design-system/Icons'
 import { useDocumentTitle } from '@/shared/useDocumentTitle'
-import { AGENT_META, AgentAvatar, PrismMascot } from './components/StudentVisuals'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
+import { AGENT_META, AgentAvatar } from './components/StudentVisuals'
 import { MentorChat } from './components/MentorChat'
 import styles from './Mentor.module.css'
 
@@ -29,6 +31,7 @@ const AGENT_DETAILS = {
 export function MentorPage() {
   useDocumentTitle('Mentor e agentes — Prisma.AI')
   const [searchParams] = useSearchParams()
+  const [mentorAnimation, setMentorAnimation] = useState('M-01')
   const rawMission = Number(searchParams.get('mission'))
   const missionId = Number.isFinite(rawMission) && rawMission > 0 ? rawMission : undefined
 
@@ -53,7 +56,7 @@ export function MentorPage() {
         </div>
         <div className={styles.heroArt} aria-hidden="true">
           <span className={styles.heroOrb} />
-          <PrismMascot size={220} tone="mentor" />
+          <Mascot3D agent="mentor" animation={mentorAnimation} size={220} />
         </div>
       </header>
 
@@ -82,7 +85,7 @@ export function MentorPage() {
               </Link>
             )}
           </div>
-          <MentorChat missionId={missionId} />
+          <MentorChat missionId={missionId} onActivity={setMentorAnimation} />
         </div>
 
         <aside className={styles.sideColumn}>

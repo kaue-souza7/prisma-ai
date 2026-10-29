@@ -12,11 +12,11 @@ import type {
   PhaseJourney,
   ProgressSummary,
 } from '@/types/student'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
 import {
   AGENT_META,
   AgentAvatar,
   PhaseArt,
-  PrismMascot,
   ProgressRing,
 } from './components/StudentVisuals'
 import { displayName, pluralize } from './format'
@@ -123,6 +123,14 @@ export function StudentHome() {
   const phases: PhaseJourney[] = overview.phases
   const trail = overview.trail
   const recommendation = overview.recommendation
+  const catalystAnimation =
+    recommendation?.kind === 'celebrate'
+      ? 'C-12'
+      : recommendation?.kind === 'review' || recommendation?.kind === 'trail_1_review'
+        ? 'C-10'
+        : recommendation?.kind === 'continue'
+          ? 'C-07'
+          : 'C-03'
   const nextMission = findNextMission(phases)
   const currentPhase = findCurrentPhase(phases)
   const completed = summary.missions_completed
@@ -218,7 +226,9 @@ export function StudentHome() {
                     <AgentAvatar agent="catalyst" size={26} />
                     <span>
                       <strong>Catalisador</strong>
-                      {recommendation.message}
+                      {recommendation.kind === 'celebrate'
+                        ? recommendation.celebration_message ?? recommendation.message
+                        : recommendation.message}
                     </span>
                   </div>
                 )}
@@ -239,9 +249,14 @@ export function StudentHome() {
               <>
                 <h2>Você concluiu o que está disponível.</h2>
                 <p>
-                  {recommendation?.message ??
-                   'Seu progresso está salvo. As próximas trilhas entram quando o conteúdo for publicado.'}
+                  {recommendation?.kind === 'celebrate'
+                    ? recommendation.celebration_message ?? recommendation.message
+                    : recommendation?.message ??
+                      'Seu progresso está salvo. As próximas trilhas entram quando o conteúdo for publicado.'}
                 </p>
+                {recommendation?.kind === 'celebrate' && recommendation.next_step_message && (
+                  <p>{recommendation.next_step_message}</p>
+                )}
                 <div className={styles.nextActions}>
                   <Link to="/student/progress" className={styles.primaryAction}>
                     Ver meu progresso
@@ -255,7 +270,7 @@ export function StudentHome() {
           <div className={styles.nextArt} aria-hidden="true">
             <span className={styles.artOrb} />
             <span className={styles.artRing} />
-            <PrismMascot size={236} />
+            <Mascot3D agent="catalyst" animation={catalystAnimation} size={236} />
             {nextMission && (
               <div className={styles.floatingBadge}>
                 <span className={styles.floatingIcon}>
