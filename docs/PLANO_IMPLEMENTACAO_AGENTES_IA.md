@@ -462,6 +462,6 @@ docker compose logs -f backend
 
 - Os três GLBs (`catalisador.glb`, `mentor.glb`, `analista.glb`) e o `manifest.json` ficam em `backend/app/static/mascotes/` e são servidos por `GET /static/mascotes/*` no FastAPI existente.
 - O frontend usa `frontend/src/features/mascots/Mascot3D.tsx`, que carrega o viewer Three.js sob demanda e usa o `PrismMascot` como fallback sem WebGL/testes.
-- Integrações ativas: Onboarding, Home, Mentor, introdução/feedback/resumo da aula e painel de progresso.
+- Integrações ativas: landing page (cards dos três agentes), Onboarding, Home, Mentor, introdução/feedback/resumo da aula e painel de progresso.
 - O piso escuro do demo foi desativado (`showFloor=false`) para o mascote aparecer transparente no tema do app.
 - Documentação: `docs/mascotes-3d/INTEGRACAO_APP.md`, `INVENTARIO_ANIMACOES.md`, `INTEGRACAO.md` e `THIRD_PARTY_NOTICES.md`.

@@ -1,16 +1,28 @@
-import { ChartIcon, ChatIcon, SparkIcon } from '@/design-system/Icons'
+import { Mascot3D } from '@/features/mascots/Mascot3D'
+import type { AgentKey } from '@/areas/student/components/StudentVisuals'
 import { Reveal, SectionHeading, SpotlightCard } from './primitives'
 
-const agents = [
+interface LandingAgent {
+  key: AgentKey
+  index: string
+  name: string
+  role: string
+  description: string
+  tags: string[]
+  animation: string
+  accent: string
+}
+
+const agents: LandingAgent[] = [
   {
     key: 'catalyst',
     index: 'A01',
     name: 'Catalisador',
     role: 'Personalização e próximo passo',
     description:
-      'Lógica determinística no backend. Recomenda missões, sugere reforços e reconhece seu progresso com base em regras claras — sem IA no MVP.',
+      'Personaliza a trilha, recomenda o próximo passo e celebra conquistas com base no seu objetivo, contexto de vida e progresso.',
     tags: ['Próximo passo', 'Missões', 'Reforço'],
-    icon: SparkIcon,
+    animation: 'C-03',
     accent: 'coral e laranja',
   },
   {
@@ -21,7 +33,7 @@ const agents = [
     description:
       'Explica conceitos financeiros, responde dúvidas durante as missões, propõe quizzes e acompanha seu raciocínio nas atividades.',
     tags: ['Explicações', 'Quizzes', 'Feedback'],
-    icon: ChatIcon,
+    animation: 'M-08',
     accent: 'azul e ciano',
   },
   {
@@ -32,7 +44,7 @@ const agents = [
     description:
       'Atua em segundo plano. Analisa respostas, identifica dificuldades recorrentes por competência e gera recomendações de reforço para o Mentor.',
     tags: ['Competências', 'Dificuldades', 'Reforço'],
-    icon: ChartIcon,
+    animation: 'A-02',
     accent: 'verde e menta',
   },
 ]
@@ -52,7 +64,6 @@ export function AgentsSection() {
 
         <div className="pl-agent-grid">
           {agents.map((agent, index) => {
-            const Icon = agent.icon
             return (
               <Reveal key={agent.key} delay={index * 0.1}>
                 <SpotlightCard className={`pl-agent-card pl-agent-card--${agent.key}`}>
@@ -65,9 +76,13 @@ export function AgentsSection() {
                     <div className="pl-agent-halo" />
                     <div className="pl-agent-ring pl-agent-ring--outer" />
                     <div className="pl-agent-ring pl-agent-ring--inner" />
-                    <div className="pl-agent-core">
-                      <Icon size={30} />
-                    </div>
+                    <Mascot3D
+                      agent={agent.key}
+                      animation={agent.animation}
+                      size={150}
+                      shadows={false}
+                      className="pl-agent-mascot"
+                    />
                     <span className="pl-agent-spark pl-agent-spark--one" />
                     <span className="pl-agent-spark pl-agent-spark--two" />
                     <span className="pl-agent-spark pl-agent-spark--three" />
@@ -92,9 +107,9 @@ export function AgentsSection() {
 
         <Reveal delay={0.16}>
           <p className="pl-agents-note">
-            O Mentor e o Analista serão ativados após a integração com o IBM watsonx Orchestrate.
-            O Catalisador já opera como lógica determinística no backend. Pontos, conquistas
-            e desbloqueios são sempre calculados pelo backend — nunca pela IA.
+            Os três agentes já operam com fallback determinístico e integração real ao
+            IBM watsonx Orchestrate. Pontos, conquistas e desbloqueios continuam sendo
+            calculados pelo backend — nunca pela IA.
           </p>
         </Reveal>
       </div>

@@ -36,6 +36,7 @@ Mapeamento de agente para personagem:
 
 | Tela | Componente | Animação |
 |---|---|---|
+| Landing page | `AgentsSection` | `C-03`, `M-08` e `A-02` nos cards dos três agentes (sem sombras) |
 | Onboarding | `OnboardingPage` | `C-01` → `C-03` → `C-04` por resposta → `C-05` na revelação da trilha |
 | Home | `StudentHome` | `C-03`, `C-07`, `C-10` ou `C-12` conforme a recomendação |
 | Mentor e agentes | `MentorPage` | `M-01`; o chat envia `M-03` ao processar, `M-08` na resposta e `M-07` em erro |
@@ -65,7 +66,8 @@ IDs principais:
 
 ## 6. Performance
 
-- Cada GLB tem ~1,5 MiB; o carregamento é lazy por personagem.
+- Cada GLB tem ~1,5 MiB; o carregamento é lazy por personagem e o `Mascot3D` usa `IntersectionObserver` para só inicializar quando o mascote entra na viewport.
+- Na landing page, os três cards usam `shadows={false}` para reduzir o custo de GPU.
 - O piso escuro do demo foi desativado por padrão (`showFloor=false`), deixando o mascote transparente no tema do app.
 - Sombras em tempo real são desativadas abaixo de 760 px no viewer original.
 - O componente é desmontado e o `dispose()` é chamado ao sair da tela.

@@ -44,6 +44,8 @@ export interface Mascot3DProps {
   className?: string
   /** Ativa o piso escuro do demo original (desligado no tema do app). */
   showFloor?: boolean
+  /** Sombras em tempo real (desligadas em cards da landing para economizar GPU). */
+  shadows?: boolean
 }
 
 /**
@@ -60,13 +62,43 @@ export function Mascot3D({
   size = 220,
   className = '',
   showFloor = false,
+  shadows = true,
 }: Mascot3DProps) {
+  const stageRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<MascotViewerInstance | null>(null)
+  const [inView, setInView] = useState(false)
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
 
+  // Carrega o GLB apenas quando o mascote entra na viewport.
   useEffect(() => {
+    if (import.meta.env.MODE === 'test') return
+
+    const node = stageRef.current
+    if (!node) return
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '240px' },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!inView) return
+
     // jsdom não implementa WebGL; os testes usam o fallback estático.
     if (import.meta.env.MODE === 'test') {
       setFailed(true)
@@ -87,6 +119,7 @@ export function Mascot3D({
           fade: number
           pixelRatio: number
           showFloor: boolean
+          shadows: boolean
         }) => MascotViewerInstance
 
         const viewer = new Viewer({
@@ -96,6 +129,7 @@ export function Mascot3D({
           fade: 0.25,
           pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
           showFloor,
+          shadows,
         })
         viewerRef.current = viewer
         await viewer.showCharacter(CHARACTER_BY_AGENT[agent], { reset: true })
@@ -119,7 +153,7 @@ export function Mascot3D({
       viewerRef.current?.destroy()
       viewerRef.current = null
     }
-  }, [agent, showFloor])
+  }, [agent, showFloor, shadows, inView])
 
   useEffect(() => {
     if (!ready || !animation || !viewerRef.current) return
@@ -132,6 +166,7 @@ export function Mascot3D({
 
   return (
     <div
+      ref={stageRef}
       className={[styles.stage, className].join(' ')}
       style={{
         width: size,

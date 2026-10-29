@@ -21,12 +21,14 @@ export class MascotViewer {
     autoResize = true,
     // Na integração com o app, o piso escuro do demo é opcional.
     showFloor = false,
+    shadows = true,
   }) {
     if (!container) throw new Error('MascotViewer requer um container DOM.');
     this.container = container;
     this.modelBaseUrl = modelBaseUrl.replace(/\/$/, '');
     this.fade = fade;
     this.showFloor = showFloor;
+    this.shadowsRequested = shadows;
     this.listeners = new Map();
     this.characters = new Map();
     this.loading = new Map();
@@ -60,7 +62,7 @@ export class MascotViewer {
     this.renderer.toneMappingExposure = 0.95;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.shadowsEnabled = window.innerWidth > 760;
+    this.shadowsEnabled = this.shadowsRequested && window.innerWidth > 760;
     const dpr = pixelRatio ?? Math.min(window.devicePixelRatio || 1, 2);
     this.renderer.setPixelRatio(dpr);
     this.renderer.domElement.className = 'mascot-canvas';
@@ -414,7 +416,7 @@ export class MascotViewer {
   resize() {
     if (this.disposed) return;
     const width = this.container.clientWidth;
-    const shouldShadows = window.innerWidth > 760;
+    const shouldShadows = this.shadowsRequested && window.innerWidth > 760;
     if (shouldShadows !== this.shadowsEnabled) {
       this.shadowsEnabled = shouldShadows;
       this.renderer.shadowMap.enabled = shouldShadows;
