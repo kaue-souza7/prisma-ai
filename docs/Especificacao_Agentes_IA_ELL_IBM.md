@@ -407,7 +407,7 @@ As seguintes decisões do rascunho original ficam registradas mas **não são re
 | D26 | Rastreabilidade do conhecimento | Coberta pela D9 para o MVP |
 | D27 | Lacunas e conflitos no conteúdo | Processo de governança (D8) cobre o essencial |
 | D28 | Perfis comportamentais completos | Cobertos pelas D30, D31 e D7 para o MVP |
-| D29 | Comportamento do Catalisador como agente de IA | Catalisador é backend determinístico no MVP |
+| ~~D29~~ | ~~Comportamento do Catalisador como agente de IA~~ | **Aprovada — ver Decisões D-C1 a D-C16 (seção 2.1)** |
 | D34 | Reconhecimento de progresso avançado | Coberto pela D31 e pelo painel de progresso |
 | D35 | Análises e conclusões avançadas | Coberto pela D31 para o MVP |
 | D37–D49 | Comportamentos situacionais diversos | Revisão após piloto com dados reais |
@@ -416,23 +416,188 @@ As seguintes decisões do rascunho original ficam registradas mas **não são re
 
 ## 4. Diretrizes transversais (aprovadas)
 
-1. **Especialização coordenada:** Mentor e Analista têm missões distintas; colaboram apenas quando necessário, via backend.
+1. **Especialização coordenada:** Catalisador, Mentor e Analista têm missões distintas; colaboram apenas quando necessário, via backend e Orchestrate.
 2. **Backend como autoridade operacional:** regras de negócio, permissões, validações e operações permanecem sob controle do backend.
 3. **Privacidade e minimização:** acesso a dados é limitado ao payload definido na Decisão 4.
 4. **Transparência:** não inventar fatos, ações ou conclusões que as evidências não sustentem.
 5. **Segurança proporcional ao risco:** pedir esclarecimento quando necessário; fallback educativo quando IA indisponível.
-6. **Autonomia do usuário:** respeitar objetivos, ritmo, preferências e decisões do estudante.
+6. **Autonomia do usuário:** respeitar objetivos, ritmo, preferências e decisões do estudante — incluindo revisitar trilhas auto-concluídas sem penalização.
 7. **Concisão por padrão:** responder brevemente e aprofundar quando necessário (Decisão 14).
 8. **Motivação sem pressão:** sem culpa, prazos artificiais, punição por inatividade ou notificações excessivas.
 9. **Coerência visual:** manter alinhamento com o Design System — identidades cromáticas, acessibilidade e experiência responsiva.
+10. **Onboarding como conversa:** o onboarding nunca deve parecer uma prova. A sondagem de conhecimento é feita exclusivamente por contexto de vida declarado, nunca por perguntas de certo/errado.
+
+---
+
+## 2.1 Decisões do Catalisador como agente de IA
+> **Aprovadas** — substituem D29 (adiada)
+
+### D-C1 — Estrutura do onboarding
+> **Aprovada**
+
+O Catalisador conduz o onboarding com **10 perguntas fixas** aplicadas a todos os usuários, seguidas de até **8 perguntas adaptativas** geradas pelo LLM conforme as respostas anteriores. Total máximo: 18 perguntas. A maioria dos usuários encerra antes do limite.
+
+### D-C2 — Método de sondagem de conhecimento
+> **Aprovada**
+
+A sondagem de nível é feita exclusivamente por **contexto de vida declarado** — experiência de trabalho, situação financeira atual, objetivos. Nunca por perguntas de certo/errado. O onboarding não é uma prova.
+
+### D-C3 — Tom e personalidade do Catalisador
+> **Aprovada**
+
+Tom: **conselheiro motivador** — entusiasmado, celebra as respostas do usuário, usa o contexto de vida para criar conexão emocional. É o primeiro contato afetivo do usuário com a plataforma, antes de qualquer missão.
+
+### D-C4 — Revelação da trilha ao final do onboarding
+> **Aprovada**
+
+O Catalisador apresenta **narrativa personalizada** (2–3 frases de rationale) antes de mostrar as trilhas, contextualizando por que aquela jornada faz sentido para aquele usuário. **A ordem das 12 trilhas nunca muda** — o que varia é o modo de cada trilha (Expresso / Padrão / Completo).
+
+### D-C5 — Trilha auto-concluída no onboarding
+> **Aprovada**
+
+**Apenas a Trilha 1** ("Meu primeiro salário") pode ser marcada como auto-concluída, quando o usuário declara experiência de trabalho formal. Nenhuma outra trilha pode ser auto-concluída — todas as demais precisam ser percorridas.
+
+### D-C6 — Apresentação da Trilha 1 auto-concluída
+> **Aprovada**
+
+A Trilha 1 auto-concluída aparece na interface com selo **"Dominada no onboarding"** — deixa claro que foi reconhecida pelo Catalisador, não percorrida. O badge correspondente também recebe esse mesmo selo, diferenciando-se do badge de quem percorreu a trilha.
+
+### D-C7 — XP da Trilha 1 auto-concluída
+> **Aprovada**
+
+Concede **50 XP fixos** de uma vez, imediatamente após o onboarding. Valor menor que os 100/70 de uma trilha percorrida — reconhece o domínio sem equiparar a quem fez o percurso completo. O usuário vê o XP chegar e entende que o Catalisador reconheceu o domínio dele.
+
+### D-C8 — Revisita voluntária da Trilha 1 auto-concluída
+> **Aprovada**
+
+Revisitar a Trilha 1 é opcional e **sem recompensa adicional de XP**. Os 50 pontos já foram concedidos e não mudam. Não há gamificação artificial para forçar revisita.
+
+### D-C9 — Recuperação quando o usuário superestimou o próprio nível
+> **Aprovada**
+
+Se o Analista detectar dificuldade recorrente em competências da Trilha 1 durante trilhas seguintes, o **Catalisador** (não o Mentor) coloca uma sugestão de revisão na Home: "Percebi algumas dificuldades com [competência] — quer dar uma olhada rápida na Trilha 1?" A trilha permanece como "Dominada no onboarding" — não é reaberta à força. O usuário decide se aceita a sugestão.
+
+### D-C10 — Modos de profundidade por trilha
+> **Aprovada**
+
+O Catalisador define para cada trilha um modo com base no contexto de vida declarado no onboarding:
+
+| Modo | O que o usuário percorre |
+|---|---|
+| **Expresso** | Só as competências marcadas como `essencial: sim` + 1 simulação final |
+| **Padrão** | Todas as competências da trilha |
+| **Completo** | Todas as competências + atividades de reforço |
+
+O campo `trail` no `profiles` ganha atributo `trail_modes` com o modo de cada trilha. O backend usa o modo para filtrar quais atividades ficam visíveis para aquele usuário naquela trilha.
+
+**Exemplo de payload:**
+```json
+{
+  "source": "ai",
+  "phase_order": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  "trail_modes": {
+    "1": "express",
+    "2": "standard",
+    "3": "full"
+  },
+  "rationale": "Com 3 anos de CLT e objetivo de sair das dívidas, sua jornada começa pelos juros..."
+}
+```
+
+### D-C11 — Presença contínua do Catalisador na jornada
+> **Aprovada**
+
+O Catalisador tem **presença contínua** após o onboarding: aparece na Home com o próximo passo recomendado, celebra conclusões de trilha, sugere revisões quando o Analista identifica necessidade, e reengaja o usuário após inatividade. É a voz da jornada do início ao fim.
+
+### D-C12 — Celebração de conclusão de trilha
+> **Aprovada**
+
+Ao concluir uma trilha, o Catalisador:
+1. Apresenta **1 frase de síntese de competências** gerada pelo Analista — o que o usuário demonstrou saber naquela trilha.
+2. Sugere o próximo passo com contexto: por que a próxima trilha importa para o objetivo daquele usuário.
+
+### D-C13 — Retorno após inatividade
+> **Aprovada**
+
+Quando o usuário retorna após ausência, o Catalisador **acolhe sem cobrar**: lembra onde o usuário parou e sugere continuar de onde estava. Sem mencionar o tempo de ausência, sem urgência artificial, sem culpa.
+
+### D-C14 — Payload do Catalisador como agente
+> **Aprovada**
+
+O backend envia ao Catalisador:
+- Objetivo declarado no onboarding e meta pessoal atual.
+- Progresso nas trilhas: concluídas, em andamento, modos definidos.
+- Recomendações estruturadas do Analista: `{ competencia, nivel_dificuldade, tipo_reforco_sugerido }`.
+- Tempo desde a última sessão (para detecção de inatividade).
+- Trilha e missão atual.
+
+O Catalisador devolve ao backend:
+- Recomendação de próximo passo: `{ tipo, trilha_id, missao_id, mensagem, rationale }`.
+- Para onboarding: `{ phase_order, trail_modes, rationale, fonte: "ai" }`.
+
+O backend valida a missão sugerida contra as regras de desbloqueio antes de aplicar. O Catalisador nunca escreve no banco diretamente e nunca concede desbloqueios.
+
+---
+
+## 2.2 Decisão do Analista — síntese de trilha
+
+### D-A1 — Síntese de competências ao final da trilha
+> **Aprovada**
+
+Ao final de cada trilha concluída, o Analista gera síntese de competências em duas camadas:
+
+1. **Frase curta** entregue pelo Catalisador na celebração de conclusão — gerada pelo Analista, apresentada pela voz do Catalisador. O usuário vê uma voz só.
+2. **Card completo** "O que você demonstrou saber" no painel de progresso — gerado pelo Analista, disponível para quem quiser explorar com mais detalhe.
+
+O usuário nunca vê a análise bruta. O card segue o formato da D14: objetivo, baseado em evidências, sem julgamento de valor.
+
+---
+
+## 2.3 Decisões de conteúdo — rotação de perguntas por missão
+
+### D-Q1 — Conjuntos de perguntas e rotação entre tentativas
+> **Aprovada**
+
+Aplica-se a todos os tipos de atividade: `multiple_choice`, questões abertas e simulações.
+
+**Estrutura dos conjuntos:**
+- Cada missão possui **3 conjuntos fixos** de perguntas cadastrados no backend (seeds).
+- Cada conjunto contém o mesmo número de perguntas, mas com questões diferentes entre si.
+- Exemplo: missão com 6 perguntas → 18 perguntas diferentes no banco (3 × 6).
+- A **ordem das perguntas dentro do conjunto** é randomizada a cada tentativa.
+
+**Regra de seleção do conjunto:**
+- O conjunto é **sorteado aleatoriamente** entre os conjuntos ainda não usados nas tentativas anteriores da missão.
+- Nas primeiras 3 tentativas: cada conjunto aparece **exatamente uma vez**, em ordem aleatória — garantindo que o usuário não veja as mesmas perguntas nas primeiras 3 tentativas.
+- A partir da 4ª tentativa: os conjuntos voltam a ser sorteados livremente (repetição permitida).
+
+**Tabela de comportamento:**
+
+| Tentativa | Conjunto sorteado | Ordem interna | Observação |
+|---|---|---|---|
+| 1ª | Qualquer dos 3 | Randomizada | Nenhum ainda usado |
+| 2ª | Um dos 2 não usados | Randomizada | Garante variedade |
+| 3ª | O último não usado | Randomizada | Todos os 3 conjuntos vistos |
+| 4ª em diante | Qualquer (livre) | Randomizada | Repetição permitida |
+
+**Regras de controle:**
+- O backend controla a rotação — nenhum agente decide qual conjunto usar.
+- Não há limite de tentativas: o usuário pode tentar uma missão quantas vezes quiser.
+- Após não passar no módulo, o sistema exibe sugestão de revisão **opcional** — o usuário pode tentar novamente sem revisar.
+- A sugestão de revisão é baseada nas competências com dificuldade identificadas pelo Analista.
+
+**O que nunca acontece:**
+- O mesmo conjunto não se repete nas primeiras 3 tentativas.
+- O sistema não bloqueia o avanço nem penaliza por número de tentativas.
+- O sistema não diz que o usuário "falhou".
 
 ---
 
 ## 5. Status do documento
 
-**Estado:** PARCIALMENTE APROVADO para o MVP da Fase 1.
+**Estado:** PARCIALMENTE APROVADO — atualizado com decisões do Catalisador como agente (D-C1 a D-C14), Analista síntese de trilha (D-A1) e rotação de perguntas (D-Q1).
 
-- Decisões aprovadas: 1–14, 30–33, 36 (total: 18 decisões).
-- Decisões adiadas: 15–29, 34–35, 37–49.
+- Decisões aprovadas: 1–14, 30–33, 36, D-C1–D-C14, D-A1, D-Q1 (total: 34 decisões).
+- Decisões adiadas: 15–28, 34–35, 37–49 (D29 aprovada como D-C1–D-C14).
 - Próxima revisão: após piloto da Fase 1, com base em dados de uso real.
 - Mudanças em decisões aprovadas devem ser registradas aqui e, quando afetarem requisitos de produto, também no PRD.
