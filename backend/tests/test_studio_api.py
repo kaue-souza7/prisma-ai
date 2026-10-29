@@ -275,6 +275,7 @@ async def test_studio_generate_without_balance_returns_402(
     )
 
     monkeypatch.setattr(settings, "orchestrate_enabled", True)
+    monkeypatch.setattr(settings, "orchestrate_studio_enabled", True)
     monkeypatch.setattr(settings, "orchestrate_url", "http://orchestrate.test")
 
     response = await client.post(
@@ -309,6 +310,7 @@ async def test_studio_generate_happy_path_spends_and_saves(
     await db_session.flush()
 
     monkeypatch.setattr(settings, "orchestrate_enabled", True)
+    monkeypatch.setattr(settings, "orchestrate_studio_enabled", True)
     monkeypatch.setattr(settings, "orchestrate_url", "http://orchestrate.test")
 
     async def fake_orchestrate(payload: dict) -> dict:

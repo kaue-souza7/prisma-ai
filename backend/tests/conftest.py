@@ -18,6 +18,21 @@ from app.main import app
 from app.shared.models import User
 
 
+@pytest.fixture(autouse=True)
+def disable_orchestrate_by_default(monkeypatch):
+    """Testes nunca chamam o Orchestrate real por acidente.
+
+    Para rodar o teste de contrato ao vivo, use:
+        ORCHESTRATE_LIVE_TEST=1 pytest -q
+    """
+    if os.getenv("ORCHESTRATE_LIVE_TEST") == "1":
+        return
+    monkeypatch.setattr(settings, "orchestrate_enabled", False)
+    monkeypatch.setattr(settings, "orchestrate_mentor_enabled", False)
+    monkeypatch.setattr(settings, "orchestrate_catalyst_enabled", False)
+    monkeypatch.setattr(settings, "orchestrate_analyst_enabled", False)
+
+
 @pytest_asyncio.fixture
 async def db_context():
     """

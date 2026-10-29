@@ -330,7 +330,11 @@ async def generate_studio_content(
     # Sem Orchestrate ativo, o Estúdio é honesto: não gera, não cobra. Essa
     # checagem vem antes do saldo para que o estudante veja a mensagem de
     # preparação, e não um erro de saldo, enquanto a IA não está disponível.
-    if not settings.orchestrate_enabled or not settings.orchestrate_url:
+    if (
+        not settings.orchestrate_studio_enabled
+        or not settings.orchestrate_enabled
+        or not settings.orchestrate_url
+    ):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=studio_mentor.STUDIO_UNAVAILABLE_MESSAGE,

@@ -210,14 +210,22 @@ async def send_mentor_message(
     conv.messages = [*conv.messages, user_message]
     await db.flush()
 
+    # Recupera thread_id da última mensagem do assistente para continuar o turn.
+    prior_thread_id: str | None = None
+    for msg in reversed(conv.messages[:-1]):  # exclui a mensagem que acabamos de adicionar
+        if msg.get("role") == "assistant" and msg.get("thread_id"):
+            prior_thread_id = msg["thread_id"]
+            break
+
     payload = await build_mentor_payload(db, user, conv, content)
-    reply = await orchestrate.request_mentor_reply(payload)
+    reply = await orchestrate.request_mentor_reply(payload, thread_id=prior_thread_id)
 
     assistant_message = {
         "role": "assistant",
         "content": reply.content,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "status": reply.status,
+        **({"thread_id": reply.thread_id} if reply.thread_id else {}),
     }
     conv.messages = [*conv.messages, assistant_message]
     conv.updated_at = datetime.now(timezone.utc)

@@ -2,7 +2,7 @@ import enum
 from datetime import datetime, timezone
 from sqlalchemy import (
     BigInteger, Boolean, DateTime, Enum, Float, ForeignKey,
-    Integer, String, Text, UniqueConstraint
+    Index, Integer, String, Text, UniqueConstraint, func
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -160,6 +160,7 @@ class Activity(Base):
     content: Mapped[dict] = mapped_column(JSONB, nullable=False)  # enunciado, opções, resposta esperada, critério
     points_value: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    question_set: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
 
     mission: Mapped["Mission"] = relationship("Mission", back_populates="activities")
     responses: Mapped[list["UserResponse"]] = relationship("UserResponse", back_populates="activity")
@@ -188,6 +189,28 @@ class UserMissionProgress(Base):
     mission: Mapped["Mission"] = relationship("Mission", back_populates="progress")
 
     __table_args__ = (UniqueConstraint("user_id", "mission_id"),)
+
+
+class TrailSynthesisRecord(Base):
+    """Cache persistido da síntese do Analista por usuário e trilha (D-A1)."""
+
+    __tablename__ = "trail_syntheses"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    trail_id: Mapped[int] = mapped_column(
+        ForeignKey("phases.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    short: Mapped[str] = mapped_column(String(500), nullable=False)
+    full: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    source: Mapped[str] = mapped_column(String(20), nullable=False, default="fallback")
+    generated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, nullable=False
+    )
+
+    __table_args__ = (UniqueConstraint("user_id", "trail_id"),)
 
 
 class UserCompetencyProgress(Base):
@@ -278,6 +301,25 @@ class UserResponse(Base):
 
 
 # ─────────────────────────────────────────────
+# Tentativas de missão (rotação de conjuntos)
+# ─────────────────────────────────────────────
+
+class UserMissionAttempt(Base):
+    __tablename__ = "user_mission_attempts"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    mission_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("missions.id", ondelete="CASCADE"), nullable=False)
+    attempt_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    question_set_used: Mapped[int] = mapped_column(Integer, nullable=False)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        Index("ix_user_mission_attempts_user_mission", "user_id", "mission_id"),
+    )
+
+
+# ─────────────────────────────────────────────
 # Estúdio de Prismas
 # ─────────────────────────────────────────────
 
@@ -300,6 +342,10 @@ class GeneratedContent(Base):
     user: Mapped["User"] = relationship("User")
     phase: Mapped["Phase"] = relationship("Phase")
     mission: Mapped["Mission"] = relationship("Mission")
+
+    __table_args__ = (
+        Index("ix_generated_contents_user_created", "user_id", "created_at"),
+    )
 
 
 # ─────────────────────────────────────────────

@@ -7,7 +7,10 @@ para a IA real seja apenas uma implementação de `call_orchestrate`.
 """
 from __future__ import annotations
 
+from app.core.config import settings
 from app.core.logging import logger
+from app.core.orchestrate_client import OrchestrateError, chat_completion
+from app.core.orchestrate_parser import extract_agent_json
 
 STUDIO_UNAVAILABLE_MESSAGE = (
     "O Estúdio estará disponível assim que o Mentor for ativado. "
@@ -81,7 +84,7 @@ def build_fallback_content(
 
 
 async def call_orchestrate(payload: dict) -> dict:
-    """Chamada real ao Orchestrate (Etapa 2).
+    """Chamada real ao agente do Estúdio.
 
     Contrato esperado por formato:
     - revisao: {type, title, sections:[{title, body}], summary:[str]}
@@ -89,7 +92,32 @@ async def call_orchestrate(payload: dict) -> dict:
     - exercicios: {type, questions:[{prompt, options, correct_answer,
       feedback_correct, feedback_incorrect, competency_codes}]}
     """
-    raise NotImplementedError(STUDIO_UNAVAILABLE_MESSAGE)
+    if not settings.orchestrate_studio_enabled:
+        raise NotImplementedError(STUDIO_UNAVAILABLE_MESSAGE)
+
+    agent_id = settings.orchestrate_studio_agent_id
+    if not settings.orchestrate_url or not agent_id:
+        raise RuntimeError("Agente do Estúdio não configurado.")
+
+    try:
+        data = await chat_completion(
+            agent_id=agent_id,
+            payload=payload,
+            timeout=45.0,
+        )
+    except OrchestrateError as exc:
+        logger.warning(
+            "Estúdio indisponível: %s — %s", exc.__class__.__name__, exc.detail
+        )
+        raise
+
+    content = extract_agent_json(data)
+    if not content:
+        raise ValueError("estrutura_invalida")
+
+    # O agente pode omitir `type`; o formato solicitado é a fonte de verdade.
+    content.setdefault("type", payload.get("format"))
+    return validate_generated_content(payload["format"], content)
 
 
 def validate_generated_content(format: str, content: dict) -> dict:
