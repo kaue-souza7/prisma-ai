@@ -21,3 +21,7 @@ dist/
 .vite/
 coverage/
 *.tsbuildinfo
+
+# Pacote de origem dos mascotes 3D (assets já integrados em backend/app/static)
+identidade-agentes.zip
+identidade-agentes/

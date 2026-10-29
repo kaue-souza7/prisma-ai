@@ -1,0 +1,429 @@
+{
+  "generator": "ELL Mascotes 3D pipeline",
+  "generatedAt": "2026-10-29T00:43:47.969Z",
+  "threeVersion": "186",
+  "animationNaming": "<CHARACTER>_<ANIMATION_ID_SEM_HIFEN>_<NOME>",
+  "characters": [
+    {
+      "id": "catalisador",
+      "name": "Catalisador",
+      "file": "catalisador.glb",
+      "bytes": 1603668,
+      "sha256": "25e23437f7ca228e09d766acad65b52ccb03fdf44c21aaa9709d06f0f6e6cba5",
+      "meshes": 52,
+      "nodes": 91,
+      "materials": 17,
+      "skins": 1,
+      "animations": 12,
+      "extensionsUsed": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_unlit"
+      ],
+      "clips": [
+        {
+          "id": "C-01",
+          "clip": "CATALISADOR_C01_IDLE",
+          "name": "Ocioso",
+          "mvpPriority": 1,
+          "statePriority": 6,
+          "kind": "idle",
+          "loop": true,
+          "duration": 10,
+          "reducedPose": 0.2
+        },
+        {
+          "id": "C-02",
+          "clip": "CATALISADOR_C02_WELCOME",
+          "name": "Saudação de onboarding",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 2,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "C-03",
+          "clip": "CATALISADOR_C03_LISTENING",
+          "name": "Ouvindo",
+          "mvpPriority": 1,
+          "statePriority": 5,
+          "kind": "loop",
+          "loop": true,
+          "duration": 3,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "C-04",
+          "clip": "CATALISADOR_C04_CELEBRATE_ANSWER",
+          "name": "Celebrando resposta",
+          "mvpPriority": 1,
+          "statePriority": 3,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "C-05",
+          "clip": "CATALISADOR_C05_TRAIL_REVEAL",
+          "name": "Revelação de trilha",
+          "mvpPriority": 1,
+          "statePriority": 3,
+          "kind": "celebration",
+          "loop": false,
+          "duration": 2.5,
+          "reducedPose": 0.4
+        },
+        {
+          "id": "C-06",
+          "clip": "CATALISADOR_C06_EXPLAINING",
+          "name": "Explicando",
+          "mvpPriority": 1,
+          "statePriority": 5,
+          "kind": "presentation",
+          "loop": true,
+          "duration": 4,
+          "reducedPose": 0.45
+        },
+        {
+          "id": "C-07",
+          "clip": "CATALISADOR_C07_NEXT_MISSION",
+          "name": "Incentivando",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.5,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "C-08",
+          "clip": "CATALISADOR_C08_WELCOME_BACK",
+          "name": "Acolhimento após inatividade",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.8,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "C-09",
+          "clip": "CATALISADOR_C09_SURPRISED_POSITIVE",
+          "name": "Surpreso positivo",
+          "mvpPriority": 3,
+          "statePriority": 2,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.5,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "C-10",
+          "clip": "CATALISADOR_C10_ENCOURAGING",
+          "name": "Encorajando após dificuldade",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.5,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "C-11",
+          "clip": "CATALISADOR_C11_MISSION_COMPLETE",
+          "name": "Celebrando conquista",
+          "mvpPriority": 1,
+          "statePriority": 2,
+          "kind": "celebration",
+          "loop": false,
+          "duration": 2.2,
+          "reducedPose": 0.4
+        },
+        {
+          "id": "C-12",
+          "clip": "CATALISADOR_C12_TRAIL_COMPLETE",
+          "name": "Celebração de trilha",
+          "mvpPriority": 2,
+          "statePriority": 1,
+          "kind": "celebration",
+          "loop": false,
+          "duration": 3.5,
+          "reducedPose": 0.4
+        }
+      ],
+      "dimensions": {
+        "characterId": "catalisador",
+        "displayName": "Catalisador",
+        "bodyHeight": 1.4800000190734863,
+        "bodyWidth": 1.7715072631835938,
+        "bodyDepth": 0.7730560302734375,
+        "generatedBy": "scripts/build-assets.mjs",
+        "palette": {
+          "bodyBottom": "#FF6B6B",
+          "bodyTop": "#FCA048"
+        }
+      }
+    },
+    {
+      "id": "mentor",
+      "name": "Mentor",
+      "file": "mentor.glb",
+      "bytes": 1648768,
+      "sha256": "3a214c7be135505fa2612eec1128aafd0c20fb4f7ed3967a5cb1b2db47719868",
+      "meshes": 55,
+      "nodes": 96,
+      "materials": 21,
+      "skins": 1,
+      "animations": 11,
+      "extensionsUsed": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_unlit"
+      ],
+      "clips": [
+        {
+          "id": "M-01",
+          "clip": "MENTOR_M01_IDLE",
+          "name": "Ocioso",
+          "mvpPriority": 1,
+          "statePriority": 5,
+          "kind": "idle",
+          "loop": true,
+          "duration": 12,
+          "reducedPose": 0.2
+        },
+        {
+          "id": "M-02",
+          "clip": "MENTOR_M02_GREETING",
+          "name": "Saudação",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.8,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "M-03",
+          "clip": "MENTOR_M03_THINKING",
+          "name": "Pensativo",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "loop",
+          "loop": true,
+          "duration": 2.5,
+          "reducedPose": 0.2
+        },
+        {
+          "id": "M-04",
+          "clip": "MENTOR_M04_CURIOUS",
+          "name": "Curioso",
+          "mvpPriority": 2,
+          "statePriority": 4,
+          "kind": "loop",
+          "loop": true,
+          "duration": 4,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "M-05",
+          "clip": "MENTOR_M05_SURPRISED",
+          "name": "Surpreso",
+          "mvpPriority": 3,
+          "statePriority": 2,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.2,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "M-06",
+          "clip": "MENTOR_M06_CONCERNED",
+          "name": "Preocupado",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 2.4,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "M-07",
+          "clip": "MENTOR_M07_ENCOURAGING",
+          "name": "Encorajador",
+          "mvpPriority": 1,
+          "statePriority": 1,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.5,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "M-08",
+          "clip": "MENTOR_M08_EXPLAINING",
+          "name": "Explicando",
+          "mvpPriority": 1,
+          "statePriority": 3,
+          "kind": "presentation",
+          "loop": true,
+          "duration": 2,
+          "reducedPose": 0.45
+        },
+        {
+          "id": "M-09",
+          "clip": "MENTOR_M09_CHECKING",
+          "name": "Verificando compreensão",
+          "mvpPriority": 2,
+          "statePriority": 4,
+          "kind": "loop",
+          "loop": true,
+          "duration": 3,
+          "reducedPose": 0.3
+        },
+        {
+          "id": "M-10",
+          "clip": "MENTOR_M10_APPROVING",
+          "name": "Aprovando",
+          "mvpPriority": 1,
+          "statePriority": 2,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.2,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "M-11",
+          "clip": "MENTOR_M11_ENCOURAGING_NEXT",
+          "name": "Incentivando",
+          "mvpPriority": 2,
+          "statePriority": 4,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.8,
+          "reducedPose": 0.32
+        }
+      ],
+      "dimensions": {
+        "characterId": "mentor",
+        "displayName": "Mentor",
+        "bodyHeight": 1.4800000190734863,
+        "bodyWidth": 1.7715072631835938,
+        "bodyDepth": 0.7730560302734375,
+        "generatedBy": "scripts/build-assets.mjs",
+        "palette": {
+          "bodyBottom": "#2F80ED",
+          "bodyTop": "#56CCF2"
+        }
+      }
+    },
+    {
+      "id": "analista",
+      "name": "Analista de Progresso",
+      "file": "analista.glb",
+      "bytes": 1550012,
+      "sha256": "8607c9f657c7c2f253caff5c89afb76aadf3b65c620f944b29bd6284a9cf5c8a",
+      "meshes": 60,
+      "nodes": 101,
+      "materials": 22,
+      "skins": 1,
+      "animations": 7,
+      "extensionsUsed": [
+        "KHR_materials_clearcoat",
+        "KHR_materials_unlit",
+        "KHR_materials_emissive_strength"
+      ],
+      "clips": [
+        {
+          "id": "A-01",
+          "clip": "ANALISTA_A01_IDLE",
+          "name": "Ocioso",
+          "mvpPriority": 1,
+          "statePriority": 4,
+          "kind": "idle",
+          "loop": true,
+          "duration": 12,
+          "reducedPose": 0.2
+        },
+        {
+          "id": "A-02",
+          "clip": "ANALISTA_A02_PRESENTING",
+          "name": "Apresentando dados",
+          "mvpPriority": 1,
+          "statePriority": 3,
+          "kind": "presentation",
+          "loop": false,
+          "duration": 2.5,
+          "reducedPose": 0.45
+        },
+        {
+          "id": "A-03",
+          "clip": "ANALISTA_A03_PATTERN",
+          "name": "Identificando padrão",
+          "mvpPriority": 1,
+          "statePriority": 2,
+          "kind": "presentation",
+          "loop": false,
+          "duration": 2.4,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "A-04",
+          "clip": "ANALISTA_A04_REFLECTING",
+          "name": "Reflexivo",
+          "mvpPriority": 2,
+          "statePriority": 3,
+          "kind": "loop",
+          "loop": true,
+          "duration": 2,
+          "reducedPose": 0.2
+        },
+        {
+          "id": "A-05",
+          "clip": "ANALISTA_A05_CONFIDENT",
+          "name": "Confiante",
+          "mvpPriority": 2,
+          "statePriority": 2,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.5,
+          "reducedPose": 0.35
+        },
+        {
+          "id": "A-06",
+          "clip": "ANALISTA_A06_ORGANIZING",
+          "name": "Organizando",
+          "mvpPriority": 3,
+          "statePriority": 3,
+          "kind": "reaction",
+          "loop": false,
+          "duration": 1.2,
+          "reducedPose": 0.32
+        },
+        {
+          "id": "A-07",
+          "clip": "ANALISTA_A07_CELEBRATION",
+          "name": "Celebração analítica",
+          "mvpPriority": 2,
+          "statePriority": 1,
+          "kind": "celebration",
+          "loop": false,
+          "duration": 2,
+          "reducedPose": 0.4
+        }
+      ],
+      "dimensions": {
+        "characterId": "analista",
+        "displayName": "Analista de Progresso",
+        "bodyHeight": 1.4800000190734863,
+        "bodyWidth": 1.7715072631835938,
+        "bodyDepth": 0.7730560302734375,
+        "generatedBy": "scripts/build-assets.mjs",
+        "palette": {
+          "bodyBottom": "#11998E",
+          "bodyTop": "#38EF7D"
+        }
+      }
+    }
+  ]
+}
